@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "target": "ES2018",
+    "lib": ["dom"],
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["@types/jest"],
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "exclude": ["./node_modules", "./scrpts"],
+  "include": ["**/*.test.ts"]
+}
