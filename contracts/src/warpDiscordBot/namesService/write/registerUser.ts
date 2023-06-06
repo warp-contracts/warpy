@@ -30,7 +30,7 @@ export const registerUser = async (
   }
 
   await SmartWeave.kv.put(effectiveId, address);
-  state.users[effectiveId] = address;
+  state.users[id] = address;
 
   return { state };
 };
