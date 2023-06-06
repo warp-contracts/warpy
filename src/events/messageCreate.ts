@@ -15,7 +15,7 @@ export async function onMessageCreate(
 
   const contract = await connectToServerContract(warp, serversContract, wallet, message.guildId);
 
-  if (message.content.startsWith('warpik link wallet')) {
+  if (message.content.startsWith('/warpik link wallet')) {
     message.channel.sendTyping();
     const args = message.content.trim().split(/ +/g);
     if (!args[3]) {
@@ -59,7 +59,7 @@ export async function onMessageCreate(
     message.reply('User registered correctly.');
     message.react('🍭');
     return null;
-  } else if (message.content.startsWith('warpik mint')) {
+  } else if (message.content.startsWith('/warpik mint')) {
     message.channel.sendTyping();
 
     let address: string | [];
@@ -94,7 +94,7 @@ export async function onMessageCreate(
     message.reply(`Tokens minted correctly. You have now ${balance} tokens.`);
     message.react('🍭');
     return null;
-  } else if (message.content.startsWith(`warpik balance`)) {
+  } else if (message.content.startsWith(`/warpik balance`)) {
     message.channel.sendTyping();
 
     let address: string | [];
@@ -122,7 +122,7 @@ export async function onMessageCreate(
     message.reply(`You have ${balance.length > 0 ? balance : 0} tokens.`);
     message.react('🍭');
     return null;
-  } else if (message.content.startsWith('warpik counter')) {
+  } else if (message.content.startsWith('/warpik counter')) {
     message.channel.sendTyping();
 
     let result: { messages: number; reactions: number }[];
@@ -133,10 +133,10 @@ export async function onMessageCreate(
       return null;
     }
 
-    message.reply(`You have sent ${result[0].messages} messages and ${result[0].reactions} reactions.`);
+    message.reply(`You have sent ${result[0].messages || 0} messages and ${result[0].reactions || 0} reactions.`);
     message.react('🍭');
     return null;
-  } else if (message.content.startsWith(`warpik help`)) {
+  } else if (message.content.startsWith(`/warpik help`)) {
     message.reply(`Hey, my name is Warpik. Here is the list of commands you can use to interact with me:
     \n👛 **warpik mint** - use it if you want to mint tokens for the messages and reactions you've sent before linking your wallet
     \n💰 **warpik balance** - check your tokens balance
