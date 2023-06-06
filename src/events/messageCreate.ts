@@ -1,6 +1,12 @@
 import { Message } from 'discord.js';
 import { Contract, JWKInterface, Tag, Warp } from 'warp-contracts';
-import { connectToServerContract, DAILY_MESSAGES_LIMIT, getStateFromDre, isTxIdValid } from '../utils';
+import {
+  connectToServerContract,
+  DAILY_MESSAGES_LIMIT,
+  getServerContractId,
+  getStateFromDre,
+  isTxIdValid,
+} from '../utils';
 
 export async function onMessageCreate(
   message: Message<boolean>,
@@ -13,7 +19,7 @@ export async function onMessageCreate(
   if (message.author.bot) return null;
   if (userToMessages[id] > DAILY_MESSAGES_LIMIT) return null;
 
-  const contract = await connectToServerContract(warp, serversContract, wallet, message.guildId);
+  const contract = await connectToServerContract(warp, wallet, message.guildId);
 
   if (message.content.startsWith('/warpik link wallet')) {
     message.channel.sendTyping();
@@ -92,6 +98,11 @@ export async function onMessageCreate(
     }
 
     message.reply(`Tokens minted correctly. You have now ${balance} tokens.`);
+    message.react('🍭');
+    return null;
+  } else if (message.content.startsWith(`/warpik contract`)) {
+    const contractTxId = await getServerContractId(message.guildId);
+    message.reply(`Here is the server contract: https://sonar.warp.cc/#/app/contract/${contractTxId}`);
     message.react('🍭');
     return null;
   } else if (message.content.startsWith(`/warpik balance`)) {

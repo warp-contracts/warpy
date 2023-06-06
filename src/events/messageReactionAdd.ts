@@ -15,7 +15,7 @@ export async function onMessageReactionAdd(
   if (userToReactions[id] > DAILY_REACTIONS_LIMIT) return;
 
   try {
-    const contract = await connectToServerContract(warp, serversContract, wallet, reactionOrigin.message.guildId);
+    const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
     await contract.writeInteraction(
       { function: 'addReaction', id: user.id },
       {

@@ -1,4 +1,4 @@
-import { Contract, JWKInterface, Warp, WarpFactory } from 'warp-contracts';
+import { JWKInterface, Warp, WarpFactory } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import fs from 'fs';
 import path from 'path';
@@ -12,29 +12,19 @@ export function isTxIdValid(txId: string): boolean {
   return validTxIdRegex.test(txId);
 }
 
-export async function connectToServerContract(
-  warp: Warp,
-  serversContract: Contract,
-  wallet: JWKInterface,
-  serverId: string | null
-) {
+export async function connectToServerContract(warp: Warp, wallet: JWKInterface, serverId: string | null) {
+  const contractTxId = await getServerContractId(serverId);
+  return warp.contract(contractTxId).connect(wallet).setEvaluationOptions({ useKVStorage: true });
+}
+
+export async function getServerContractId(serverId: string | null) {
   if (!serverId) {
     throw new Error(`Server id not provided. Cannot connect to the contract.`);
   } else {
-    const contractTxId = (
-      await serversContract.viewState<
-        { function: string; serverId: string | null },
-        { serverName: string; serverId: string; contractTxId: string }
-      >({
-        function: 'getServerInfo',
-        serverId,
-      })
-    ).result.contractTxId;
-
-    return warp.contract(contractTxId).connect(wallet).setEvaluationOptions({ useKVStorage: true });
+    const result = await getStateFromDre(SERVERS_CONTRACT);
+    return result.state.servers[serverId].contractTxId;
   }
 }
-
 export function initializeWarp(): Warp {
   return WarpFactory.forMainnet().use(new DeployPlugin());
 }
@@ -47,20 +37,20 @@ export function readWallet() {
   return JSON.parse(fs.readFileSync(path.resolve('.secrets', 'wallet.json'), 'utf-8'));
 }
 
-export async function getStateFromDre(contractId: string, propertyToGet: string, walletAddress: string) {
+export async function getStateFromDre(contractId: string, propertyToGet?: string, id?: string) {
   const dre1 = `dre-1`;
   const dre3 = `dre-3`;
   const dre5 = `dre-5`;
   try {
-    const response = await fetchDre(dre1, contractId, propertyToGet, walletAddress);
+    const response = await fetchDre(dre1, contractId, propertyToGet, id);
     return response.result;
   } catch (e) {
     try {
-      const response = await fetchDre(dre3, contractId, propertyToGet, walletAddress);
+      const response = await fetchDre(dre3, contractId, propertyToGet, id);
       return response.result;
     } catch (e) {
       try {
-        const response = await fetchDre(dre5, contractId, propertyToGet, walletAddress);
+        const response = await fetchDre(dre5, contractId, propertyToGet, id);
         return response.result;
       } catch (e) {
         throw new Error(`Could not load state from DRE nodes.`);
@@ -69,10 +59,10 @@ export async function getStateFromDre(contractId: string, propertyToGet: string,
   }
 }
 
-async function fetchDre(dre: string, contractId: string, propertyToGet: string, walletAddress: string) {
-  return await fetch(`https://${dre}.warp.cc/contract?id=${contractId}&query=$.${propertyToGet}.${walletAddress}`).then(
-    (res) => {
-      return res.json();
-    }
-  );
+async function fetchDre(dre: string, contractId: string, propertyToGet?: string, id?: string) {
+  return await fetch(
+    `https://${dre}.warp.cc/contract?id=${contractId}${propertyToGet ? `&query=$.${propertyToGet}.${id}` : ''}`
+  ).then((res) => {
+    return res.json();
+  });
 }
