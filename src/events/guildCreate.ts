@@ -2,7 +2,7 @@ import { Guild } from 'discord.js';
 import { Contract, JWKInterface, Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
-const BOT_CONTRACT_SRC = 'lQYNZg3NXTqIsBA6iMdXYAAMlesYKaLp4mi-9ipv-D8';
+const BOT_CONTRACT_SRC = 'JmIkZyGdwPnR_4y41AOsBH0Sx0jiNySLHlDh94iZs4A';
 
 export async function onGuildCreate(guild: Guild, warp: Warp, wallet: JWKInterface, serversContract: Contract) {
   const { contractTxId } = await warp.deployFromSourceTx({
@@ -29,7 +29,7 @@ export async function onGuildCreate(guild: Guild, warp: Warp, wallet: JWKInterfa
     tags: [new Tag('Discord-Server-Name', guild.name), new Tag('Indexed-By', 'warp-discord-bot')],
   });
 
-  console.log(contractTxId);
+  console.log(`New server created. Server name: ${guild.name}, contractId: ${contractTxId}`);
   await serversContract.writeInteraction({
     function: 'registerServer',
     serverId: guild.id,

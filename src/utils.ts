@@ -3,7 +3,7 @@ import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import fs from 'fs';
 import path from 'path';
 
-const SERVERS_CONTRACT = '_5SNf0nR2zVmSp6Gw58V1l4IaJnL1r3AHFSLZoMDnWM';
+const SERVERS_CONTRACT = 'hGmYeSsKUbP_W0968FUoLWPrmmi2k41HWAB0xSBG4M4';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
