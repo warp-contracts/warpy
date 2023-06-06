@@ -2,7 +2,7 @@
   "name": "warpik",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc && yarn:e:",
+    "build": "tsc",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --ext .js,.ts . --fix",
     "format": "prettier --write \"**/*.+(js|ts|json)\"",
