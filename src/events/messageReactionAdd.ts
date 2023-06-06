@@ -1,5 +1,5 @@
 import { MessageReaction, PartialMessageReaction, PartialUser, User } from 'discord.js';
-import { Contract, JWKInterface, Tag, Warp } from 'warp-contracts';
+import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, DAILY_REACTIONS_LIMIT } from '../utils';
 
 export async function onMessageReactionAdd(
@@ -7,7 +7,6 @@ export async function onMessageReactionAdd(
   user: User | PartialUser,
   warp: Warp,
   wallet: JWKInterface,
-  serversContract: Contract,
   userToReactions: { [user: string]: number }
 ) {
   const id = `${reactionOrigin.message.guildId}_${user.id}`;

@@ -43,15 +43,15 @@ export async function getStateFromDre(contractId: string, propertyToGet?: string
   const dre5 = `dre-5`;
   try {
     const response = await fetchDre(dre1, contractId, propertyToGet, id);
-    return response.result;
+    return response;
   } catch (e) {
     try {
       const response = await fetchDre(dre3, contractId, propertyToGet, id);
-      return response.result;
+      return response;
     } catch (e) {
       try {
         const response = await fetchDre(dre5, contractId, propertyToGet, id);
-        return response.result;
+        return response;
       } catch (e) {
         throw new Error(`Could not load state from DRE nodes.`);
       }

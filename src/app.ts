@@ -39,14 +39,14 @@ client.on('guildCreate', async (guild) => {
 });
 
 client.on('messageCreate', async (message) => {
-  const result = await onMessageCreate(message, warp, serversContract, wallet, userToMessages);
+  const result = await onMessageCreate(message, warp, wallet, userToMessages);
   if (result) {
     userToMessages = result;
   }
 });
 
 client.on('messageReactionAdd', async (reactionOrigin, user) => {
-  const result = await onMessageReactionAdd(reactionOrigin, user, warp, wallet, serversContract, userToReactions);
+  const result = await onMessageReactionAdd(reactionOrigin, user, warp, wallet, userToReactions);
   if (result) {
     userToReactions = result;
   }
