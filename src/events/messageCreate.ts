@@ -81,7 +81,7 @@ export async function onMessageCreate(
       );
 
       try {
-        balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
+        balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result[0];
       } catch (e) {
         message.reply(`Could not load state from D.R.E. nodes.`);
         return null;
@@ -166,6 +166,7 @@ export async function onMessageCreate(
         text += `${i + 1}. <@${rankingArray[i].id}> - ${rankingArray[i].tokens} tokens\n`;
       }
       message.reply(text);
+      message.react('🍭');
     } catch (e) {
       message.reply(`Could not load state from D.R.E. nodes.`);
       return null;
