@@ -36,7 +36,7 @@ export async function onMessageCreate(
     }
 
     const wallet = args[3];
-    if (!isTxIdValid(wallet) || !isEthWallet(wallet)) {
+    if (!isTxIdValid(wallet) && !isEthWallet(wallet)) {
       message.reply('Wallet address is not valid.');
       message.react('👎');
       return null;

@@ -2,7 +2,7 @@ import { JWKInterface, Warp, WarpFactory } from 'warp-contracts';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import fs from 'fs';
 import path from 'path';
-import utils from 'ethers';
+import * as ethers from 'ethers';
 
 const SERVERS_CONTRACT = 'hGmYeSsKUbP_W0968FUoLWPrmmi2k41HWAB0xSBG4M4';
 export const DAILY_MESSAGES_LIMIT = 100;
@@ -14,7 +14,7 @@ export function isTxIdValid(txId: string): boolean {
 }
 
 export function isEthWallet(txId: string): boolean {
-  return utils.isAddress(txId);
+  return ethers.isAddress(txId);
 }
 
 export async function connectToServerContract(warp: Warp, wallet: JWKInterface, serverId: string | null) {
