@@ -62,44 +62,33 @@ export async function onMessageCreate(
       address: wallet,
     });
 
-    message.reply('User registered correctly.');
-    message.react('🍭');
-    return null;
-  } else if (message.content.startsWith('/warpik mint')) {
-    message.channel.sendTyping();
+    let result: { messages: number; reactions: number }[];
+    let balance = 0;
 
-    let address: string | [];
     try {
-      address = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result;
+      result = (await getStateFromDre(contract.txId(), 'counter', message.author.id)).result;
     } catch (e) {
       message.reply(`Could not load state from D.R.E. nodes.`);
       return null;
     }
 
-    if (address.length == 0) {
-      message.reply(
-        'User not registered in the name service. Please ping warpik with `warpik link wallet <wallet_id>` first.'
+    if (result.length > 0) {
+      await contract.writeInteraction(
+        { function: 'mint', id: message.author.id },
+        {
+          tags: [new Tag('Indexed-By', `mint;${message.author.id};${message.guildId};`)],
+        }
       );
-      message.react('👎');
-      return null;
-    }
 
-    await contract.writeInteraction(
-      { function: 'mint', id: message.author.id },
-      {
-        tags: [new Tag('Indexed-By', `mint;${message.author.id};${message.guildId};`)],
+      try {
+        balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
+      } catch (e) {
+        message.reply(`Could not load state from D.R.E. nodes.`);
+        return null;
       }
-    );
-
-    let balance: string;
-    try {
-      balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
-    } catch (e) {
-      message.reply(`Could not load state from D.R.E. nodes.`);
-      return null;
     }
 
-    message.reply(`Tokens minted correctly. You have now ${balance} tokens.`);
+    message.reply(`User registered correctly. You have ${balance} tokens.`);
     message.react('🍭');
     return null;
   } else if (message.content.startsWith(`/warpik contract`)) {
@@ -154,9 +143,8 @@ export async function onMessageCreate(
   } else if (message.content.startsWith(`/warpik help`)) {
     message.channel.sendTyping();
     message.reply(`Hey, my name is Warpik. Here is the list of commands you can use to interact with me:
-    \n👛 **/warpik mint** - use it if you want to mint tokens for the messages and reactions you've sent before linking your wallet
-    \n💰 **/warpik balance** - check your tokens balance
     \n💼 **/warpik link wallet <wallet_id>** - link you wallet address to start receiving tokens for your activity
+    \n💰 **/warpik balance** - check your tokens balance
     \n📊 **/warpik counter** - check number of the messages and reactions you've sent so far
     \n📃 **/warpik contract** - get link to this server's warpik contract`);
     return null;
