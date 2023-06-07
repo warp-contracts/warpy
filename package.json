@@ -13,6 +13,7 @@
   "dependencies": {
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
+    "ethers": "^6.4.2",
     "warp-contracts": "^1.4.8",
     "warp-contracts-lmdb": "^1.1.10",
     "warp-contracts-plugin-deploy": "^1.0.8"

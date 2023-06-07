@@ -5,6 +5,7 @@ import {
   DAILY_MESSAGES_LIMIT,
   getServerContractId,
   getStateFromDre,
+  isEthWallet,
   isTxIdValid,
 } from '../utils';
 
@@ -35,7 +36,7 @@ export async function onMessageCreate(
     }
 
     const wallet = args[3];
-    if (!isTxIdValid(wallet)) {
+    if (!isTxIdValid(wallet) || !isEthWallet(wallet)) {
       message.reply('Wallet address is not valid.');
       message.react('👎');
       return null;
