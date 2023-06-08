@@ -63,7 +63,7 @@ export async function onMessageCreate(
     });
 
     let result: { messages: number; reactions: number }[];
-    let balance = 0;
+    // let balance = 0;
 
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', message.author.id)).result;
@@ -80,15 +80,15 @@ export async function onMessageCreate(
         }
       );
 
-      try {
-        balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result[0];
-      } catch (e) {
-        message.reply(`Could not load state from D.R.E. nodes.`);
-        return null;
-      }
+      // try {
+      //   balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result[0];
+      // } catch (e) {
+      //   message.reply(`Could not load state from D.R.E. nodes.`);
+      //   return null;
+      // }
     }
 
-    message.reply(`User registered correctly. You have ${balance} tokens.`);
+    message.reply(`User registered correctly.`);
     message.react('🍭');
     return null;
   } else if (message.content.startsWith(`/warpik contract`)) {
