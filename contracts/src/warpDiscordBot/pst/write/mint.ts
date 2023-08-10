@@ -18,7 +18,7 @@ export const mint = async (state: ContractState, { input: { id } }: ContractActi
 
   const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
   if (counter) {
-    const tokens = counter.messages * state.messagesTokenWeight + counter.reactions * state.reactionsTokenWeight;
+    const tokens = counter.points;
     await SmartWeave.kv.put(`${balancesPrefix}${address}`, tokens);
     state.balances[address] = tokens;
   }

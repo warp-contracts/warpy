@@ -17,11 +17,17 @@ export interface ContractState {
     [id: string]: {
       messages: number;
       reactions: number;
+      points: number;
+      boosts: string[];
     };
   };
   users: {
     [id: string]: string;
   };
+  boosts: {
+    [name: string]: number;
+  };
+  admins: string[];
 }
 
 export interface ContractAction {
@@ -43,7 +49,11 @@ export interface PstResult {
   balance: number;
 }
 
-export type ContractReadResult = NameServiceResult | MessagesContentResult | PstResult;
+export interface BoostResult {
+  boost: number;
+}
+
+export type ContractReadResult = NameServiceResult | MessagesContentResult | PstResult | BoostResult;
 
 export interface ContractInput {
   function: ContractFunction;
@@ -64,6 +74,8 @@ export interface ContractInput {
   qty: number;
   id: string;
   messageId: string;
+  points: number;
+  adminId: string;
 }
 
 export type ContractFunction =
@@ -78,7 +90,17 @@ export type ContractFunction =
   | 'addReaction'
   | 'getCounter'
   | 'removeMessage'
-  | 'removeReaction';
+  | 'removeReaction'
+  | 'addBoost'
+  | 'getBoost'
+  | 'removeBoost'
+  | 'changeBoost'
+  | 'addUserBoost'
+  | 'removeUserBoost'
+  | 'addPoints'
+  | 'removePoints'
+  | 'addAdmin'
+  | 'removeAdmin';
 
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 

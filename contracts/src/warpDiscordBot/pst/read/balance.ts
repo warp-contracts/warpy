@@ -12,5 +12,5 @@ export const balance = async (state: ContractState, { input: { target } }: Contr
 
   const result = await SmartWeave.kv.get(`${balancesPrefix}${target}`);
 
-  return { result: { target, ticker, balance: result ? result : 0 } };
+  return { result: { target, ticker, balance: state.balances[target] } };
 };

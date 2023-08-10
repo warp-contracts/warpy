@@ -8,7 +8,7 @@ import { LoggerFactory, Warp, WarpFactory, Contract } from 'warp-contracts';
 
 jest.setTimeout(30000);
 
-describe('Testing Contract contract', () => {
+describe('Testing warpDiscordBot contract', () => {
   let ownerWallet: JWKInterface;
   let owner: string;
 
@@ -49,6 +49,8 @@ describe('Testing Contract contract', () => {
       users: {},
       counter: {},
       messages: {},
+      boosts: {},
+      admins: [],
     };
 
     contractSrc = fs.readFileSync(path.join(__dirname, '../dist/warpDiscordBot/warpDiscordBotContract.js'), 'utf8');
@@ -134,6 +136,46 @@ describe('Testing Contract contract', () => {
     ).rejects.toThrow('Id has no address assigned.');
   });
 
+  it('should not add admin if id is not provided', async () => {
+    await expect(contract.writeInteraction({ function: 'addAdmin' }, { strict: true })).rejects.toThrow(
+      `Admin's id should be provided.`
+    );
+  });
+
+  it('should properly add admin', async () => {
+    await contract.writeInteraction({ function: 'addAdmin', id: 'testAdmin' });
+    await contract.writeInteraction({ function: 'addAdmin', id: 'testAdmin2' });
+
+    const { cachedValue } = await contract.readState();
+    expect(cachedValue.state.admins[0]).toBe('testAdmin');
+    expect(cachedValue.state.admins[1]).toBe('testAdmin2');
+  });
+
+  it('should not add same admin id for the second time', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addAdmin', id: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`Admin's id already on the list.`);
+  });
+
+  it('should not remove admin if id is not provided', async () => {
+    await expect(contract.writeInteraction({ function: 'removeAdmin' }, { strict: true })).rejects.toThrow(
+      `Admin's id should be provided.`
+    );
+  });
+
+  it('should throw when trying to remove non-existing admin', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removeAdmin', id: 'testAdmin3' }, { strict: true })
+    ).rejects.toThrow(`Admin's not on the list.`);
+  });
+
+  it('should properly remove admin', async () => {
+    await contract.writeInteraction({ function: 'removeAdmin', id: 'testAdmin2' });
+
+    const { cachedValue } = await contract.readState();
+    expect(cachedValue.state.admins.length).toEqual(1);
+  });
+
   it('should not add message with no content', async () => {
     await expect(
       contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '1' }, { strict: true })
@@ -155,57 +197,70 @@ describe('Testing Contract contract', () => {
   it('should properly add message', async () => {
     await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '1' });
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'asia',
       })
     ).result?.counter;
     expect(counter.messages).toEqual(1);
+    expect(counter.points).toEqual(100);
   });
 
   it('should properly add second message', async () => {
     await contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '2', content: 'randomContent' });
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'asia',
       })
     ).result?.counter;
     expect(counter.messages).toEqual(2);
+    expect(counter.points).toEqual(200);
   });
 
   it('should properly add second user message', async () => {
     await contract.writeInteraction({ function: 'addMessage', id: 'tomek', content: 'randomContent', messageId: '3' });
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'tomek',
       })
     ).result?.counter;
     expect(counter.messages).toEqual(1);
+    expect(counter.points).toEqual(100);
   });
 
   it('should properly add reaction', async () => {
     await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'asia',
       })
     ).result?.counter;
     expect(counter.reactions).toEqual(1);
     expect(counter.messages).toEqual(2);
+    expect(counter.points).toEqual(210);
   });
 
   it('should correctly set tokens when adding a message and a reaction', async () => {
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(210);
+    const result = await contract.viewState<
+      { function: string; target: string },
+      { target: string; ticker: string; balance: number }
+    >({ function: 'balance', target: owner });
+    expect(result.result.balance).toEqual(210);
   });
 
   it('should not allow to mint tokens if id is not registered in the name service', async () => {
@@ -254,12 +309,16 @@ describe('Testing Contract contract', () => {
     expect(balance).toEqual(10);
 
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'asia',
       })
     ).result?.counter;
     expect(counter.messages).toEqual(1);
+    expect(counter.points).toEqual(110);
   });
 
   it('should properly remove reaction', async () => {
@@ -275,17 +334,456 @@ describe('Testing Contract contract', () => {
     expect(balance).toEqual(0);
 
     const counter = (
-      await contract.viewState<{ function: string; id: string }, { counter: { messages: number; reactions: number } }>({
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
         function: 'getCounter',
         id: 'asia',
       })
     ).result?.counter;
     expect(counter.reactions).toEqual(0);
+    expect(counter.points).toEqual(100);
   });
 
   it('should throw when trying to delet non-existing message', async () => {
     await expect(
       contract.writeInteraction({ function: 'removeMessage', id: 'asia', messageId: '99' }, { strict: true })
     ).rejects.toThrow(`Message not found.`);
+  });
+
+  it('should not allow to add boost when name is not provided', async () => {
+    await expect(contract.writeInteraction({ function: 'addBoost', value: 5 }, { strict: true })).rejects.toThrow(
+      `Boost name should be provided.`
+    );
+  });
+
+  it('should not allow to add boost when value is not provided', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addBoost', name: 'testBoost' }, { strict: true })
+    ).rejects.toThrow(`Boost value should be provided.`);
+  });
+
+  it(`should not allow to add boost when name is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addBoost', name: 30, value: 5 }, { strict: true })
+    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+  });
+
+  it(`should not allow to add boost when value is not of type 'number'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 'testBoostValue' }, { strict: true })
+    ).rejects.toThrow(`Boost value should be of type 'number'.`);
+  });
+
+  it('should correctly add boost', async () => {
+    await contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 3 });
+
+    const boost = (
+      await contract.viewState<{ function: string; name: string }, { boost: number }>({
+        function: 'getBoost',
+        name: 'testBoost',
+      })
+    ).result?.boost;
+
+    expect(boost).toBe(3);
+  });
+
+  it(`should not allow to add boost with the same name twice`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 5 }, { strict: true })
+    ).rejects.toThrow(`Boost with given name already exists.`);
+  });
+
+  it('should not allow to remove boost if no name is given', async () => {
+    await expect(contract.writeInteraction({ function: 'removeBoost' }, { strict: true })).rejects.toThrow(
+      `Boost name should be provided.`
+    );
+  });
+
+  it(`should not allow to remove boost if boost name is of type 'string'`, async () => {
+    await expect(contract.writeInteraction({ function: 'removeBoost', name: 5 }, { strict: true })).rejects.toThrow(
+      `Boost name should be of type 'string'.`
+    );
+  });
+
+  it(`should not allow to remove boost if boost name is of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removeBoost', name: 'incorrectTestBoost' }, { strict: true })
+    ).rejects.toThrow(`Boost with given name does not exist.`);
+  });
+
+  it('should remove boost correctly', async () => {
+    await contract.writeInteraction({ function: 'removeBoost', name: 'testBoost' });
+
+    const boost = (
+      await contract.viewState<{ function: string; name: string }, { boost: number }>({
+        function: 'getBoost',
+        name: 'testBoost',
+      })
+    ).result?.boost;
+
+    expect(boost).toBe(0);
+  });
+
+  it('should not allow to change boost when name is not provided', async () => {
+    await expect(contract.writeInteraction({ function: 'changeBoost', value: 15 }, { strict: true })).rejects.toThrow(
+      `Boost name should be provided.`
+    );
+  });
+
+  it('should not allow to change boost when value is not provided', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'changeBoost', name: 'testChangeBoost' }, { strict: true })
+    ).rejects.toThrow(`Boost value should be provided.`);
+  });
+
+  it(`should not allow to change boost when name is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'changeBoost', name: 20, value: 6 }, { strict: true })
+    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+  });
+
+  it(`should not allow to change boost when value is not of type 'number'`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'changeBoost', name: 'testChangeBoost', value: 'testChangeBoostValue' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost value should be of type 'number'.`);
+  });
+
+  it('should correctly change boost', async () => {
+    await contract.writeInteraction({ function: 'addBoost', name: 'testChangeBoost', value: 3 });
+    await contract.writeInteraction({ function: 'changeBoost', name: 'testChangeBoost', value: 6 });
+
+    const boost = (
+      await contract.viewState<{ function: string; name: string }, { boost: number }>({
+        function: 'getBoost',
+        name: 'testChangeBoost',
+      })
+    ).result?.boost;
+
+    expect(boost).toBe(6);
+  });
+
+  it(`should not allow to change boost when boost does not exist`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'changeBoost', name: 'incorrectTestChangeBoost', value: 7 },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost with given name does not exist.`);
+  });
+
+  it('should not allow to add user boost when name is not provided', async () => {
+    await expect(contract.writeInteraction({ function: 'addUserBoost', id: 'asia' }, { strict: true })).rejects.toThrow(
+      `Boost name should be provided.`
+    );
+  });
+
+  it('should not allow to add user boost when user id is not provided', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost' }, { strict: true })
+    ).rejects.toThrow(`User id should be provided.`);
+  });
+
+  it(`should not allow to add user boost when name is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addUserBoost', name: 5, id: 'asia' }, { strict: true })
+    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+  });
+
+  it(`should not allow to change boost when user id is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 5 }, { strict: true })
+    ).rejects.toThrow(`User id should be of type 'string'.`);
+  });
+
+  it('should correctly add user boost', async () => {
+    await contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 'asia' });
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number; boosts: string[] } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.boosts.length).toEqual(1);
+  });
+
+  it('should not allow to remove user boost when name is not provided', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removeUserBoost', id: 'asia' }, { strict: true })
+    ).rejects.toThrow(`Boost name should be provided.`);
+  });
+
+  it('should not allow to remove user boost when user id is not provided', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removeUserBoost', name: 'testChangeBoost' }, { strict: true })
+    ).rejects.toThrow(`User id should be provided.`);
+  });
+
+  it(`should not allow to add user boost when name is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addUserBoost', name: 5, id: 'asia' }, { strict: true })
+    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+  });
+
+  it(`should not allow to change boost when user id is not of type 'string'`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 5 }, { strict: true })
+    ).rejects.toThrow(`User id should be of type 'string'.`);
+  });
+
+  it(`should not allow to remove boost when boost is not assigned to user`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'removeUserBoost', name: 'incorrectTestChangeBoost', id: 'asia' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost not found.`);
+  });
+
+  it('should correctly remove user boost', async () => {
+    await contract.writeInteraction({ function: 'removeUserBoost', name: 'testChangeBoost', id: 'asia' });
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; boosts: string[] } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+
+    expect(counter.boosts.length).toBe(0);
+    const { cachedValue } = await contract.readState();
+    console.log(cachedValue.state);
+  });
+
+  it('should correctly calculate points based on boost - message', async () => {
+    await contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 'asia' });
+    await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '66' });
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; boosts: string[]; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+
+    expect(counter.points).toEqual(700);
+
+    const result = await contract.viewState<
+      { function: string; target: string },
+      { target: string; ticker: string; balance: number }
+    >({ function: 'balance', target: owner });
+    expect(result.result.balance).toEqual(600);
+  });
+
+  it('should correctly calculate points based on boost - reaction', async () => {
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; boosts: string[]; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+
+    expect(counter.points).toEqual(760);
+
+    const result = await contract.viewState<
+      { function: string; target: string },
+      { target: string; ticker: string; balance: number }
+    >({ function: 'balance', target: owner });
+    expect(result.result.balance).toEqual(660);
+  });
+
+  it('should properly remove message', async () => {
+    await contract.writeInteraction({ function: 'removeMessage', id: 'asia', messageId: '66' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(60);
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.messages).toEqual(1);
+    expect(counter.points).toEqual(160);
+  });
+
+  it('should properly remove reaction', async () => {
+    await contract.writeInteraction({ function: 'removeReaction', id: 'asia' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(0);
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.reactions).toEqual(0);
+    expect(counter.points).toEqual(100);
+  });
+
+  it('should properly add second boost and calculate points and balance based on it', async () => {
+    await contract.writeInteraction({ function: 'addBoost', name: 'secondTestBoost', value: 3 });
+    await contract.writeInteraction({ function: 'addUserBoost', name: 'secondTestBoost', id: 'asia' });
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
+    await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '77' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800);
+  });
+
+  it(`should not allow to add points when id is not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addPoints', points: 5, adminId: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`User's id should be provided.`);
+  });
+
+  it(`should not allow to add points when points are not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addPoints', id: 'asia', adminId: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`Points should be provided.`);
+  });
+
+  it(`should not allow to add points when adminId is not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5 }, { strict: true })
+    ).rejects.toThrow(`Caller's id should be provided.`);
+  });
+
+  it(`should not allow to add points when adminId is not on admins list`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addPoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Only admin can award points.`);
+  });
+
+  it('should correctly award points', async () => {
+    await contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5, adminId: 'testAdmin' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    // boost - 18, points: 5
+    expect(balance).toEqual(180 + 1800 + 18 * 5);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 18 * 5);
+  });
+
+  it(`should not allow to remove points when id is not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removePoints', points: 5, adminId: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`User's id should be provided.`);
+  });
+
+  it(`should not allow to remove points when points are not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removePoints', id: 'asia', adminId: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`Points should be provided.`);
+  });
+
+  it(`should not allow to remove points when adminId is not provided`, async () => {
+    await expect(
+      contract.writeInteraction({ function: 'removePoints', id: 'asia', points: 5 }, { strict: true })
+    ).rejects.toThrow(`Caller's id should be provided.`);
+  });
+
+  it(`should not allow to remove points when adminId is not on admins list`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'removePoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Only admin can remove points.`);
+  });
+
+  it('should correctly remove points', async () => {
+    await contract.writeInteraction({ function: 'removePoints', id: 'asia', points: 5, adminId: 'testAdmin' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800);
   });
 });

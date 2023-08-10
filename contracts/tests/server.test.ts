@@ -23,7 +23,7 @@ describe('Testing Contract contract', () => {
   let contractId: string;
 
   beforeAll(async () => {
-    arlocal = new ArLocal(1820, false);
+    arlocal = new ArLocal(1821, false);
     await arlocal.start();
 
     LoggerFactory.INST.logLevel('error');

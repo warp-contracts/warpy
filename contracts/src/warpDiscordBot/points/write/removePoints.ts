@@ -1,30 +1,42 @@
+import { countBoostsPoints } from '../../messagesContent/write/addMessage';
 import {
   ContractAction,
   ContractState,
   ContractResult,
+  messagesPrefix,
   counterPrefix,
   usersPrefix,
   balancesPrefix,
 } from '../../types/types';
-import { countBoostsPoints } from './addMessage';
 
 declare const ContractError;
 declare const SmartWeave;
 
-export const removeReaction = async (
+export const removePoints = async (
   state: ContractState,
-  { input: { id } }: ContractAction
+  { input: { id, points, adminId } }: ContractAction
 ): Promise<ContractResult> => {
   if (!id) {
+    throw new ContractError(`User's id should be provided.`);
+  }
+
+  if (!points) {
+    throw new ContractError(`Points should be provided.`);
+  }
+
+  if (!adminId) {
     throw new ContractError(`Caller's id should be provided.`);
   }
 
+  if (!state.admins.includes(adminId)) {
+    throw new ContractError(`Only admin can remove points.`);
+  }
+
   const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
-  let boostsPoints = state.reactionsTokenWeight;
+  let boostsPoints = points;
   boostsPoints *= countBoostsPoints(state, counter.boosts);
   const counterObj = {
     ...counter,
-    reactions: counter.reactions - 1,
     points: counter.points - boostsPoints,
   };
   await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
