@@ -3,15 +3,11 @@ import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import fs from 'fs';
 import path from 'path';
 import * as ethers from 'ethers';
+import { Message } from 'discord.js';
 
-const SERVERS_CONTRACT = 'hGmYeSsKUbP_W0968FUoLWPrmmi2k41HWAB0xSBG4M4';
+const SERVERS_CONTRACT = 'D5hZvvoM9K5rUSioc6NpQoaBdHqgOfis5Kuw3yu8sJQ';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
-
-export function isTxIdValid(txId: string): boolean {
-  const validTxIdRegex = /[a-z0-9_-]{43}/i;
-  return validTxIdRegex.test(txId);
-}
 
 export function isEthWallet(txId: string): boolean {
   return ethers.isAddress(txId);
@@ -66,8 +62,14 @@ export async function getStateFromDre(contractId: string, propertyToGet?: string
 
 async function fetchDre(dre: string, contractId: string, propertyToGet?: string, id?: string) {
   return await fetch(
-    `https://${dre}.warp.cc/contract?id=${contractId}${propertyToGet ? `&query=$.${propertyToGet}.${id}` : ''}`
+    `https://${dre}.warp.cc/contract?id=${contractId}${
+      propertyToGet ? `&query=$.${propertyToGet}${id ? `.${id}` : ''}` : ''
+    }`
   ).then((res) => {
     return res.json();
   });
+}
+
+export function getMessageArgs(message: Message) {
+  return message.content.trim().split(/ +/g);
 }

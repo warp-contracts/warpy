@@ -6,7 +6,9 @@
     "downlevelIteration": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "typeRoots": ["src/@types", "node_modules/@types"]
   },
-  "files": ["src/app.ts", "src/utils.ts", "src/constants.ts"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

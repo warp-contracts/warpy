@@ -28,6 +28,15 @@ export interface ContractState {
     [name: string]: number;
   };
   admins: string[];
+  seasons: {
+    [name: string]: Season;
+  };
+}
+
+export interface Season {
+  from: string;
+  to: string;
+  boost: string;
 }
 
 export interface ContractAction {
@@ -76,6 +85,9 @@ export interface ContractInput {
   messageId: string;
   points: number;
   adminId: string;
+  from: string;
+  to: string;
+  boost: string;
 }
 
 export type ContractFunction =
@@ -100,7 +112,8 @@ export type ContractFunction =
   | 'addPoints'
   | 'removePoints'
   | 'addAdmin'
-  | 'removeAdmin';
+  | 'removeAdmin'
+  | 'addSeason';
 
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 

@@ -80,5 +80,14 @@ export const countBoostsPoints = (state: ContractState, boosts: string[]) => {
   boosts.forEach((boost) => {
     points *= state.boosts[boost];
   });
+  const seasons = state.seasons;
+  const currentTimestamp = SmartWeave.block.timestamp;
+  Object.keys(seasons).forEach((s) => {
+    if (currentTimestamp >= seasons[s].from && currentTimestamp <= seasons[s].to) {
+      const boost = seasons[s].boost;
+      const boostsPoints = state.boosts[boost];
+      points *= boostsPoints;
+    }
+  });
   return points;
 };

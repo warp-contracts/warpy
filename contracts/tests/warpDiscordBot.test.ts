@@ -25,6 +25,8 @@ describe('Testing warpDiscordBot contract', () => {
 
   let contractId: string;
 
+  let currentTimestamp: number;
+
   beforeAll(async () => {
     arlocal = new ArLocal(1820, false);
     await arlocal.start();
@@ -36,11 +38,11 @@ describe('Testing warpDiscordBot contract', () => {
     ({ jwk: ownerWallet, address: owner } = await warp.generateWallet());
     ({ jwk: ownerWallet2, address: owner2 } = await warp.generateWallet());
 
-    const creationTimestamp = Date.now();
+    currentTimestamp = Date.now();
     initialState = {
       owner,
       serverName: 'TEST_SERVER',
-      creationTimestamp,
+      creationTimestamp: currentTimestamp,
       ticker: 'TEST_SERVER_TICKER',
       name: 'Test Server',
       messagesTokenWeight: 100,
@@ -51,6 +53,7 @@ describe('Testing warpDiscordBot contract', () => {
       messages: {},
       boosts: {},
       admins: [],
+      seasons: {},
     };
 
     contractSrc = fs.readFileSync(path.join(__dirname, '../dist/warpDiscordBot/warpDiscordBotContract.js'), 'utf8');
@@ -785,5 +788,123 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).result?.counter;
     expect(counter.points).toEqual(100 + 180 + 1800);
+  });
+
+  it(`should not allow to add season when name is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addSeason', from: '123456', to: '654321', boost: 'seasonBoost' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Season name should be provided.`);
+  });
+
+  it(`should not allow to add season when from timestamp is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addSeason', name: 'seasonName', to: '654321', boost: 'seasonBoost' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`From timestamp should be provided.`);
+  });
+
+  it(`should not allow to add season when to timestamp is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addSeason', name: 'seasonName', from: '123456', boost: 'seasonBoost' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`To timestamp should be provided.`);
+  });
+
+  it(`should not allow to add season when boost is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addSeason', name: 'seasonName', from: '123456', to: '654321' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost name should be provided.`);
+  });
+
+  it(`should not allow to add season when boost is not on the list`, async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'addSeason', name: 'seasonName', from: '123456', to: '654321', boost: 'nonExistingBoost' },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost with given name does not exist. Please add boost first.`);
+  });
+
+  it('should properly add season', async () => {
+    await contract.writeInteraction({ function: 'addBoost', name: 'seasonBoost', value: 2 });
+    await contract.writeInteraction({
+      function: 'addSeason',
+      name: 'seasonName',
+      from: '123456',
+      to: '654321',
+      boost: 'seasonBoost',
+    });
+
+    const { cachedValue } = await contract.readState();
+    expect(JSON.stringify(cachedValue.state.seasons['seasonName'])).toBe(
+      JSON.stringify({ from: '123456', to: '654321', boost: 'seasonBoost' })
+    );
+  });
+
+  it('should add message points according to season boost', async () => {
+    await contract.writeInteraction({
+      function: 'addSeason',
+      name: 'seasonName2',
+      from: Math.round((currentTimestamp - 9000) / 1000),
+      to: Math.round((currentTimestamp + 9000) / 1000),
+      boost: 'seasonBoost',
+    });
+    await contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '55', content: 'randomContent' });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600);
+  });
+
+  it('should add reaction points according to season boost', async () => {
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
+
+    const { cachedValue } = await contract.readState();
+    console.log('Cached value', cachedValue.state['counter']['asia']);
+    console.log('Cached value', cachedValue.state['boosts']);
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360);
   });
 });
