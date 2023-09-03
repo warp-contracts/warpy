@@ -27,7 +27,7 @@ declare const ContractError;
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
 
-  if (state.owner != action.caller) {
+  if (!state.owners.includes(action.caller)) {
     throw new ContractError(`Only owner of the contract can perform interactions.`);
   }
 

@@ -40,7 +40,7 @@ describe('Testing warpDiscordBot contract', () => {
 
     currentTimestamp = Date.now();
     initialState = {
-      owner,
+      owners: [owner],
       serverName: 'TEST_SERVER',
       creationTimestamp: currentTimestamp,
       ticker: 'TEST_SERVER_TICKER',

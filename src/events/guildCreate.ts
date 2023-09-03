@@ -2,17 +2,16 @@ import { Guild } from 'discord.js';
 import { Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
-const BOT_CONTRACT_SRC = '-T_k7g5CtfgIN2LecCJY-SZ-X_aloZL74d9uuDBkH6Y';
+const BOT_CONTRACT_SRC = 'AacoA20at-g8fxwSvLSx_6m2ucgjtqSsy9BIKZiOflk';
 
 export default {
   name: 'guildCreate',
   async execute(guild: Guild, warp: Warp, wallet: any, serversContract: any) {
-    const walletAddress = await warp.arweave.wallets.jwkToAddress(wallet);
     const { contractTxId } = await warp.deployFromSourceTx({
       wallet: new ArweaveSigner(wallet),
       srcTxId: BOT_CONTRACT_SRC,
       initState: JSON.stringify({
-        owner: walletAddress,
+        owners: ['0xD284e567A89136406F45614F4D06cdddF4125fBa', '0x64937ab314bc1999396De341Aa66897C30008852'],
         serverName: guild.name,
         creationTimestamp: Date.now(),
         ticker: `${guild.name.toUpperCase().replace(/ /g, '_')}_TICKER`,
@@ -24,7 +23,7 @@ export default {
         users: {},
         counter: {},
         boosts: {},
-        admins: [],
+        admins: ['304935610089734150', '769844280767807520'],
         seasons: {},
       }),
       evaluationManifest: {
