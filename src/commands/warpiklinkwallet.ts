@@ -34,7 +34,7 @@ export default {
 
     await contract.writeInteraction({
       function: 'registerUser',
-      id: interaction.author.id,
+      id: interaction.user.id,
       address: wallet,
     });
 
