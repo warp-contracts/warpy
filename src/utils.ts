@@ -5,7 +5,7 @@ import path from 'path';
 import * as ethers from 'ethers';
 import { Message } from 'discord.js';
 
-const SERVERS_CONTRACT = 'Kkuv4d0As7662v-1j5gIqnFub_0zEVDNq9DqKWV8dr4';
+const SERVERS_CONTRACT = 'nzSWo0RYc_f55T9vaJv3gT5AHkcndjUttaPNCWj07rs';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 

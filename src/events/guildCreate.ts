@@ -7,11 +7,16 @@ const BOT_CONTRACT_SRC = 'AacoA20at-g8fxwSvLSx_6m2ucgjtqSsy9BIKZiOflk';
 export default {
   name: 'guildCreate',
   async execute(guild: Guild, warp: Warp, wallet: any, serversContract: any) {
+    const walletAddress = await warp.arweave.wallets.jwkToAddress(wallet);
     const { contractTxId } = await warp.deployFromSourceTx({
       wallet: new ArweaveSigner(wallet),
       srcTxId: BOT_CONTRACT_SRC,
       initState: JSON.stringify({
-        owners: ['0xD284e567A89136406F45614F4D06cdddF4125fBa', '0x64937ab314bc1999396De341Aa66897C30008852'],
+        owners: [
+          '0xD284e567A89136406F45614F4D06cdddF4125fBa',
+          '0x64937ab314bc1999396De341Aa66897C30008852',
+          walletAddress,
+        ],
         serverName: guild.name,
         creationTimestamp: Date.now(),
         ticker: `${guild.name.toUpperCase().replace(/ /g, '_')}_TICKER`,
