@@ -19,7 +19,7 @@ export default {
     }
     console.log(result[0]);
     interaction.reply(
-      `You have sent ${result[0].messages || 0} interactions and ${result[0].reactions || 0} reactions. You have ${
+      `You have sent ${result[0].messages || 0} messages and ${result[0].reactions || 0} reactions. You have ${
         result[0].points
       } points.`
     );
