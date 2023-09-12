@@ -32,6 +32,6 @@ export default {
       points: interaction.options.getInteger('points'),
       adminId: interaction.user.id,
     });
-    interaction.reply('Points added.');
+    interaction.reply('Points removed.');
   },
 };
