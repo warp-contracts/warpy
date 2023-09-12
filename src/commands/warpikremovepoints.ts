@@ -4,8 +4,8 @@ import { Warp } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpikaddpoints')
-    .setDescription(`Add points to specific user (only available for admins).`)
+    .setName('warpikremovepoints')
+    .setDescription(`Remove specific user's points (only available for admins).`)
     .addStringOption((option) => option.setName('user').setDescription('User handle.').setRequired(true))
     .addIntegerOption((option) => option.setName('points').setDescription('Number of points.').setRequired(true)),
   async execute(interaction: any, warp: Warp, wallet: any) {
@@ -14,7 +14,7 @@ export default {
     try {
       const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        interaction.reply('Only admin can award points.');
+        interaction.reply('Only admin can remove points.');
         return;
       }
     } catch (e) {
@@ -27,7 +27,7 @@ export default {
     }
     const userId = interaction.options.getString('user').replace(/[<>@]/g, '');
     await contract.writeInteraction({
-      function: 'addPoints',
+      function: 'removePoints',
       id: userId,
       points: interaction.options.getInteger('points'),
       adminId: interaction.user.id,
