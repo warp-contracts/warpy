@@ -731,19 +731,16 @@ describe('Testing warpDiscordBot contract', () => {
     expect(counter.points).toEqual(100 + 180 + 1800);
   });
 
-  it(`should not allow to add points when id is not provided`, async () => {
+  it(`should not allow to add points when members are not provided`, async () => {
     await expect(
-      contract.writeInteraction(
-        { function: 'addPoints', points: 5, adminId: 'testAdmin', roles: ['user'] },
-        { strict: true }
-      )
-    ).rejects.toThrow(`User's id should be provided.`);
+      contract.writeInteraction({ function: 'addPoints', points: 5, adminId: 'testAdmin' }, { strict: true })
+    ).rejects.toThrow(`No members provided.`);
   });
 
   it(`should not allow to add points when points are not provided`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addPoints', id: 'asia', adminId: 'testAdmin', roles: ['user'] },
+        { function: 'addPoints', adminId: 'testAdmin', members: [{ id: 'asia', roles: 'user' }] },
         { strict: true }
       )
     ).rejects.toThrow(`Points should be provided.`);
@@ -751,14 +748,17 @@ describe('Testing warpDiscordBot contract', () => {
 
   it(`should not allow to add points when adminId is not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5, roles: ['user'] }, { strict: true })
-    ).rejects.toThrow(`Caller's id should be provided.`);
+      contract.writeInteraction(
+        { function: 'addPoints', points: 5, members: [{ id: 'asia', roles: 'user' }] },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Admin's id should be provided.`);
   });
 
   it(`should not allow to add points when adminId is not on admins list`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addPoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin', roles: ['user'] },
+        { function: 'addPoints', points: 5, adminId: 'incorrectTestAdmin', members: [{ id: 'asia', roles: 'user' }] },
         { strict: true }
       )
     ).rejects.toThrow(`Only admin can award points.`);
@@ -767,10 +767,10 @@ describe('Testing warpDiscordBot contract', () => {
   it('should correctly award points', async () => {
     await contract.writeInteraction({
       function: 'addPoints',
-      id: 'asia',
       points: 5,
       adminId: 'testAdmin',
-      roles: ['user'],
+      members: [{ id: 'asia', roles: 'user' }],
+      noBoost: false,
     });
 
     const balance = (
@@ -794,35 +794,51 @@ describe('Testing warpDiscordBot contract', () => {
     expect(counter.points).toEqual(100 + 180 + 1800 + 18 * 5);
   });
 
-  it(`should not allow to remove points when id is not provided`, async () => {
+  it(`should not allow to remove points when members are not provided`, async () => {
     await expect(
       contract.writeInteraction({ function: 'removePoints', points: 5, adminId: 'testAdmin' }, { strict: true })
-    ).rejects.toThrow(`User's id should be provided.`);
+    ).rejects.toThrow(`No members provided.`);
   });
 
   it(`should not allow to remove points when points are not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'removePoints', id: 'asia', adminId: 'testAdmin' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'removePoints', members: [{ id: 'asia', roles: ['user'] }], adminId: 'testAdmin' },
+        { strict: true }
+      )
     ).rejects.toThrow(`Points should be provided.`);
   });
 
   it(`should not allow to remove points when adminId is not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'removePoints', id: 'asia', points: 5 }, { strict: true })
+      contract.writeInteraction(
+        { function: 'removePoints', members: [{ id: 'asia', roles: ['user'] }], points: 5 },
+        { strict: true }
+      )
     ).rejects.toThrow(`Caller's id should be provided.`);
   });
 
   it(`should not allow to remove points when adminId is not on admins list`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'removePoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin' },
+        {
+          function: 'removePoints',
+          members: [{ id: 'asia', roles: ['user'] }],
+          points: 5,
+          adminId: 'incorrectTestAdmin',
+        },
         { strict: true }
       )
     ).rejects.toThrow(`Only admin can remove points.`);
   });
 
   it('should correctly remove points', async () => {
-    await contract.writeInteraction({ function: 'removePoints', id: 'asia', points: 5, adminId: 'testAdmin' });
+    await contract.writeInteraction({
+      function: 'removePoints',
+      members: [{ id: 'asia', roles: ['admin'] }],
+      points: 5,
+      adminId: 'testAdmin',
+    });
 
     const balance = (
       await contract.viewState<
@@ -973,7 +989,7 @@ describe('Testing warpDiscordBot contract', () => {
           to: '654321',
           boost: 'seasonToRoleBoost',
           boostValue: 5,
-          roles: ['role'],
+          role: 'role',
         },
         { strict: true }
       )
@@ -989,7 +1005,7 @@ describe('Testing warpDiscordBot contract', () => {
           to: '654321',
           boost: 'seasonToRoleBoost',
           boostValue: 5,
-          roles: ['role'],
+          role: 'role',
         },
         { strict: true }
       )
@@ -1005,7 +1021,7 @@ describe('Testing warpDiscordBot contract', () => {
           from: '654321',
           boost: 'seasonToRoleBoost',
           boostValue: 5,
-          roles: ['role'],
+          role: 'role',
         },
         { strict: true }
       )
@@ -1021,7 +1037,7 @@ describe('Testing warpDiscordBot contract', () => {
           to: '12345',
           from: '654321',
           boostValue: 5,
-          roles: ['role'],
+          role: 'role',
         },
         { strict: true }
       )
@@ -1037,7 +1053,7 @@ describe('Testing warpDiscordBot contract', () => {
           to: '12345',
           from: '654321',
           boost: 'seasonToRole',
-          roles: ['role'],
+          role: 'role',
         },
         { strict: true }
       )
@@ -1052,12 +1068,12 @@ describe('Testing warpDiscordBot contract', () => {
       from: '654321',
       boost: 'seasonToRoleBoost',
       boostValue: 5,
-      roles: ['role'],
+      role: 'role',
     });
 
     const { cachedValue } = await contract.readState();
     expect(JSON.stringify(cachedValue.state.seasons['seasonToRole'])).toBe(
-      JSON.stringify({ from: '654321', to: '12345', boost: 'seasonToRoleBoost', roles: ['role'] })
+      JSON.stringify({ from: '654321', to: '12345', boost: 'seasonToRoleBoost', role: 'role' })
     );
     expect(cachedValue.state.boosts['seasonToRoleBoost']).toBe(5);
   });
@@ -1076,7 +1092,7 @@ describe('Testing warpDiscordBot contract', () => {
       to: Math.round((currentTimestamp + 9000) / 1000),
       boost: 'seasonToRoleBoost2',
       boostValue: 5,
-      roles: ['admin'],
+      role: 'admin',
     });
     await contract.writeInteraction({
       function: 'addMessage',
@@ -1127,5 +1143,114 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).result?.counter;
     expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100);
+  });
+
+  it('should not boost points when noBoost flag is set to true', async () => {
+    await contract.writeInteraction({
+      function: 'addPoints',
+      points: 1,
+      adminId: 'testAdmin',
+      members: [{ id: 'asia', roles: 'admin' }],
+      noBoost: true,
+    });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1);
+  });
+
+  it('should not boost removed points when noBoost flag is set to true', async () => {
+    await contract.writeInteraction({
+      function: 'removePoints',
+      members: [{ id: 'asia', roles: ['admin'] }],
+      points: 1,
+      adminId: 'testAdmin',
+      noBoost: true,
+    });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1);
+  });
+
+  it('should correctly award points to multiple members', async () => {
+    await contract.writeInteraction({
+      function: 'addPoints',
+      points: 1,
+      adminId: 'testAdmin',
+      members: [
+        { id: 'asia', roles: ['admin'] },
+        { id: 'tomek', roles: 'user' },
+      ],
+      noBoost: true,
+    });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1 + 1);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1 + 1);
+
+    const balance2 = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner2 })
+    ).result?.balance;
+
+    expect(balance2).toEqual(200 + 1);
+    const counter2 = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'tomek',
+      })
+    ).result?.counter;
+    expect(counter2.points).toEqual(100 + 1);
   });
 });

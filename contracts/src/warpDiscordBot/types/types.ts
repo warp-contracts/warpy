@@ -37,7 +37,7 @@ export interface Season {
   from: string;
   to: string;
   boost: string;
-  roles?: string[];
+  role?: string;
 }
 
 export interface ContractAction {
@@ -92,6 +92,8 @@ export interface ContractInput {
   boostValue: number;
   roles: string[];
   role: string;
+  noBoost?: boolean;
+  members: { id: string; roles: string[] }[];
 }
 
 export type ContractFunction =
@@ -118,7 +120,8 @@ export type ContractFunction =
   | 'addAdmin'
   | 'removeAdmin'
   | 'addSeason'
-  | 'addSeasonToRole';
+  | 'addSeasonToRole'
+  | 'addPointsToMultipleMembers';
 
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 

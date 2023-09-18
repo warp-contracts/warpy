@@ -88,8 +88,8 @@ export const countBoostsPoints = (state: ContractState, boosts: string[], roles:
   const currentTimestamp = SmartWeave.block.timestamp;
   Object.keys(seasons).forEach((s) => {
     if (currentTimestamp >= seasons[s].from && currentTimestamp <= seasons[s].to) {
-      if (seasons[s].roles && seasons[s].roles?.length > 0) {
-        if (roles.filter((r) => seasons[s].roles?.includes(r)).length > 0) {
+      if (seasons[s].role) {
+        if (roles.includes(seasons[s].role as string)) {
           const boost = seasons[s].boost;
           const boostsPoints = state.boosts[boost];
           points *= boostsPoints;

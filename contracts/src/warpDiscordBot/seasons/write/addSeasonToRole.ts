@@ -5,7 +5,7 @@ declare const SmartWeave;
 
 export const addSeasonToRole = async (
   state: ContractState,
-  { input: { name, from, to, boost, boostValue, roles } }: ContractAction
+  { input: { name, from, to, boost, boostValue, role } }: ContractAction
 ): Promise<ContractResult> => {
   if (!name) {
     throw new ContractError(`Season name should be provided.`);
@@ -32,7 +32,7 @@ export const addSeasonToRole = async (
     from,
     to,
     boost,
-    roles,
+    role,
   };
   return { state };
 };

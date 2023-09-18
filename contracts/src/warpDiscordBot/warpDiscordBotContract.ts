@@ -16,12 +16,12 @@ import { removeBoost } from './boost/write/removeBoost';
 import { changeBoost } from './boost/write/changeBoost';
 import { addUserBoost } from './boost/write/addUserBoost';
 import { removeUserBoost } from './boost/write/removeUserBoost';
-import { addPoints } from './points/write/addPoints';
 import { addAdmin } from './admins/write/addAdmin';
 import { removeAdmin } from './admins/write/removeAdmin';
 import { removePoints } from './points/write/removePoints';
 import { addSeason } from './seasons/write/addSeason';
 import { addSeasonToRole } from './seasons/write/addSeasonToRole';
+import { addPoints } from './points/write/addPoints';
 
 declare const ContractError;
 
