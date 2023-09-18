@@ -14,7 +14,7 @@ declare const SmartWeave;
 
 export const addPoints = async (
   state: ContractState,
-  { input: { id, points, adminId } }: ContractAction
+  { input: { id, points, adminId, roles } }: ContractAction
 ): Promise<ContractResult> => {
   if (!id) {
     throw new ContractError(`User's id should be provided.`);
@@ -26,6 +26,10 @@ export const addPoints = async (
 
   if (!adminId) {
     throw new ContractError(`Caller's id should be provided.`);
+  }
+
+  if (!roles) {
+    throw new ContractError(`No roles provided.`);
   }
 
   if (!state.admins.includes(adminId)) {
@@ -42,7 +46,7 @@ export const addPoints = async (
     points: 0,
   };
   if (counter) {
-    boostsPoints *= countBoostsPoints(state, counter.boosts);
+    boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     counterObj = {
       messages: counter.messages,
       reactions: counter.reactions,

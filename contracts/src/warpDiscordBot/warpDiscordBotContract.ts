@@ -21,6 +21,7 @@ import { addAdmin } from './admins/write/addAdmin';
 import { removeAdmin } from './admins/write/removeAdmin';
 import { removePoints } from './points/write/removePoints';
 import { addSeason } from './seasons/write/addSeason';
+import { addSeasonToRole } from './seasons/write/addSeasonToRole';
 
 declare const ContractError;
 
@@ -76,6 +77,8 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await removeAdmin(state, action);
     case 'addSeason':
       return await addSeason(state, action);
+    case 'addSeasonToRole':
+      return await addSeasonToRole(state, action);
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
   }

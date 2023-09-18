@@ -14,7 +14,7 @@ declare const SmartWeave;
 
 export const removeMessage = async (
   state: ContractState,
-  { input: { id, messageId } }: ContractAction
+  { input: { id, messageId, roles } }: ContractAction
 ): Promise<ContractResult> => {
   if (!id) {
     throw new ContractError(`Caller's id should be provided.`);
@@ -39,7 +39,7 @@ export const removeMessage = async (
 
   const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
   let boostsPoints = state.messagesTokenWeight;
-  boostsPoints *= countBoostsPoints(state, counter.boosts);
+  boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
   const counterObj = {
     ...counter,
     messages: counter.messages - 1,

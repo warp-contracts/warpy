@@ -13,7 +13,7 @@ declare const SmartWeave;
 
 export const addMessage = async (
   state: ContractState,
-  { input: { id, messageId, content } }: ContractAction
+  { input: { id, messageId, content, roles } }: ContractAction
 ): Promise<ContractResult> => {
   if (!id) {
     throw new ContractError(`Caller's id should be provided.`);
@@ -25,6 +25,10 @@ export const addMessage = async (
 
   if (!content) {
     throw new ContractError(`No content provided.`);
+  }
+
+  if (!roles) {
+    throw new ContractError(`No roles provided.`);
   }
 
   let effectiveContent: string = '';
@@ -49,7 +53,7 @@ export const addMessage = async (
     points: 0,
   };
   if (counter) {
-    boostsPoints *= countBoostsPoints(state, counter.boosts);
+    boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     counterObj = {
       messages: counter.messages + 1,
       reactions: counter.reactions,
@@ -75,7 +79,7 @@ export const addMessage = async (
   return { state };
 };
 
-export const countBoostsPoints = (state: ContractState, boosts: string[]) => {
+export const countBoostsPoints = (state: ContractState, boosts: string[], roles: string[]) => {
   let points = 1;
   boosts.forEach((boost) => {
     points *= state.boosts[boost];
@@ -84,9 +88,17 @@ export const countBoostsPoints = (state: ContractState, boosts: string[]) => {
   const currentTimestamp = SmartWeave.block.timestamp;
   Object.keys(seasons).forEach((s) => {
     if (currentTimestamp >= seasons[s].from && currentTimestamp <= seasons[s].to) {
-      const boost = seasons[s].boost;
-      const boostsPoints = state.boosts[boost];
-      points *= boostsPoints;
+      if (seasons[s].roles && seasons[s].roles?.length > 0) {
+        if (roles.filter((r) => seasons[s].roles?.includes(r)).length > 0) {
+          const boost = seasons[s].boost;
+          const boostsPoints = state.boosts[boost];
+          points *= boostsPoints;
+        }
+      } else {
+        const boost = seasons[s].boost;
+        const boostsPoints = state.boosts[boost];
+        points *= boostsPoints;
+      }
     }
   });
   return points;

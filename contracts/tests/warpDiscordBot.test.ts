@@ -181,24 +181,39 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not add message with no content', async () => {
     await expect(
-      contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '1' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addMessage', id: 'asia', messageId: '1', roles: ['admin'] },
+        { strict: true }
+      )
     ).rejects.toThrow('No content provided.');
   });
 
   it('should not add message with no id', async () => {
     await expect(
-      contract.writeInteraction({ function: 'addMessage', content: 'randomContent', messageId: '1' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addMessage', content: 'randomContent', messageId: '1', roles: ['admin'] },
+        { strict: true }
+      )
     ).rejects.toThrow(`Caller's id should be provided.`);
   });
 
   it('should not add message with no messageId', async () => {
     await expect(
-      contract.writeInteraction({ function: 'addMessage', content: 'randomContent', id: 'asia' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addMessage', content: 'randomContent', id: 'asia', roles: ['admin'] },
+        { strict: true }
+      )
     ).rejects.toThrow(`Message id should be provided.`);
   });
 
   it('should properly add message', async () => {
-    await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '1' });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      content: 'randomContent',
+      messageId: '1',
+      roles: ['admin'],
+    });
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -213,7 +228,13 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add second message', async () => {
-    await contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '2', content: 'randomContent' });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      messageId: '2',
+      content: 'randomContent',
+      roles: ['admin'],
+    });
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -228,7 +249,13 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add second user message', async () => {
-    await contract.writeInteraction({ function: 'addMessage', id: 'tomek', content: 'randomContent', messageId: '3' });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'tomek',
+      content: 'randomContent',
+      messageId: '3',
+      roles: ['admin'],
+    });
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -243,7 +270,7 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add reaction', async () => {
-    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia', roles: ['admin'] });
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -375,12 +402,15 @@ describe('Testing warpDiscordBot contract', () => {
 
   it(`should not allow to add boost when value is not of type 'number'`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 'testBoostValue' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addBoost', name: 'testBoost', boostValue: 'testBoostValue' },
+        { strict: true }
+      )
     ).rejects.toThrow(`Boost value should be of type 'number'.`);
   });
 
   it('should correctly add boost', async () => {
-    await contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 3 });
+    await contract.writeInteraction({ function: 'addBoost', name: 'testBoost', boostValue: 3 });
 
     const boost = (
       await contract.viewState<{ function: string; name: string }, { boost: number }>({
@@ -394,7 +424,7 @@ describe('Testing warpDiscordBot contract', () => {
 
   it(`should not allow to add boost with the same name twice`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addBoost', name: 'testBoost', value: 5 }, { strict: true })
+      contract.writeInteraction({ function: 'addBoost', name: 'testBoost', boostValue: 5 }, { strict: true })
     ).rejects.toThrow(`Boost with given name already exists.`);
   });
 
@@ -450,15 +480,15 @@ describe('Testing warpDiscordBot contract', () => {
   it(`should not allow to change boost when value is not of type 'number'`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'changeBoost', name: 'testChangeBoost', value: 'testChangeBoostValue' },
+        { function: 'changeBoost', name: 'testChangeBoost', boostValue: 'testChangeBoostValue' },
         { strict: true }
       )
     ).rejects.toThrow(`Boost value should be of type 'number'.`);
   });
 
   it('should correctly change boost', async () => {
-    await contract.writeInteraction({ function: 'addBoost', name: 'testChangeBoost', value: 3 });
-    await contract.writeInteraction({ function: 'changeBoost', name: 'testChangeBoost', value: 6 });
+    await contract.writeInteraction({ function: 'addBoost', name: 'testChangeBoost', boostValue: 3 });
+    await contract.writeInteraction({ function: 'changeBoost', name: 'testChangeBoost', boostValue: 6 });
 
     const boost = (
       await contract.viewState<{ function: string; name: string }, { boost: number }>({
@@ -473,7 +503,7 @@ describe('Testing warpDiscordBot contract', () => {
   it(`should not allow to change boost when boost does not exist`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'changeBoost', name: 'incorrectTestChangeBoost', value: 7 },
+        { function: 'changeBoost', name: 'incorrectTestChangeBoost', boostValue: 7 },
         { strict: true }
       )
     ).rejects.toThrow(`Boost with given name does not exist.`);
@@ -570,7 +600,13 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should correctly calculate points based on boost - message', async () => {
     await contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 'asia' });
-    await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '66' });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      content: 'randomContent',
+      messageId: '66',
+      roles: ['admin'],
+    });
 
     const counter = (
       await contract.viewState<
@@ -592,7 +628,7 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should correctly calculate points based on boost - reaction', async () => {
-    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia', roles: ['admin'] });
 
     const counter = (
       await contract.viewState<
@@ -664,10 +700,16 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add second boost and calculate points and balance based on it', async () => {
-    await contract.writeInteraction({ function: 'addBoost', name: 'secondTestBoost', value: 3 });
+    await contract.writeInteraction({ function: 'addBoost', name: 'secondTestBoost', boostValue: 3 });
     await contract.writeInteraction({ function: 'addUserBoost', name: 'secondTestBoost', id: 'asia' });
-    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
-    await contract.writeInteraction({ function: 'addMessage', id: 'asia', content: 'randomContent', messageId: '77' });
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia', roles: ['admin'] });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      content: 'randomContent',
+      messageId: '77',
+      roles: ['admin'],
+    });
 
     const balance = (
       await contract.viewState<
@@ -691,33 +733,45 @@ describe('Testing warpDiscordBot contract', () => {
 
   it(`should not allow to add points when id is not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addPoints', points: 5, adminId: 'testAdmin' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addPoints', points: 5, adminId: 'testAdmin', roles: ['user'] },
+        { strict: true }
+      )
     ).rejects.toThrow(`User's id should be provided.`);
   });
 
   it(`should not allow to add points when points are not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addPoints', id: 'asia', adminId: 'testAdmin' }, { strict: true })
+      contract.writeInteraction(
+        { function: 'addPoints', id: 'asia', adminId: 'testAdmin', roles: ['user'] },
+        { strict: true }
+      )
     ).rejects.toThrow(`Points should be provided.`);
   });
 
   it(`should not allow to add points when adminId is not provided`, async () => {
     await expect(
-      contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5 }, { strict: true })
+      contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5, roles: ['user'] }, { strict: true })
     ).rejects.toThrow(`Caller's id should be provided.`);
   });
 
   it(`should not allow to add points when adminId is not on admins list`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addPoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin' },
+        { function: 'addPoints', id: 'asia', points: 5, adminId: 'incorrectTestAdmin', roles: ['user'] },
         { strict: true }
       )
     ).rejects.toThrow(`Only admin can award points.`);
   });
 
   it('should correctly award points', async () => {
-    await contract.writeInteraction({ function: 'addPoints', id: 'asia', points: 5, adminId: 'testAdmin' });
+    await contract.writeInteraction({
+      function: 'addPoints',
+      id: 'asia',
+      points: 5,
+      adminId: 'testAdmin',
+      roles: ['user'],
+    });
 
     const balance = (
       await contract.viewState<
@@ -836,7 +890,7 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add season', async () => {
-    await contract.writeInteraction({ function: 'addBoost', name: 'seasonBoost', value: 2 });
+    await contract.writeInteraction({ function: 'addBoost', name: 'seasonBoost', boostValue: 2 });
     await contract.writeInteraction({
       function: 'addSeason',
       name: 'seasonName',
@@ -859,7 +913,13 @@ describe('Testing warpDiscordBot contract', () => {
       to: Math.round((currentTimestamp + 9000) / 1000),
       boost: 'seasonBoost',
     });
-    await contract.writeInteraction({ function: 'addMessage', id: 'asia', messageId: '55', content: 'randomContent' });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      messageId: '55',
+      content: 'randomContent',
+      roles: ['admin'],
+    });
 
     const balance = (
       await contract.viewState<
@@ -882,11 +942,7 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should add reaction points according to season boost', async () => {
-    await contract.writeInteraction({ function: 'addReaction', id: 'asia' });
-
-    const { cachedValue } = await contract.readState();
-    console.log('Cached value', cachedValue.state['counter']['asia']);
-    console.log('Cached value', cachedValue.state['boosts']);
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia', roles: ['admin'] });
 
     const balance = (
       await contract.viewState<
@@ -906,5 +962,170 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).result?.counter;
     expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360);
+  });
+
+  it(`should not allow to add season to role when name is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addSeasonToRole',
+          from: '123456',
+          to: '654321',
+          boost: 'seasonToRoleBoost',
+          boostValue: 5,
+          roles: ['role'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Season name should be provided.`);
+  });
+
+  it(`should not allow to add season to role when from timestamp is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addSeasonToRole',
+          name: 'seasonToRole',
+          to: '654321',
+          boost: 'seasonToRoleBoost',
+          boostValue: 5,
+          roles: ['role'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow(`From timestamp should be provided.`);
+  });
+
+  it(`should not allow to add season to role when to timestamp is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addSeasonToRole',
+          name: 'seasonToRole',
+          from: '654321',
+          boost: 'seasonToRoleBoost',
+          boostValue: 5,
+          roles: ['role'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow(`To timestamp should be provided.`);
+  });
+
+  it(`should not allow to add season to role when boost is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addSeasonToRole',
+          name: 'seasonToRole',
+          to: '12345',
+          from: '654321',
+          boostValue: 5,
+          roles: ['role'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost name should be provided.`);
+  });
+
+  it(`should not allow to add season to role when boost value is not provided`, async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addSeasonToRole',
+          name: 'seasonToRole',
+          to: '12345',
+          from: '654321',
+          boost: 'seasonToRole',
+          roles: ['role'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow(`Boost value should be provided.`);
+  });
+
+  it('should properly add season to role', async () => {
+    await contract.writeInteraction({
+      function: 'addSeasonToRole',
+      name: 'seasonToRole',
+      to: '12345',
+      from: '654321',
+      boost: 'seasonToRoleBoost',
+      boostValue: 5,
+      roles: ['role'],
+    });
+
+    const { cachedValue } = await contract.readState();
+    expect(JSON.stringify(cachedValue.state.seasons['seasonToRole'])).toBe(
+      JSON.stringify({ from: '654321', to: '12345', boost: 'seasonToRoleBoost', roles: ['role'] })
+    );
+    expect(cachedValue.state.boosts['seasonToRoleBoost']).toBe(5);
+  });
+
+  it('should add message points according to season to role boost', async () => {
+    await contract.writeInteraction({ function: 'removeUserBoost', id: 'asia', name: 'testChangeBoost' });
+    await contract.writeInteraction({ function: 'removeUserBoost', id: 'asia', name: 'secondTestBoost' });
+
+    const { cachedValue } = await contract.readState();
+    console.log(cachedValue.state.counter['asia']);
+
+    await contract.writeInteraction({
+      function: 'addSeasonToRole',
+      name: 'seasonToRole2',
+      from: Math.round((currentTimestamp - 9000) / 1000),
+      to: Math.round((currentTimestamp + 9000) / 1000),
+      boost: 'seasonToRoleBoost2',
+      boostValue: 5,
+      roles: ['admin'],
+    });
+    await contract.writeInteraction({
+      function: 'addMessage',
+      id: 'asia',
+      messageId: '00',
+      content: 'randomContent',
+      roles: ['admin'],
+    });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000);
+  });
+
+  it('should add reaction points according to season to role boost', async () => {
+    await contract.writeInteraction({ function: 'addReaction', id: 'asia', roles: ['admin'] });
+
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100);
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100);
   });
 });

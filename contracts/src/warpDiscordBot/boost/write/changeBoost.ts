@@ -5,7 +5,7 @@ declare const SmartWeave;
 
 export const changeBoost = async (
   state: ContractState,
-  { input: { name, value } }: ContractAction
+  { input: { name, boostValue } }: ContractAction
 ): Promise<ContractResult> => {
   if (!name) {
     throw new ContractError(`Boost name should be provided.`);
@@ -15,11 +15,11 @@ export const changeBoost = async (
     throw new ContractError(`Boost name should be of type 'string'.`);
   }
 
-  if (!value) {
+  if (!boostValue) {
     throw new ContractError(`Boost value should be provided.`);
   }
 
-  if (typeof value != 'number') {
+  if (typeof boostValue != 'number') {
     throw new ContractError(`Boost value should be of type 'number'.`);
   }
 
@@ -29,6 +29,6 @@ export const changeBoost = async (
     throw new ContractError(`Boost with given name does not exist.`);
   }
 
-  boosts[name] = value;
+  boosts[name] = boostValue;
   return { state };
 };

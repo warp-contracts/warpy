@@ -11,9 +11,16 @@ import { countBoostsPoints } from './addMessage';
 declare const ContractError;
 declare const SmartWeave;
 
-export const addReaction = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
+export const addReaction = async (
+  state: ContractState,
+  { input: { id, roles } }: ContractAction
+): Promise<ContractResult> => {
   if (!id) {
     throw new ContractError(`Caller's id should be provided.`);
+  }
+
+  if (!roles) {
+    throw new ContractError(`No roles provided.`);
   }
 
   const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
@@ -26,7 +33,7 @@ export const addReaction = async (state: ContractState, { input: { id } }: Contr
     boosts: [],
   };
   if (counter) {
-    boostsPoints *= countBoostsPoints(state, counter.boosts);
+    boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     counterObj = {
       messages: counter.messages,
       reactions: counter.reactions + 1,
