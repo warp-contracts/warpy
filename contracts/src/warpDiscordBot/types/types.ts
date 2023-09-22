@@ -34,8 +34,8 @@ export interface ContractState {
 }
 
 export interface Season {
-  from: string;
-  to: string;
+  from: number;
+  to: number;
   boost: string;
   role?: string;
 }

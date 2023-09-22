@@ -54,22 +54,18 @@ export default {
       return;
     } else {
       const contract = await connectToServerContract(warp, wallet, message.guildId);
-      const result = await contract.writeInteraction(
+      await contract.writeInteraction(
         {
           function: 'addMessage',
           id: message.author.id,
           content: message.content,
           messageId: message.id,
+          roles: message.member?.roles.cache.map((r) => r.name),
         },
         {
           tags: [new Tag('Indexed-By', `message-add;${message.author.id};${message.guildId};`)],
         }
       );
-      console.log(result);
-      //     return {
-      //       ...userToMessages,
-      //       [id]: (userToMessages[id] || 0) + 1,
-      //     };
     }
   },
 };

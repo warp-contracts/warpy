@@ -79,7 +79,7 @@ async function main() {
     if (event.default.once) {
       client.once(event.default.name, (...args) => event.default.execute(...args));
     } else {
-      if (event.default.name == 'messageCreate') {
+      if (event.default.name == 'messageCreate' || event.default.name == 'messageDelete') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
       } else if (event.default.name == 'messageReactionAdd') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));

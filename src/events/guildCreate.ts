@@ -2,7 +2,7 @@ import { Guild } from 'discord.js';
 import { Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
-const BOT_CONTRACT_SRC = 'yBsXcWTZclkijlJ-ADEYszpDf1xil-YXFVfW83OIJlk';
+const BOT_CONTRACT_SRC = 'VSy03fG-mF2cCDyiZ-3Vt34lSDy6x9mF5D96tH8qop4';
 
 export default {
   name: 'guildCreate',
@@ -21,8 +21,8 @@ export default {
         creationTimestamp: Date.now(),
         ticker: `${guild.name.toUpperCase().replace(/ /g, '_')}_TICKER`,
         name: `${guild.name} PST`,
-        messagesTokenWeight: 100,
-        reactionsTokenWeight: 10,
+        messagesTokenWeight: 10,
+        reactionsTokenWeight: 1,
         balances: {},
         messages: {},
         users: {},

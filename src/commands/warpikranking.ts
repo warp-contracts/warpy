@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre } from '../utils';
+import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
 import { Warp } from 'warp-contracts';
 
 export default {
@@ -27,11 +27,43 @@ export default {
           }
         })
       );
-      let text = ``;
+      // let text = ``;
+      const fields = [];
       for (let i = 0; i < rankingArray.length; i++) {
-        text += `${i + 1}. <@${rankingArray[i].id}> - ${rankingArray[i].tokens} tokens\n`;
+        fields.push({ name: '', value: `${i + 1}. <@${rankingArray[i].id}> - **${rankingArray[i].tokens}** tokens` });
       }
-      interaction.reply(text);
+      interaction.reply({
+        content: `Warpik ranking.`,
+        tts: true,
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                style: 5,
+                label: `Check out contract state`,
+                url: `https://sonar.warp.cc/#/app/contract/${contract.txId()}?network=mainnet#current-state`,
+                disabled: false,
+                type: 2,
+              },
+            ],
+          },
+        ],
+        embeds: [
+          {
+            type: 'rich',
+            description: `Here is the list of 10 best results on this server.`,
+            color: 0xdd72cb,
+            fields,
+            thumbnail: {
+              url: warpikIconUrl,
+              height: 0,
+              width: 0,
+            },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      });
     } catch (e) {
       interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;

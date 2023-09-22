@@ -5,7 +5,7 @@ import path from 'path';
 import * as ethers from 'ethers';
 import { Message } from 'discord.js';
 
-const SERVERS_CONTRACT = 'VxGGfQ2B9rN4bGsuFF_herGQ4dIP57cXTW-9MmMU4r4';
+const SERVERS_CONTRACT = '1DtnAYKfC2QFnxrVL6KJE1ZGGzm3JeNnt8oLLvNUl-o';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
@@ -73,3 +73,25 @@ async function fetchDre(dre: string, contractId: string, propertyToGet?: string,
 export function getMessageArgs(message: Message) {
   return message.content.trim().split(/ +/g);
 }
+
+export const warpikIconUrl =
+  'https://hngsugmbwjg66knpan5kih3juwqufuempw7xu3jujuflmslg3bva.arweave.dev/O00qGYGyTe8prwN6pB9ppaFC0Ix9v3ptNE0Ktklm2Go';
+
+export const errorEmbed = (errorMessage: string) => {
+  return {
+    content: `An error has occured.`,
+    tts: true,
+    embeds: [
+      {
+        type: 'rich',
+        color: 0xdd72cb,
+        fields: [
+          {
+            name: `Reason for error`,
+            value: `${errorMessage}`,
+          },
+        ],
+      },
+    ],
+  };
+};

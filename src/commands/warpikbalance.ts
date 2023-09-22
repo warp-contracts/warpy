@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre } from '../utils';
+import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
 import { Warp } from 'warp-contracts';
 
 export default {
@@ -11,8 +11,9 @@ export default {
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 
     let address: string | [];
+    const userId = interaction.user.id;
     try {
-      address = (await getStateFromDre(contract.txId(), 'users', interaction.user.id)).result;
+      address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
       console.log(e);
       interaction.reply(`Could not load state from D.R.E. nodes.`);
@@ -20,9 +21,7 @@ export default {
     }
 
     if (address.length == 0) {
-      interaction.reply(
-        'User not registered in the name service. Please ping warpik with `warpik link wallet <wallet_id>` first.'
-      );
+      interaction.reply('User not registered in the name service. Please ping warpik with `warpiklinkwallet` first.');
     }
 
     let balance: string;
@@ -34,6 +33,45 @@ export default {
       return;
     }
 
-    interaction.reply(`You have ${balance.length > 0 ? balance : 0} tokens.`);
+    interaction.reply({
+      content: `User's tokens balance.`,
+      tts: true,
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              style: 5,
+              label: `Check out contract state`,
+              url: `https://sonar.warp.cc/#/app/contract/${contract.txId()}?network=mainnet#current-state`,
+              disabled: false,
+              type: 2,
+            },
+          ],
+        },
+      ],
+      embeds: [
+        {
+          type: 'rich',
+          color: 0xdd72cb,
+          fields: [
+            {
+              name: `User`,
+              value: `<@${userId}>`,
+            },
+            {
+              name: `Tokens balance`,
+              value: `${balance.length > 0 ? balance : 0}`,
+            },
+          ],
+          thumbnail: {
+            url: warpikIconUrl,
+            height: 0,
+            width: 0,
+          },
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    });
   },
 };

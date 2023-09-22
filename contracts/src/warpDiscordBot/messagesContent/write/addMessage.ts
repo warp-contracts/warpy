@@ -52,8 +52,11 @@ export const addMessage = async (
     boosts: [],
     points: 0,
   };
+
+  const boosts = counter ? counter.boosts : [];
+  boostsPoints *= countBoostsPoints(state, boosts, roles);
+
   if (counter) {
-    boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     counterObj = {
       messages: counter.messages + 1,
       reactions: counter.reactions,
@@ -61,7 +64,7 @@ export const addMessage = async (
       points: counter.points + boostsPoints,
     };
   } else {
-    counterObj = { messages: 1, reactions: 0, boosts: [], points: state.messagesTokenWeight };
+    counterObj = { messages: 1, reactions: 0, boosts: [], points: boostsPoints };
   }
 
   await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
@@ -85,7 +88,8 @@ export const countBoostsPoints = (state: ContractState, boosts: string[], roles:
     points *= state.boosts[boost];
   });
   const seasons = state.seasons;
-  const currentTimestamp = SmartWeave.block.timestamp;
+  const currentTimestamp = Number(SmartWeave.block.timestamp);
+
   Object.keys(seasons).forEach((s) => {
     if (currentTimestamp >= seasons[s].from && currentTimestamp <= seasons[s].to) {
       if (seasons[s].role) {
