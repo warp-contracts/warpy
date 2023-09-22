@@ -50,7 +50,12 @@ export interface NameServiceResult {
 }
 
 export interface MessagesContentResult {
-  counter?: { messages: number; interactions: number };
+  counter?: {
+    messages: number;
+    reactions: number;
+    points: number;
+    boosts: string[];
+  };
 }
 
 export interface PstResult {
@@ -60,7 +65,7 @@ export interface PstResult {
 }
 
 export interface BoostResult {
-  boost: number;
+  boost: number | null;
 }
 
 export type ContractReadResult = NameServiceResult | MessagesContentResult | PstResult | BoostResult;
@@ -86,8 +91,8 @@ export interface ContractInput {
   messageId: string;
   points: number;
   adminId: string;
-  from: string;
-  to: string;
+  from: number;
+  to: number;
   boost: string;
   boostValue: number;
   roles: string[];

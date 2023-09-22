@@ -1,14 +1,13 @@
+import { validateInputArgumentPresence, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, counterPrefix } from '../../types/types';
 
 declare const ContractError;
-declare const SmartWeave;
 
 export const getBoost = async (state: ContractState, { input: { name } }: ContractAction): Promise<ContractResult> => {
-  if (!name) {
-    throw new ContractError('Boost name must be provided.');
-  }
+  validateInputArgumentPresence(name, 'name');
+  validateString(name, 'name');
 
   const boost = state.boosts[name];
 
-  return { result: boost ? { boost } : { boost: 0 } };
+  return { result: boost ? { boost } : { boost: null } };
 };

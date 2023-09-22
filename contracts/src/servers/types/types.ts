@@ -16,8 +16,8 @@ export interface ContractAction {
 
 export type ContractReadResult = {
   serverId: string;
-  serverName: string;
-  contractTxId: string;
+  serverName: string | null;
+  contractTxId: string | null;
 };
 
 export interface ContractInput {

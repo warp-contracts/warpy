@@ -1,3 +1,4 @@
+import { validateInputArgumentPresence, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, counterPrefix } from '../../types/types';
 
 declare const ContractError;
@@ -7,25 +8,14 @@ export const addUserBoost = async (
   state: ContractState,
   { input: { id, name } }: ContractAction
 ): Promise<ContractResult> => {
-  if (!name) {
-    throw new ContractError(`Boost name should be provided.`);
-  }
+  validateInputArgumentPresence(name, 'name');
+  validateString(name, 'name');
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
 
-  if (typeof name != 'string') {
-    throw new ContractError(`Boost name should be of type 'string'.`);
-  }
+  const counter = state.counter[id];
 
-  if (!id) {
-    throw new ContractError(`User id should be provided.`);
-  }
-
-  if (typeof id != 'string') {
-    throw new ContractError(`User id should be of type 'string'.`);
-  }
-
-  const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
-
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: 0 } = {
+  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
     messages: 0,
     reactions: 0,
     boosts: [],
@@ -42,7 +32,6 @@ export const addUserBoost = async (
   } else {
     counterObj = { messages: 0, reactions: 0, boosts: [name], points: 0 };
   }
-  await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
   state.counter[id] = counterObj;
   const userBoosts = state.counter[id].boosts;
 

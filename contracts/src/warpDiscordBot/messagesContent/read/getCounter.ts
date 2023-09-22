@@ -1,14 +1,11 @@
+import { validateInputArgumentPresence, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, counterPrefix } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
-
 export const getCounter = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  if (!id) {
-    throw new ContractError('Id must be provided.');
-  }
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
 
-  const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
+  const counter = state.counter[id];
 
   return { result: { counter } };
 };

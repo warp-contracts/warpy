@@ -112,12 +112,12 @@ describe('Testing warpDiscordBot contract', () => {
   it('should not register id if id is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'registerUser', address: 'randomAddress' }, { strict: true })
-    ).rejects.toThrow('Id must be provided.');
+    ).rejects.toThrow('id should be provided.');
   });
 
   it('should not register id if id is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'registerUser', id: 'asia' }, { strict: true })).rejects.toThrow(
-      'Address must be provided.'
+      'address should be provided.'
     );
   });
 
@@ -129,7 +129,7 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should throw if id is not passed to the interaction', async () => {
     await expect(contract.writeInteraction({ function: 'getAddress' }, { strict: true })).rejects.toThrow(
-      'Id must be provided.'
+      'id should be provided.'
     );
   });
 
@@ -141,7 +141,7 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not add admin if id is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'addAdmin' }, { strict: true })).rejects.toThrow(
-      `Admin's id should be provided.`
+      `id should be provided.`
     );
   });
 
@@ -162,7 +162,7 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not remove admin if id is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'removeAdmin' }, { strict: true })).rejects.toThrow(
-      `Admin's id should be provided.`
+      `id should be provided.`
     );
   });
 
@@ -185,7 +185,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addMessage', id: 'asia', messageId: '1', roles: ['admin'] },
         { strict: true }
       )
-    ).rejects.toThrow('No content provided.');
+    ).rejects.toThrow('content should be provided.');
   });
 
   it('should not add message with no id', async () => {
@@ -194,7 +194,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addMessage', content: 'randomContent', messageId: '1', roles: ['admin'] },
         { strict: true }
       )
-    ).rejects.toThrow(`Caller's id should be provided.`);
+    ).rejects.toThrow(`id should be provided.`);
   });
 
   it('should not add message with no messageId', async () => {
@@ -203,7 +203,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addMessage', content: 'randomContent', id: 'asia', roles: ['admin'] },
         { strict: true }
       )
-    ).rejects.toThrow(`Message id should be provided.`);
+    ).rejects.toThrow(`messageId should be provided.`);
   });
 
   it('should properly add message', async () => {
@@ -384,20 +384,20 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not allow to add boost when name is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'addBoost', value: 5 }, { strict: true })).rejects.toThrow(
-      `Boost name should be provided.`
+      `name should be provided.`
     );
   });
 
   it('should not allow to add boost when value is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'addBoost', name: 'testBoost' }, { strict: true })
-    ).rejects.toThrow(`Boost value should be provided.`);
+    ).rejects.toThrow(`boostValue should be provided.`);
   });
 
   it(`should not allow to add boost when name is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addBoost', name: 30, value: 5 }, { strict: true })
-    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+    ).rejects.toThrow(`name should be of type 'string'.`);
   });
 
   it(`should not allow to add boost when value is not of type 'number'`, async () => {
@@ -406,7 +406,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addBoost', name: 'testBoost', boostValue: 'testBoostValue' },
         { strict: true }
       )
-    ).rejects.toThrow(`Boost value should be of type 'number'.`);
+    ).rejects.toThrow(`Invalid value for 'boostValue'. Must be an integer`);
   });
 
   it('should correctly add boost', async () => {
@@ -430,13 +430,13 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not allow to remove boost if no name is given', async () => {
     await expect(contract.writeInteraction({ function: 'removeBoost' }, { strict: true })).rejects.toThrow(
-      `Boost name should be provided.`
+      `name should be provided.`
     );
   });
 
   it(`should not allow to remove boost if boost name is of type 'string'`, async () => {
     await expect(contract.writeInteraction({ function: 'removeBoost', name: 5 }, { strict: true })).rejects.toThrow(
-      `Boost name should be of type 'string'.`
+      `name should be of type 'string'.`
     );
   });
 
@@ -456,34 +456,34 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).result?.boost;
 
-    expect(boost).toBe(0);
+    expect(boost).toBe(null);
   });
 
   it('should not allow to change boost when name is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'changeBoost', value: 15 }, { strict: true })).rejects.toThrow(
-      `Boost name should be provided.`
+      `name should be provided.`
     );
   });
 
   it('should not allow to change boost when value is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'changeBoost', name: 'testChangeBoost' }, { strict: true })
-    ).rejects.toThrow(`Boost value should be provided.`);
+    ).rejects.toThrow(`boostValue should be provided.`);
   });
 
   it(`should not allow to change boost when name is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'changeBoost', name: 20, value: 6 }, { strict: true })
-    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+    ).rejects.toThrow(`name should be of type 'string'.`);
   });
 
-  it(`should not allow to change boost when value is not of type 'number'`, async () => {
+  it(`should not allow to change boost when value is not an integer`, async () => {
     await expect(
       contract.writeInteraction(
         { function: 'changeBoost', name: 'testChangeBoost', boostValue: 'testChangeBoostValue' },
         { strict: true }
       )
-    ).rejects.toThrow(`Boost value should be of type 'number'.`);
+    ).rejects.toThrow(`Invalid value for 'boostValue'. Must be an integer`);
   });
 
   it('should correctly change boost', async () => {
@@ -511,26 +511,26 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should not allow to add user boost when name is not provided', async () => {
     await expect(contract.writeInteraction({ function: 'addUserBoost', id: 'asia' }, { strict: true })).rejects.toThrow(
-      `Boost name should be provided.`
+      `name should be provided.`
     );
   });
 
   it('should not allow to add user boost when user id is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost' }, { strict: true })
-    ).rejects.toThrow(`User id should be provided.`);
+    ).rejects.toThrow(`id should be provided.`);
   });
 
   it(`should not allow to add user boost when name is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addUserBoost', name: 5, id: 'asia' }, { strict: true })
-    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+    ).rejects.toThrow(`name should be of type 'string'.`);
   });
 
   it(`should not allow to change boost when user id is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 5 }, { strict: true })
-    ).rejects.toThrow(`User id should be of type 'string'.`);
+    ).rejects.toThrow(`id should be of type 'string'.`);
   });
 
   it('should correctly add user boost', async () => {
@@ -551,25 +551,25 @@ describe('Testing warpDiscordBot contract', () => {
   it('should not allow to remove user boost when name is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'removeUserBoost', id: 'asia' }, { strict: true })
-    ).rejects.toThrow(`Boost name should be provided.`);
+    ).rejects.toThrow(`name should be provided.`);
   });
 
   it('should not allow to remove user boost when user id is not provided', async () => {
     await expect(
       contract.writeInteraction({ function: 'removeUserBoost', name: 'testChangeBoost' }, { strict: true })
-    ).rejects.toThrow(`User id should be provided.`);
+    ).rejects.toThrow(`id should be provided.`);
   });
 
   it(`should not allow to add user boost when name is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addUserBoost', name: 5, id: 'asia' }, { strict: true })
-    ).rejects.toThrow(`Boost name should be of type 'string'.`);
+    ).rejects.toThrow(`name should be of type 'string'.`);
   });
 
   it(`should not allow to change boost when user id is not of type 'string'`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', id: 5 }, { strict: true })
-    ).rejects.toThrow(`User id should be of type 'string'.`);
+    ).rejects.toThrow(`id should be of type 'string'.`);
   });
 
   it(`should not allow to remove boost when boost is not assigned to user`, async () => {
@@ -734,7 +734,7 @@ describe('Testing warpDiscordBot contract', () => {
   it(`should not allow to add points when members are not provided`, async () => {
     await expect(
       contract.writeInteraction({ function: 'addPoints', points: 5, adminId: 'testAdmin' }, { strict: true })
-    ).rejects.toThrow(`No members provided.`);
+    ).rejects.toThrow(`members should be provided.`);
   });
 
   it(`should not allow to add points when points are not provided`, async () => {
@@ -743,7 +743,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addPoints', adminId: 'testAdmin', members: [{ id: 'asia', roles: 'user' }] },
         { strict: true }
       )
-    ).rejects.toThrow(`Points should be provided.`);
+    ).rejects.toThrow(`points should be provided.`);
   });
 
   it(`should not allow to add points when adminId is not provided`, async () => {
@@ -752,7 +752,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addPoints', points: 5, members: [{ id: 'asia', roles: 'user' }] },
         { strict: true }
       )
-    ).rejects.toThrow(`Admin's id should be provided.`);
+    ).rejects.toThrow(`adminId should be provided.`);
   });
 
   it(`should not allow to add points when adminId is not on admins list`, async () => {
@@ -797,7 +797,7 @@ describe('Testing warpDiscordBot contract', () => {
   it(`should not allow to remove points when members are not provided`, async () => {
     await expect(
       contract.writeInteraction({ function: 'removePoints', points: 5, adminId: 'testAdmin' }, { strict: true })
-    ).rejects.toThrow(`No members provided.`);
+    ).rejects.toThrow(`members should be provided.`);
   });
 
   it(`should not allow to remove points when points are not provided`, async () => {
@@ -806,7 +806,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'removePoints', members: [{ id: 'asia', roles: ['user'] }], adminId: 'testAdmin' },
         { strict: true }
       )
-    ).rejects.toThrow(`Points should be provided.`);
+    ).rejects.toThrow(`points should be provided.`);
   });
 
   it(`should not allow to remove points when adminId is not provided`, async () => {
@@ -815,7 +815,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'removePoints', members: [{ id: 'asia', roles: ['user'] }], points: 5 },
         { strict: true }
       )
-    ).rejects.toThrow(`Caller's id should be provided.`);
+    ).rejects.toThrow(`adminId should be provided.`);
   });
 
   it(`should not allow to remove points when adminId is not on admins list`, async () => {
@@ -863,43 +863,43 @@ describe('Testing warpDiscordBot contract', () => {
   it(`should not allow to add season when name is not provided`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addSeason', from: '123456', to: '654321', boost: 'seasonBoost' },
+        { function: 'addSeason', from: 123456, to: 654321, boost: 'seasonBoost' },
         { strict: true }
       )
-    ).rejects.toThrow(`Season name should be provided.`);
+    ).rejects.toThrow(`name should be provided.`);
   });
 
   it(`should not allow to add season when from timestamp is not provided`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addSeason', name: 'seasonName', to: '654321', boost: 'seasonBoost' },
+        { function: 'addSeason', name: 'seasonName', to: 654321, boost: 'seasonBoost' },
         { strict: true }
       )
-    ).rejects.toThrow(`From timestamp should be provided.`);
+    ).rejects.toThrow(`from should be provided.`);
   });
 
   it(`should not allow to add season when to timestamp is not provided`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addSeason', name: 'seasonName', from: '123456', boost: 'seasonBoost' },
+        { function: 'addSeason', name: 'seasonName', from: 123456, boost: 'seasonBoost' },
         { strict: true }
       )
-    ).rejects.toThrow(`To timestamp should be provided.`);
+    ).rejects.toThrow(`to should be provided.`);
   });
 
   it(`should not allow to add season when boost is not provided`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addSeason', name: 'seasonName', from: '123456', to: '654321' },
+        { function: 'addSeason', name: 'seasonName', from: 123456, to: 654321 },
         { strict: true }
       )
-    ).rejects.toThrow(`Boost name should be provided.`);
+    ).rejects.toThrow(`boost should be provided.`);
   });
 
   it(`should not allow to add season when boost is not on the list`, async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addSeason', name: 'seasonName', from: '123456', to: '654321', boost: 'nonExistingBoost' },
+        { function: 'addSeason', name: 'seasonName', from: 123456, to: 654321, boost: 'nonExistingBoost' },
         { strict: true }
       )
     ).rejects.toThrow(`Boost with given name does not exist. Please add boost first.`);
@@ -910,14 +910,14 @@ describe('Testing warpDiscordBot contract', () => {
     await contract.writeInteraction({
       function: 'addSeason',
       name: 'seasonName',
-      from: '123456',
-      to: '654321',
+      from: 123456,
+      to: 654321,
       boost: 'seasonBoost',
     });
 
     const { cachedValue } = await contract.readState();
     expect(JSON.stringify(cachedValue.state.seasons['seasonName'])).toBe(
-      JSON.stringify({ from: '123456', to: '654321', boost: 'seasonBoost' })
+      JSON.stringify({ from: 123456, to: 654321, boost: 'seasonBoost' })
     );
   });
 
@@ -993,7 +993,7 @@ describe('Testing warpDiscordBot contract', () => {
         },
         { strict: true }
       )
-    ).rejects.toThrow(`Season name should be provided.`);
+    ).rejects.toThrow(`name should be provided.`);
   });
 
   it(`should not allow to add season to role when from timestamp is not provided`, async () => {
@@ -1009,7 +1009,7 @@ describe('Testing warpDiscordBot contract', () => {
         },
         { strict: true }
       )
-    ).rejects.toThrow(`From timestamp should be provided.`);
+    ).rejects.toThrow(`from should be provided.`);
   });
 
   it(`should not allow to add season to role when to timestamp is not provided`, async () => {
@@ -1018,14 +1018,14 @@ describe('Testing warpDiscordBot contract', () => {
         {
           function: 'addSeasonToRole',
           name: 'seasonToRole',
-          from: '654321',
+          from: 654321,
           boost: 'seasonToRoleBoost',
           boostValue: 5,
           role: 'role',
         },
         { strict: true }
       )
-    ).rejects.toThrow(`To timestamp should be provided.`);
+    ).rejects.toThrow(`to should be provided.`);
   });
 
   it(`should not allow to add season to role when boost is not provided`, async () => {
@@ -1034,14 +1034,14 @@ describe('Testing warpDiscordBot contract', () => {
         {
           function: 'addSeasonToRole',
           name: 'seasonToRole',
-          to: '12345',
-          from: '654321',
+          to: 12345,
+          from: 654321,
           boostValue: 5,
           role: 'role',
         },
         { strict: true }
       )
-    ).rejects.toThrow(`Boost name should be provided.`);
+    ).rejects.toThrow(`boost should be provided.`);
   });
 
   it(`should not allow to add season to role when boost value is not provided`, async () => {
@@ -1050,22 +1050,22 @@ describe('Testing warpDiscordBot contract', () => {
         {
           function: 'addSeasonToRole',
           name: 'seasonToRole',
-          to: '12345',
-          from: '654321',
+          to: 12345,
+          from: 654321,
           boost: 'seasonToRole',
           role: 'role',
         },
         { strict: true }
       )
-    ).rejects.toThrow(`Boost value should be provided.`);
+    ).rejects.toThrow(`boostValue should be provided.`);
   });
 
   it('should properly add season to role', async () => {
     await contract.writeInteraction({
       function: 'addSeasonToRole',
       name: 'seasonToRole',
-      to: '12345',
-      from: '654321',
+      to: 12345,
+      from: 654321,
       boost: 'seasonToRoleBoost',
       boostValue: 5,
       role: 'role',
@@ -1073,7 +1073,7 @@ describe('Testing warpDiscordBot contract', () => {
 
     const { cachedValue } = await contract.readState();
     expect(JSON.stringify(cachedValue.state.seasons['seasonToRole'])).toBe(
-      JSON.stringify({ from: '654321', to: '12345', boost: 'seasonToRoleBoost', role: 'role' })
+      JSON.stringify({ from: 654321, to: 12345, boost: 'seasonToRoleBoost', role: 'role' })
     );
     expect(cachedValue.state.boosts['seasonToRoleBoost']).toBe(5);
   });

@@ -1,29 +1,18 @@
-import {
-  ContractAction,
-  ContractState,
-  ContractResult,
-  counterPrefix,
-  usersPrefix,
-  balancesPrefix,
-} from '../../types/types';
-import { countBoostsPoints } from './addMessage';
+import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult } from '../../types/types';
+import { addTokensBalance, countBoostsPoints } from './addMessage';
 
 declare const ContractError;
-declare const SmartWeave;
 
 export const addReaction = async (
   state: ContractState,
   { input: { id, roles } }: ContractAction
 ): Promise<ContractResult> => {
-  if (!id) {
-    throw new ContractError(`Caller's id should be provided.`);
-  }
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
+  validateInputArgumentPresence(roles, 'roles');
 
-  if (!roles) {
-    throw new ContractError(`No roles provided.`);
-  }
-
-  const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
+  const counter = state.counter[id];
 
   let boostsPoints = state.reactionsTokenWeight;
   let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
@@ -44,16 +33,9 @@ export const addReaction = async (
     counterObj = { messages: 0, reactions: 1, boosts: [], points: state.reactionsTokenWeight };
   }
 
-  await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
   state.counter[id] = counterObj;
 
-  const address = await SmartWeave.kv.get(`${usersPrefix}${id}`);
-  if (address) {
-    const tokens = await SmartWeave.kv.get(`${balancesPrefix}${address}`);
-    const newTokensAmount = tokens ? tokens + boostsPoints : boostsPoints;
-    await SmartWeave.kv.put(`${balancesPrefix}${address}`, newTokensAmount);
-    state.balances[address] = newTokensAmount;
-  }
+  addTokensBalance(state, id, boostsPoints);
 
   return { state };
 };

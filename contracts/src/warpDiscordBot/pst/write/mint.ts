@@ -1,25 +1,21 @@
-import {
-  ContractAction,
-  ContractState,
-  ContractResult,
-  usersPrefix,
-  counterPrefix,
-  balancesPrefix,
-} from '../../types/types';
+import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
 declare const ContractError;
-declare const SmartWeave;
 
 export const mint = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  const address = await SmartWeave.kv.get(`${usersPrefix}${id}`);
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
+
+  const address = state.users[id];
+
   if (!address) {
     throw new ContractError(`User is not registered in the name service.`);
   }
 
-  const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
+  const counter = state.counter[id];
   if (counter) {
     const tokens = counter.points;
-    await SmartWeave.kv.put(`${balancesPrefix}${address}`, tokens);
     state.balances[address] = tokens;
   }
 

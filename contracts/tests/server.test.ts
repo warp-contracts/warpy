@@ -28,7 +28,7 @@ describe('Testing Contract contract', () => {
 
     LoggerFactory.INST.logLevel('error');
 
-    warp = WarpFactory.forLocal(1820).use(new DeployPlugin());
+    warp = WarpFactory.forLocal(1821).use(new DeployPlugin());
 
     ({ jwk: ownerWallet, address: owner } = await warp.generateWallet());
 
@@ -106,7 +106,7 @@ describe('Testing Contract contract', () => {
         { function: 'registerServer', serverName: 'serverName', contractTxId: '3523453' },
         { strict: true }
       )
-    ).rejects.toThrow('Server id has not been provided.');
+    ).rejects.toThrow('serverId should be provided.');
   });
 
   it('should not register server if serverName is not provided', async () => {
@@ -115,7 +115,7 @@ describe('Testing Contract contract', () => {
         { function: 'registerServer', serverId: '234234324', contractTxId: '3523453' },
         { strict: true }
       )
-    ).rejects.toThrow('Server name has not been provided.');
+    ).rejects.toThrow('serverName should be provided.');
   });
 
   it('should not register server if contract id is not provided', async () => {
@@ -124,7 +124,7 @@ describe('Testing Contract contract', () => {
         { function: 'registerServer', serverId: '234234324', serverName: 'randomServerName' },
         { strict: true }
       )
-    ).rejects.toThrow('Contract id has not been provided.');
+    ).rejects.toThrow('contractTxId should be provided.');
   });
 
   it('should remove server', async () => {

@@ -1,15 +1,14 @@
+import { validateInputArgumentPresence, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, usersPrefix } from '../../types/types';
 
 declare const ContractError;
 declare const SmartWeave;
 
 export const getAddress = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  if (!id) {
-    throw new ContractError('Id must be provided.');
-  }
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
 
-  const effectiveId = `${usersPrefix}${id}`;
-  const address = (await SmartWeave.kv.kvMap()).get(effectiveId);
+  const address = state.users[id];
 
   if (!address) {
     throw new ContractError('Id has no address assigned.');

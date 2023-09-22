@@ -1,4 +1,5 @@
-import { countBoostsPoints } from '../../messagesContent/write/addMessage';
+import { validateInputArgumentPresence, validateInteger, validateString } from '../../../utils';
+import { addTokensBalance, countBoostsPoints } from '../../messagesContent/write/addMessage';
 import {
   ContractAction,
   ContractState,
@@ -15,17 +16,11 @@ export const addPoints = async (
   state: ContractState,
   { input: { points, adminId, members, noBoost } }: ContractAction
 ): Promise<ContractResult> => {
-  if (!points) {
-    throw new ContractError(`Points should be provided.`);
-  }
-
-  if (!adminId) {
-    throw new ContractError(`Admin's id should be provided.`);
-  }
-
-  if (!members) {
-    throw new ContractError(`No members provided.`);
-  }
+  validateInputArgumentPresence(points, 'points');
+  validateInteger(points, 'points');
+  validateInputArgumentPresence(adminId, 'adminId');
+  validateString(adminId, 'adminId');
+  validateInputArgumentPresence(members, 'members');
 
   if (!state.admins.includes(adminId)) {
     throw new ContractError(`Only admin can award points.`);
@@ -34,7 +29,7 @@ export const addPoints = async (
   for (let i = 0; i < members.length; i++) {
     const id = members[i].id;
     const roles = members[i].roles;
-    const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
+    const counter = state.counter[id];
 
     let boostsPoints = points;
     let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
@@ -57,17 +52,9 @@ export const addPoints = async (
       counterObj = { messages: 0, reactions: 0, boosts: [], points: boostsPoints };
     }
 
-    await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
     state.counter[id] = counterObj;
 
-    const address = await SmartWeave.kv.get(`${usersPrefix}${id}`);
-    if (address) {
-      const tokens = await SmartWeave.kv.get(`${balancesPrefix}${address}`);
-      const newTokensAmount = tokens ? tokens + boostsPoints : boostsPoints;
-      await SmartWeave.kv.put(`${balancesPrefix}${address}`, newTokensAmount);
-
-      state.balances[address] = newTokensAmount;
-    }
+    addTokensBalance(state, id, boostsPoints);
   }
 
   return { state };

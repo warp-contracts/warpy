@@ -1,12 +1,5 @@
-import {
-  ContractAction,
-  ContractState,
-  ContractResult,
-  messagesPrefix,
-  counterPrefix,
-  usersPrefix,
-  balancesPrefix,
-} from '../../types/types';
+import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult, messagesPrefix } from '../../types/types';
 import { countBoostsPoints } from './addMessage';
 
 declare const ContractError;
@@ -16,13 +9,10 @@ export const removeMessage = async (
   state: ContractState,
   { input: { id, messageId, roles } }: ContractAction
 ): Promise<ContractResult> => {
-  if (!id) {
-    throw new ContractError(`Caller's id should be provided.`);
-  }
-
-  if (!messageId) {
-    throw new ContractError(`Message id id should be provided.`);
-  }
+  validateInputArgumentPresence(id, 'id');
+  validateString(id, 'id');
+  validateInputArgumentPresence(messageId, 'messageId');
+  validateString(messageId, 'messageId');
 
   const message = await SmartWeave.kv.keys({
     gte: `${messagesPrefix}${id}_${messageId}`,
@@ -37,7 +27,7 @@ export const removeMessage = async (
 
   delete state.messages[message[0].substring(message[0].indexOf('.') + 1)];
 
-  const counter = await SmartWeave.kv.get(`${counterPrefix}${id}`);
+  const counter = state.counter[id];
   let boostsPoints = state.messagesTokenWeight;
   boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
   const counterObj = {
@@ -45,15 +35,18 @@ export const removeMessage = async (
     messages: counter.messages - 1,
     points: counter.points - boostsPoints,
   };
-  await SmartWeave.kv.put(`${counterPrefix}${id}`, counterObj);
   state.counter[id] = counterObj;
 
-  const address = await SmartWeave.kv.get(`${usersPrefix}${id}`);
+  subtractTokensBalance(state, id, boostsPoints);
+
+  return { state };
+};
+
+export const subtractTokensBalance = (state: ContractState, id: string, boostsPoints: number) => {
+  const address = state.users[id];
   if (address) {
-    const tokens = await SmartWeave.kv.get(`${balancesPrefix}${address}`);
-    await SmartWeave.kv.put(`${balancesPrefix}${address}`, tokens - boostsPoints);
+    const tokens = state.balances[address];
 
     state.balances[address] = tokens - boostsPoints;
   }
-  return { state };
 };
