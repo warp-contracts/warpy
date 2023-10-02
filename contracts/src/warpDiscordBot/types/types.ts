@@ -1,4 +1,5 @@
 export interface ContractState {
+  caller: string;
   owners: string[];
   serverName: string;
   creationTimestamp: number;

@@ -32,6 +32,7 @@ export async function handle(state: ContractState, action: ContractAction): Prom
     throw new ContractError(`Only owner of the contract can perform interactions.`);
   }
 
+  state.caller = action.caller;
   switch (input.function) {
     case 'getAddress':
       return await getAddress(state, action);

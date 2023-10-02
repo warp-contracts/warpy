@@ -25,7 +25,6 @@ export const addMessage = async (
   const effectiveCaller = `${id}_${messageId}_${SmartWeave.block.timestamp}`;
 
   await SmartWeave.kv.put(`${messagesPrefix}${effectiveCaller}`, effectiveContent);
-  state.messages[effectiveCaller] = effectiveContent;
 
   const counter = state.counter[id];
 

@@ -25,8 +25,6 @@ export const removeMessage = async (
 
   await SmartWeave.kv.del(message[0]);
 
-  delete state.messages[message[0].substring(message[0].indexOf('.') + 1)];
-
   const counter = state.counter[id];
   let boostsPoints = state.messagesTokenWeight;
   boostsPoints *= countBoostsPoints(state, counter.boosts, roles);

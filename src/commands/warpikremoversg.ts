@@ -31,7 +31,7 @@ export default {
     const userId = user.replace(/[<>@]/g, '');
     const { originalTxId } = (await contract.writeInteraction({
       function: 'removePoints',
-      id: userId,
+      members: [{ id: userId, roles: interaction.member.roles.cache.map((r: any) => r.name) }],
       points: rsg,
       adminId,
     })) as WriteInteractionResponse;
