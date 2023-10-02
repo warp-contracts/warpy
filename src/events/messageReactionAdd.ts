@@ -10,7 +10,6 @@ export default {
     // if (userToReactions[id] > DAILY_REACTIONS_LIMIT) return;
     try {
       const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
-      console.log('ROLES', reactionOrigin.message.member.roles.cache);
       await contract.writeInteraction(
         {
           function: 'addReaction',

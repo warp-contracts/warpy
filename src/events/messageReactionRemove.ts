@@ -3,7 +3,7 @@ import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract } from '../utils';
 
 export default {
-  name: 'messageReactionDelete',
+  name: 'messageReactionRemove',
   async execute(reactionOrigin: any, user: User, warp: Warp, wallet: JWKInterface) {
     // const id = `${reactionOrigin.message.guildId}_${user.id}`;
     if (user.bot) return;
