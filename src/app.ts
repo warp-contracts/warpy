@@ -83,6 +83,8 @@ async function main() {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
       } else if (event.default.name == 'messageReactionAdd') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
+      } else if (event.default.name == 'messageReactionDelete') {
+        client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
       } else if (event.default.name == 'guildCreate') {
         client.on(
           event.default.name,
