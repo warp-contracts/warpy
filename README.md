@@ -1,1 +1,1 @@
-Warpik
+Warpy Discord Bot
