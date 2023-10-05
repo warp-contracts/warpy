@@ -1,5 +1,4 @@
 export interface ContractState {
-  caller: string;
   owners: string[];
   serverName: string;
   creationTimestamp: number;
@@ -66,7 +65,7 @@ export interface PstResult {
 }
 
 export interface BoostResult {
-  boost: number | null;
+  boost: number;
 }
 
 export type ContractReadResult = NameServiceResult | MessagesContentResult | PstResult | BoostResult;
@@ -100,6 +99,8 @@ export interface ContractInput {
   role: string;
   noBoost?: boolean;
   members: { id: string; roles: string[] }[];
+  userId: string;
+  emoji: string;
 }
 
 export type ContractFunction =
@@ -135,3 +136,4 @@ export const messagesPrefix = `messages.`;
 export const counterPrefix = `counter.`;
 export const balancesPrefix = `balances.`;
 export const usersPrefix = `users.`;
+export const pointsPrefix = `points.`;

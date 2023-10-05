@@ -1,17 +1,18 @@
-import { validateInputArgumentPresence, validateInteger, validateString } from '../../../utils';
+import { checkArgumentSet, validateInteger, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
+export const addBoost = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'name');
+  validateString(input, 'name');
+  checkArgumentSet(input, 'boostValue');
+  validateInteger(input, 'boostValue');
+  checkArgumentSet(input, 'adminId');
+  validateString(input, 'adminId');
 
-export const addBoost = async (
-  state: ContractState,
-  { input: { name, boostValue } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(name, 'name');
-  validateString(name, 'name');
-  validateInputArgumentPresence(boostValue, 'boostValue');
-  validateInteger(boostValue, 'boostValue');
-
+  const { name, boostValue, adminId } = input;
+  if (!state.admins.includes(adminId)) {
+    throw new ContractError(`Only admin can add boost.`);
+  }
   const boosts = state.boosts;
 
   if (boosts[name]) {

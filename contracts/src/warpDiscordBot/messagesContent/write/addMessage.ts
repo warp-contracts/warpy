@@ -1,23 +1,18 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, messagesPrefix, counterPrefix } from '../../types/types';
+import { checkArgumentSet, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
+export const addMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'id');
+  validateString(input, 'id');
+  checkArgumentSet(input, 'messageId');
+  validateString(input, 'messageId');
+  checkArgumentSet(input, 'content');
+  checkArgumentSet(input, 'roles');
 
-export const addMessage = async (
-  state: ContractState,
-  { input: { id, messageId, content, roles } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-  validateInputArgumentPresence(messageId, 'messageId');
-  validateString(messageId, 'messageId');
-  validateInputArgumentPresence(content, 'content');
-  validateInputArgumentPresence(roles, 'roles');
-
+  const { id, messageId, content, roles } = input;
   let effectiveContent: string = '';
   if (content.length > 2000) {
-    effectiveContent = content.substring(0, 1999);
+    effectiveContent = content.substring(0, 2000);
   } else {
     effectiveContent = content;
   }
@@ -29,12 +24,7 @@ export const addMessage = async (
   const counter = state.counter[id];
 
   let boostsPoints = state.messagesTokenWeight;
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
-    messages: 0,
-    reactions: 0,
-    boosts: [],
-    points: 0,
-  };
+  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
 
   const boosts = counter ? counter.boosts : [];
   boostsPoints *= countBoostsPoints(state, boosts, roles);
@@ -53,6 +43,8 @@ export const addMessage = async (
   state.counter[id] = counterObj;
 
   addTokensBalance(state, id, boostsPoints);
+
+  await SmartWeave.kv.put(`${pointsPrefix}${effectiveCaller}`, boostsPoints);
 
   return { state };
 };

@@ -1,15 +1,11 @@
-import { validateInputArgumentPresence, validateInteger } from '../../../utils';
+import { checkArgumentSet, validateInteger } from '../../../utils';
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
+export const transfer = async (state: ContractState, { input, caller }: ContractAction): Promise<ContractResult> => {
+  validateInteger(input, 'qty');
+  checkArgumentSet(input, 'target');
 
-export const transfer = async (
-  state: ContractState,
-  { input: { target, qty }, caller }: ContractAction
-): Promise<ContractResult> => {
-  validateInteger(qty, 'qty');
-  validateInputArgumentPresence(target, 'target');
-
+  const { target, qty } = input;
   if (qty <= 0 || caller === target) {
     throw new ContractError('Invalid token transfer');
   }

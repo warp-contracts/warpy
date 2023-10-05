@@ -73,12 +73,21 @@ describe('Testing Contract contract', () => {
     expect((await contract.readState()).cachedValue.state).toEqual(initialState);
   });
 
+  it('should not register server if contract tx id is not valid', async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'registerServer', serverId: '12334', serverName: 'serverName', contractTxId: '3523453' },
+        { strict: true }
+      )
+    ).rejects.toThrow('Incorrect contract tx id.');
+  });
+
   it('should correctly register a server', async () => {
     await contract.writeInteraction({
       function: 'registerServer',
       serverId: '12334',
       serverName: 'serverName',
-      contractTxId: '3523453',
+      contractTxId: 'ynfQO52y6qLGDQ62l8KqbXDQFs_wDd6PU1CQf3Q4RYE',
     });
 
     const result = (
@@ -88,13 +97,18 @@ describe('Testing Contract contract', () => {
       })
     ).result;
     expect(result.serverName).toEqual('serverName');
-    expect(result.contractTxId).toEqual('3523453');
+    expect(result.contractTxId).toEqual('ynfQO52y6qLGDQ62l8KqbXDQFs_wDd6PU1CQf3Q4RYE');
   });
 
   it('should not register name if registering same serverId again', async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'registerServer', serverId: '12334', serverName: 'serverName', contractTxId: '3523453' },
+        {
+          function: 'registerServer',
+          serverId: '12334',
+          serverName: 'serverName',
+          contractTxId: 'ynfQO52y6qLGDQ62l8KqbXDQFs_wDd6PU1CQf3Q4RYE',
+        },
         { strict: true }
       )
     ).rejects.toThrow('Server has been already registered.');
@@ -103,7 +117,11 @@ describe('Testing Contract contract', () => {
   it('should not register server if serverId is not provided', async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'registerServer', serverName: 'serverName', contractTxId: '3523453' },
+        {
+          function: 'registerServer',
+          serverName: 'serverName',
+          contractTxId: 'ynfQO52y6qLGDQ62l8KqbXDQFs_wDd6PU1CQf3Q4RYE',
+        },
         { strict: true }
       )
     ).rejects.toThrow('serverId should be provided.');
@@ -112,7 +130,11 @@ describe('Testing Contract contract', () => {
   it('should not register server if serverName is not provided', async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'registerServer', serverId: '234234324', contractTxId: '3523453' },
+        {
+          function: 'registerServer',
+          serverId: '234234324',
+          contractTxId: 'ynfQO52y6qLGDQ62l8KqbXDQFs_wDd6PU1CQf3Q4RYE',
+        },
         { strict: true }
       )
     ).rejects.toThrow('serverName should be provided.');
@@ -136,7 +158,7 @@ describe('Testing Contract contract', () => {
         serverId: '12334',
       })
     ).result;
-    expect(result.serverName).toEqual(null);
+    expect(result.serverName).toEqual(undefined);
   });
 
   it('should throw when trying to remove non-existing server', async () => {

@@ -1,19 +1,16 @@
-import { validateInputArgumentPresence, validateString } from '../../utils';
+import { checkArgumentSet, validateString, validateTxId } from '../../utils';
 import { ContractAction, ContractState, ContractResult } from '../types/types';
 
-declare const ContractError;
+export const registerServer = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'serverId');
+  validateString(input, 'serverId');
+  checkArgumentSet(input, 'serverName');
+  validateString(input, 'serverName');
+  checkArgumentSet(input, 'contractTxId');
+  validateString(input, 'contractTxId');
+  validateTxId(input.contractTxId);
 
-export const registerServer = async (
-  state: ContractState,
-  { input: { serverId, serverName, contractTxId } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(serverId, 'serverId');
-  validateString(serverId, 'serverId');
-  validateInputArgumentPresence(serverName, 'serverName');
-  validateString(serverName, 'serverName');
-  validateInputArgumentPresence(contractTxId, 'contractTxId');
-  validateString(contractTxId, 'contractTxId');
-
+  const { serverId, serverName, contractTxId } = input;
   const server = state.servers[serverId];
 
   if (server) {

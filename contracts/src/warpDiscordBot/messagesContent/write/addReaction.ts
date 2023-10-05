@@ -1,26 +1,21 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult } from '../../types/types';
+import { checkArgumentSet, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult, pointsPrefix } from '../../types/types';
 import { addTokensBalance, countBoostsPoints } from './addMessage';
 
-declare const ContractError;
+export const addReaction = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
+  checkArgumentSet(input, 'roles');
+  checkArgumentSet(input, 'messageId');
+  validateString(input, 'messageId');
+  checkArgumentSet(input, 'emoji');
+  validateString(input, 'emoji');
 
-export const addReaction = async (
-  state: ContractState,
-  { input: { id, roles } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-  validateInputArgumentPresence(roles, 'roles');
-
-  const counter = state.counter[id];
+  const { userId, roles, messageId, emoji } = input;
+  const counter = state.counter[userId];
 
   let boostsPoints = state.reactionsTokenWeight;
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
-    messages: 0,
-    reactions: 0,
-    points: 0,
-    boosts: [],
-  };
+  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
   if (counter) {
     boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     counterObj = {
@@ -33,9 +28,12 @@ export const addReaction = async (
     counterObj = { messages: 0, reactions: 1, boosts: [], points: state.reactionsTokenWeight };
   }
 
-  state.counter[id] = counterObj;
+  state.counter[userId] = counterObj;
 
-  addTokensBalance(state, id, boostsPoints);
+  addTokensBalance(state, userId, boostsPoints);
+
+  const effectiveCaller = `${userId}_${emoji}_${messageId}_${SmartWeave.block.timestamp}`;
+  await SmartWeave.kv.put(`${pointsPrefix}${effectiveCaller}`, boostsPoints);
 
   return { state };
 };

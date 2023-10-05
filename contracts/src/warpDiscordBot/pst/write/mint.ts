@@ -1,12 +1,11 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { checkArgumentSet, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
+export const mint = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'id');
+  validateString(input, 'id');
 
-export const mint = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-
+  const { id } = input;
   const address = state.users[id];
 
   if (!address) {

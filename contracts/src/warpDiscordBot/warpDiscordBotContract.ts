@@ -23,8 +23,6 @@ import { addSeason } from './seasons/write/addSeason';
 import { addSeasonToRole } from './seasons/write/addSeasonToRole';
 import { addPoints } from './points/write/addPoints';
 
-declare const ContractError;
-
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
 
@@ -32,7 +30,6 @@ export async function handle(state: ContractState, action: ContractAction): Prom
     throw new ContractError(`Only owner of the contract can perform interactions.`);
   }
 
-  state.caller = action.caller;
   switch (input.function) {
     case 'getAddress':
       return await getAddress(state, action);

@@ -1,41 +1,42 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, messagesPrefix } from '../../types/types';
-import { countBoostsPoints } from './addMessage';
+import { checkArgumentSet, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
+export const removeMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
+  checkArgumentSet(input, 'messageId');
+  validateString(input, 'messageId');
 
-export const removeMessage = async (
-  state: ContractState,
-  { input: { id, messageId, roles } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-  validateInputArgumentPresence(messageId, 'messageId');
-  validateString(messageId, 'messageId');
+  const { userId, messageId } = input;
 
   const message = await SmartWeave.kv.keys({
-    gte: `${messagesPrefix}${id}_${messageId}`,
-    lt: `${messagesPrefix}${id}_${messageId}\xff`,
+    gte: `${messagesPrefix}${userId}_${messageId}`,
+    lt: `${messagesPrefix}${userId}_${messageId}\xff`,
   });
+
+  const boostsPoints = await SmartWeave.kv.kvMap({
+    gte: `${pointsPrefix}${userId}_${messageId}`,
+    lt: `${pointsPrefix}${userId}_${messageId}\xff`,
+  });
+  const boostsPointsValue = [...boostsPoints.values()][0];
+  const boostsPointsKey = [...boostsPoints.keys()][0];
 
   if (message.length == 0) {
     throw new ContractError(`Message not found.`);
   }
 
   await SmartWeave.kv.del(message[0]);
+  await SmartWeave.kv.del(boostsPointsKey);
 
-  const counter = state.counter[id];
-  let boostsPoints = state.messagesTokenWeight;
-  boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
+  const counter = state.counter[userId];
   const counterObj = {
     ...counter,
     messages: counter.messages - 1,
-    points: counter.points - boostsPoints,
+    points: counter.points - boostsPointsValue,
   };
-  state.counter[id] = counterObj;
+  state.counter[userId] = counterObj;
 
-  subtractTokensBalance(state, id, boostsPoints);
+  subtractTokensBalance(state, userId, boostsPointsValue);
 
   return { state };
 };

@@ -1,13 +1,12 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { checkArgumentSet, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, counterPrefix } from '../../types/types';
 
-declare const ContractError;
+export const getBoost = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'name');
+  validateString(input, 'name');
 
-export const getBoost = async (state: ContractState, { input: { name } }: ContractAction): Promise<ContractResult> => {
-  validateInputArgumentPresence(name, 'name');
-  validateString(name, 'name');
-
+  const { name } = input;
   const boost = state.boosts[name];
 
-  return { result: boost ? { boost } : { boost: null } };
+  return { result: { boost } };
 };

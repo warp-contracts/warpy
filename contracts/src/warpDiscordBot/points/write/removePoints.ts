@@ -1,28 +1,16 @@
-import { validateInputArgumentPresence, validateInteger, validateString } from '../../../utils';
+import { checkArgumentSet, validateInteger, validateString } from '../../../utils';
 import { countBoostsPoints } from '../../messagesContent/write/addMessage';
 import { subtractTokensBalance } from '../../messagesContent/write/removeMessage';
-import {
-  ContractAction,
-  ContractState,
-  ContractResult,
-  counterPrefix,
-  usersPrefix,
-  balancesPrefix,
-} from '../../types/types';
+import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
+export const removePoints = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'points');
+  validateInteger(input, 'points');
+  checkArgumentSet(input, 'adminId');
+  validateString(input, 'adminId');
+  checkArgumentSet(input, 'members');
 
-export const removePoints = async (
-  state: ContractState,
-  { input: { members, points, adminId, noBoost } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(points, 'points');
-  validateInteger(points, 'points');
-  validateInputArgumentPresence(adminId, 'adminId');
-  validateString(adminId, 'adminId');
-  validateInputArgumentPresence(members, 'members');
-
+  const { members, points, adminId, noBoost } = input;
   if (!state.admins.includes(adminId)) {
     throw new ContractError(`Only admin can remove points.`);
   }

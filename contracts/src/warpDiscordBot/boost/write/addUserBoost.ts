@@ -1,26 +1,21 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { checkArgumentSet, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, counterPrefix } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
+export const addUserBoost = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'name');
+  validateString(input, 'name');
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
+  checkArgumentSet(input, 'adminId');
+  validateString(input, 'adminId');
 
-export const addUserBoost = async (
-  state: ContractState,
-  { input: { id, name } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(name, 'name');
-  validateString(name, 'name');
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
+  const { userId, adminId, name } = input;
+  if (!state.admins.includes(adminId)) {
+    throw new ContractError(`Only admin can add user boost.`);
+  }
+  const counter = state.counter[userId];
 
-  const counter = state.counter[id];
-
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number } = {
-    messages: 0,
-    reactions: 0,
-    boosts: [],
-    points: 0,
-  };
+  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
   if (counter) {
     const newBoosts = counter.boosts.includes(name) ? counter.boosts : [...counter.boosts, name];
     counterObj = {
@@ -32,12 +27,7 @@ export const addUserBoost = async (
   } else {
     counterObj = { messages: 0, reactions: 0, boosts: [name], points: 0 };
   }
-  state.counter[id] = counterObj;
-  const userBoosts = state.counter[id].boosts;
-
-  if (!userBoosts.includes(name)) {
-    userBoosts.push(name);
-  }
+  state.counter[userId] = counterObj;
 
   return { state };
 };

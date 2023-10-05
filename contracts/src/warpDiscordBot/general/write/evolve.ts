@@ -1,7 +1,5 @@
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
-
 export const evolve = async (
   state: ContractState,
   { caller, input: { value } }: ContractAction

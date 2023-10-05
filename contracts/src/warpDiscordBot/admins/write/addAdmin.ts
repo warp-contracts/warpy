@@ -1,17 +1,21 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
+import { checkArgumentSet, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
+export const addAdmin = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
+  checkArgumentSet(input, 'adminId');
+  validateString(input, 'adminId');
 
-export const addAdmin = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-
-  if (state.admins.includes(id)) {
+  const { userId, adminId } = input;
+  if (!state.admins.includes(adminId)) {
+    throw new ContractError(`Only admin can add admins.`);
+  }
+  if (state.admins.includes(userId)) {
     throw new ContractError(`Admin's id already on the list.`);
   }
 
-  state.admins.push(id);
+  state.admins.push(userId);
 
   return { state };
 };

@@ -1,9 +1,9 @@
 {
-  "name": "warp-template-typescript",
+  "name": "warpik-contracts",
   "version": "0.0.1",
-  "description": "Warp contracts - Typescript template",
+  "description": "Warpik Discord Bot - contracts",
   "main": "index.js",
-  "author": "Redstone Team <dev@redstone.finance>",
+  "author": "Asia Zioła <asia@warp.cc>",
   "license": "MIT",
   "private": false,
   "scripts": {

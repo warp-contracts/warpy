@@ -1,29 +1,35 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult } from '../../types/types';
-import { countBoostsPoints } from './addMessage';
+import { checkArgumentSet, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult, pointsPrefix } from '../../types/types';
 import { subtractTokensBalance } from './removeMessage';
 
-declare const ContractError;
-declare const SmartWeave;
+export const removeReaction = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
+  checkArgumentSet(input, 'messageId');
+  validateString(input, 'messageId');
+  checkArgumentSet(input, 'emoji');
+  validateString(input, 'emoji');
 
-export const removeReaction = async (
-  state: ContractState,
-  { input: { id, roles } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
+  const { userId, messageId, emoji } = input;
 
-  const counter = state.counter[id];
-  let boostsPoints = state.reactionsTokenWeight;
-  boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
+  const counter = state.counter[userId];
+  const boostsPoints = await SmartWeave.kv.kvMap({
+    gte: `${pointsPrefix}${userId}_${emoji}_${messageId}`,
+    lt: `${pointsPrefix}${userId}_${emoji}_${messageId}\xff`,
+  });
+
+  const boostsPointsValue = [...boostsPoints.values()][0];
+  const boostsPointsKey = [...boostsPoints.keys()][0];
+  await SmartWeave.kv.del(boostsPointsKey);
+
   const counterObj = {
     ...counter,
     reactions: counter.reactions - 1,
-    points: counter.points - boostsPoints,
+    points: counter.points - boostsPointsValue,
   };
-  state.counter[id] = counterObj;
+  state.counter[userId] = counterObj;
 
-  subtractTokensBalance(state, id, boostsPoints);
+  subtractTokensBalance(state, userId, boostsPointsValue);
 
   return { state };
 };

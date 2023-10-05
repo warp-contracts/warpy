@@ -1,13 +1,11 @@
-import { validateInputArgumentPresence, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, usersPrefix } from '../../types/types';
+import { checkArgumentSet, validateString } from '../../../utils';
+import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
-declare const ContractError;
-declare const SmartWeave;
+export const getAddress = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'id');
+  validateString(input, 'id');
 
-export const getAddress = async (state: ContractState, { input: { id } }: ContractAction): Promise<ContractResult> => {
-  validateInputArgumentPresence(id, 'id');
-  validateString(id, 'id');
-
+  const { id } = input;
   const address = state.users[id];
 
   if (!address) {

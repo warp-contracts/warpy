@@ -1,15 +1,11 @@
-import { validateInputArgumentPresence, validateString } from '../../utils';
+import { checkArgumentSet, validateString } from '../../utils';
 import { ContractAction, ContractState, ContractResult } from '../types/types';
 
-declare const ContractError;
+export const removeServer = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+  checkArgumentSet(input, 'serverId');
+  validateString(input, 'serverId');
 
-export const removeServer = async (
-  state: ContractState,
-  { input: { serverId } }: ContractAction
-): Promise<ContractResult> => {
-  validateInputArgumentPresence(serverId, 'serverId');
-  validateString(serverId, 'serverId');
-
+  const { serverId } = input;
   const server = state.servers[serverId];
   if (!server) {
     throw new ContractError(`Server not found.`);
