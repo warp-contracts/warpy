@@ -19,18 +19,18 @@ export default {
     try {
       const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        interaction.reply('Only admin can award RSG.');
+        await interaction.reply('Only admin can award RSG.');
         return;
       }
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     const rsg = interaction.options.getInteger('rsg');
     const role = interaction.options.getString('role');
     if (isNaN(Number(rsg))) {
-      interaction.reply('Incorrect number of RSG.');
+      await interaction.reply('Incorrect number of RSG.');
     }
     const roleManager = interaction.guild.roles.cache.find((r: any) => r.name === role);
     const members = roleManager.members.map((member: any) => ({
@@ -46,7 +46,7 @@ export default {
       ...(noBoost && { noBoost }),
     })) as WriteInteractionResponse;
 
-    interaction.reply({
+    await interaction.reply({
       content: `Role has been awarded with RSG <:RSG:1159789917107400765>.`,
       tts: true,
       components: [

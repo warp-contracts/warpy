@@ -28,11 +28,11 @@ export default {
     try {
       const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        interaction.reply('Only admin can set role season.');
+        await interaction.reply('Only admin can set role season.');
         return;
       }
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
@@ -45,7 +45,7 @@ export default {
     const adminId = interaction.user.id;
 
     if (isNaN(Number(boostValue))) {
-      interaction.reply('Incorrect boost value.');
+      await interaction.reply('Incorrect boost value.');
     }
     const { originalTxId } = (await contract.writeInteraction({
       function: 'addSeasonToRole',
@@ -58,7 +58,7 @@ export default {
       adminId,
     })) as WriteInteractionResponse;
 
-    interaction.reply({
+    await interaction.reply({
       content: `Role season added.`,
       tts: true,
       components: [

@@ -13,7 +13,7 @@ export default {
     try {
       balances = (await getStateFromDre(contract.txId())).state.balances;
       const balancesArray: [string, number][] = Object.entries(balances);
-      const balancesSorted = balancesArray.sort((a, b) => b[1] - a[1]).slice(0 - 9);
+      const balancesSorted = balancesArray.sort((a, b) => b[1] - a[1]).slice(0 - 10);
 
       const rankingArray: any = await Promise.all(
         balancesSorted.map(async (b) => {
@@ -22,7 +22,7 @@ export default {
             const userId = Object.keys(result.state.users).find((key) => result.state.users[key] === b[0]);
             return { id: userId, tokens: b[1] };
           } catch (e) {
-            interaction.reply(`Could not load state from D.R.E. nodes.`);
+            await interaction.reply(`Could not load state from D.R.E. nodes.`);
             return null;
           }
         })
@@ -32,7 +32,7 @@ export default {
       for (let i = 0; i < rankingArray.length; i++) {
         fields.push({ name: '', value: `${i + 1}. <@${rankingArray[i].id}> - **${rankingArray[i].tokens}** tokens` });
       }
-      interaction.reply({
+      await interaction.reply({
         content: `Warpy ranking.`,
         tts: true,
         components: [
@@ -65,7 +65,7 @@ export default {
         ],
       });
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
     return;

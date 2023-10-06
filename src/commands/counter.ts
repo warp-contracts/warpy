@@ -15,23 +15,23 @@ export default {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
       console.log(e);
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     if (address.length == 0) {
-      interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
     }
 
     let result: { messages: number; reactions: number; points: number }[];
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
-    interaction.reply({
+    await interaction.reply({
       content: `User stats.`,
       tts: true,
       components: [

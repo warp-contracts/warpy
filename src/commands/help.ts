@@ -6,7 +6,7 @@ export default {
   async execute(interaction: any) {
     interaction.channel.sendTyping();
 
-    interaction.reply({
+    await interaction.reply({
       content: `Warpy commands.`,
       tts: true,
       embeds: [

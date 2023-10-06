@@ -14,12 +14,12 @@ export default {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
       console.log(e);
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     if (address.length == 0) {
-      interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
     }
 
     let balance: string;
@@ -27,11 +27,11 @@ export default {
       balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
     } catch (e) {
       console.log(e);
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
-    interaction.reply({
+    await interaction.reply({
       content: `User's tokens balance.`,
       tts: true,
       components: [

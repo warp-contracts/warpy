@@ -5,7 +5,7 @@ export default {
   data: new SlashCommandBuilder().setName('contract').setDescription(`Returns server contract's link on SonAr.`),
   async execute(interaction: any) {
     const contractTxId = await getServerContractId(interaction.guildId);
-    interaction.reply({
+    await interaction.reply({
       content: `Warpy server's contract.`,
       tts: true,
       components: [

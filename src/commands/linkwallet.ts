@@ -16,7 +16,7 @@ export default {
     const wallet = interaction.options.getString('address');
     const userId = interaction.user.id;
     if (!isEthWallet(wallet)) {
-      interaction.reply('Wallet address is not valid.');
+      await interaction.reply('Wallet address is not valid.');
       return null;
     }
 
@@ -24,12 +24,12 @@ export default {
     try {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     if (address.length > 0) {
-      interaction.reply('User already registered.');
+      await interaction.reply('User already registered.');
       return null;
     }
 
@@ -44,7 +44,7 @@ export default {
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
@@ -57,7 +57,7 @@ export default {
       );
     }
 
-    interaction.reply({
+    await interaction.reply({
       content: `User registered correctly.`,
       tts: true,
       components: [

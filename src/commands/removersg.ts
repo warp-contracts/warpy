@@ -17,17 +17,17 @@ export default {
     try {
       const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        interaction.reply();
+        await interaction.reply();
         return;
       }
     } catch (e) {
-      interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     const rsg = interaction.options.getInteger('rsg');
     if (isNaN(Number(rsg))) {
-      interaction.reply('Incorrect number of RSG.');
+      await interaction.reply('Incorrect number of RSG.');
     }
     const adminId = interaction.user.id;
     const user = interaction.options.getString('user');
@@ -52,7 +52,7 @@ export default {
       })
     ).result?.counter;
 
-    interaction.reply({
+    await interaction.reply({
       content: `RSG have been subtracted from ${user} balance.`,
       tts: true,
       components: [
