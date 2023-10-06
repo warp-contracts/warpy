@@ -21,7 +21,7 @@ export default {
       await contract.writeInteraction(
         {
           function: 'addReaction',
-          id: user.id,
+          userId: user.id,
           roles: reactionOrigin.message.member?.roles.cache.map((r: any) => r.name),
           messageId: reactionOrigin.message.id,
           emoji: reactionOrigin.emoji.id,

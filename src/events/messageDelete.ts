@@ -21,7 +21,7 @@ export default {
       await contract.writeInteraction(
         {
           function: 'removeMessage',
-          id: message.author.id,
+          userId: message.author.id,
           messageId: message.id,
           roles: message.member?.roles.cache.map((r) => r.name),
         },

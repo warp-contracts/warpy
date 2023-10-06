@@ -2,7 +2,7 @@ import { Guild } from 'discord.js';
 import { Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
-const BOT_CONTRACT_SRC = 'naaec73rwPnO3LI64zcgEt_ec-lwMhFw7-JMiaS1dKQ';
+const BOT_CONTRACT_SRC = 'xK6N6FmJgFet0HQKr4pKFX_i1HkPfcbRYVV1ZTAWa_o';
 
 export default {
   name: 'guildCreate',

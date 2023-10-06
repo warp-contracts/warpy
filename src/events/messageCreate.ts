@@ -64,7 +64,7 @@ export default {
       await contract.writeInteraction(
         {
           function: 'addMessage',
-          id: message.author.id,
+          userId: message.author.id,
           content: message.content,
           messageId: message.id,
           roles: message.member?.roles.cache.map((r) => r.name),
