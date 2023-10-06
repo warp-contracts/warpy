@@ -1,13 +1,9 @@
 import * as dotenv from 'dotenv';
 import { Client, Collection, Events, IntentsBitField, Partials } from 'discord.js';
 import { connectToServersContract, initializeWarp, readWallet } from './utils';
-// import { onGuildCreate } from './events/guildCreate';
-// import { onMessageCreate } from './events/messageCreate';
-// import { onMessageReactionAdd } from './events/messageReactionAdd';
 import { LoggerFactory } from 'warp-contracts';
 import path from 'path';
 import fs from 'fs';
-// import { Contract } from 'ethers';
 
 dotenv.config();
 
@@ -26,14 +22,6 @@ async function main() {
   LoggerFactory.INST.logLevel('error');
   const warp = initializeWarp();
   const serversContract = connectToServersContract(warp, wallet);
-
-  // let userToMessages: { [serverIduserId: string]: number } = {};
-  // let userToReactions: { [serverIduserId: string]: number } = {};
-
-  // setInterval(() => {
-  //   userToMessages = {};
-  //   userToReactions = {};
-  // }, 1000 * 60 * 60 * 24);
 
   client.commands = new Collection();
 

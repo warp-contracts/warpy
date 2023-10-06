@@ -18,13 +18,16 @@ export default {
       } catch (e) {
         return;
       }
+      const guild = user.client.guilds.cache.get(reactionOrigin.message.guildId);
+      const member = guild?.members.cache.get(user.id);
+      const roles = member?.roles.cache.map((r: any) => r.name);
       await contract.writeInteraction(
         {
           function: 'addReaction',
           userId: user.id,
-          roles: reactionOrigin.message.member?.roles.cache.map((r: any) => r.name),
+          roles,
           messageId: reactionOrigin.message.id,
-          emojiId: reactionOrigin.emoji.id,
+          emojiId: reactionOrigin.emoji.name,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-add;${user.id};${reactionOrigin.message.guildId};`)],

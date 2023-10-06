@@ -47,7 +47,7 @@ export default {
     })) as WriteInteractionResponse;
 
     interaction.reply({
-      content: `Role has been awarded with RSG :RSG:.`,
+      content: `Role has been awarded with RSG <:RSG:1159789917107400765>.`,
       tts: true,
       components: [
         {
@@ -73,7 +73,7 @@ export default {
       embeds: [
         {
           type: 'rich',
-          description: `All users having below role have been rewarded with RSG :RSG:.`,
+          description: `All users having below role have been rewarded with RSG <:RSG:1159789917107400765>.`,
           color: 0xdd72cb,
           fields: [
             {
@@ -82,7 +82,7 @@ export default {
             },
             {
               name: `RSG`,
-              value: `${rsg} :RSG:`,
+              value: `${rsg} <:RSG:1159789917107400765>`,
             },
           ],
           thumbnail: {

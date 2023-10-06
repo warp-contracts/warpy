@@ -23,7 +23,7 @@ export default {
           function: 'removeReaction',
           userId: user.id,
           messageId: reactionOrigin.message.id,
-          emojiId: reactionOrigin.emoji.id,
+          emojiId: reactionOrigin.emoji.name,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-delete;${user.id};${reactionOrigin.message.guildId};`)],
