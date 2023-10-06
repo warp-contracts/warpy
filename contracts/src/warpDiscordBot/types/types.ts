@@ -31,6 +31,10 @@ export interface ContractState {
   seasons: {
     [name: string]: Season;
   };
+  reactions: {
+    max: number;
+    timeLagInSeconds: number;
+  };
 }
 
 export interface Season {
@@ -100,7 +104,7 @@ export interface ContractInput {
   noBoost?: boolean;
   members: { id: string; roles: string[] }[];
   userId: string;
-  emoji: string;
+  emojiId: string;
 }
 
 export type ContractFunction =
@@ -133,7 +137,10 @@ export type ContractFunction =
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 
 export const messagesPrefix = `messages.`;
+export const reactionsPrefix = `reactions.`;
 export const counterPrefix = `counter.`;
 export const balancesPrefix = `balances.`;
 export const usersPrefix = `users.`;
 export const pointsPrefix = `points.`;
+export const timePrefix = `time.`;
+export const removedReactionsPrefix = `removedReactions.`;

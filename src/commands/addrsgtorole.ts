@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
+import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpikaddrsgtorole')
+    .setName('addrsgtorole')
     .setDescription(`Add RSG to specific role (only available for admins).`)
     .addStringOption((option) =>
       option.setName('role').setDescription('Role which members will be awarded with RSG.').setRequired(true)
@@ -86,7 +86,7 @@ export default {
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

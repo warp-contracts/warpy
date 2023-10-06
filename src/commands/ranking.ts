@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
+import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
 import { Warp } from 'warp-contracts';
 
 export default {
-  data: new SlashCommandBuilder().setName('warpikranking').setDescription(`Returns server's ranking.`),
+  data: new SlashCommandBuilder().setName('ranking').setDescription(`Returns server's ranking.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
     interaction.channel.sendTyping();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
@@ -33,7 +33,7 @@ export default {
         fields.push({ name: '', value: `${i + 1}. <@${rankingArray[i].id}> - **${rankingArray[i].tokens}** tokens` });
       }
       interaction.reply({
-        content: `Warpik ranking.`,
+        content: `Warpy ranking.`,
         tts: true,
         components: [
           {
@@ -56,7 +56,7 @@ export default {
             color: 0xdd72cb,
             fields,
             thumbnail: {
-              url: warpikIconUrl,
+              url: warpyIconUrl,
               height: 0,
               width: 0,
             },

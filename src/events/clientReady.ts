@@ -4,6 +4,6 @@ export default {
   name: Events.ClientReady,
   once: true,
   execute() {
-    console.log('Warpik is online!');
+    console.log('Warpy is online!');
   },
 };

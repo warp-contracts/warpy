@@ -1,11 +1,11 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
+import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpikaddrsg')
-    .setDescription(`Add RSG to specific user (only available for admins).`)
+    .setName('removersg')
+    .setDescription(`Remove specific user's RSG (only available for admins).`)
     .addStringOption((option) => option.setName('user').setDescription('User handle.').setRequired(true))
     .addIntegerOption((option) => option.setName('rsg').setDescription('Number of RSG.').setRequired(true))
     .addBooleanOption((option) =>
@@ -17,7 +17,7 @@ export default {
     try {
       const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        interaction.reply('Only admin can award RSG.');
+        interaction.reply();
         return;
       }
     } catch (e) {
@@ -25,18 +25,20 @@ export default {
       return;
     }
 
-    if (isNaN(Number(interaction.options.getInteger('rsg')))) {
+    const rsg = interaction.options.getInteger('rsg');
+    if (isNaN(Number(rsg))) {
       interaction.reply('Incorrect number of RSG.');
     }
+    const adminId = interaction.user.id;
     const user = interaction.options.getString('user');
     const userId = user.replace(/[<>@]/g, '');
     const noBoost = interaction.options.getBoolean('noboost');
-    const rsg = interaction.options.getInteger('rsg');
+
     const { originalTxId } = (await contract.writeInteraction({
-      function: 'addPoints',
-      points: rsg,
-      adminId: interaction.user.id,
+      function: 'removePoints',
       members: [{ id: userId, roles: interaction.member.roles.cache.map((r: any) => r.name) }],
+      points: rsg,
+      adminId,
       ...(noBoost && { noBoost }),
     })) as WriteInteractionResponse;
 
@@ -51,7 +53,7 @@ export default {
     ).result?.counter;
 
     interaction.reply({
-      content: `Congrats ${user}! You have been rewarded with **RSG** :RSG:.`,
+      content: `RSG have been subtracted from ${user} balance.`,
       tts: true,
       components: [
         {
@@ -77,11 +79,11 @@ export default {
       embeds: [
         {
           type: 'rich',
-          description: `Admins decided to award you with some extra RSG. Here you can find info about awarded RSG and your current balance. Check out interaction to see more details.`,
+          description: `Admins decided to subtract some RSG from your balance.`,
           color: 0xdd72cb,
           fields: [
             {
-              name: `RSG awarded`,
+              name: `RSG subtracted`,
               value: `${rsg} :RSG:`,
             },
             {
@@ -90,7 +92,7 @@ export default {
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

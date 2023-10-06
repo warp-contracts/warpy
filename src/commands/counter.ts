@@ -1,17 +1,16 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
+import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
 import { Warp } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpikbalance')
-    .setDescription(`Returns balance for the given wallet address.`),
+    .setName('counter')
+    .setDescription(`Returns number of user's RSG, messages and interactions.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
     interaction.channel.sendTyping();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
-
-    let address: string | [];
     const userId = interaction.user.id;
+    let address: string | [];
     try {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
@@ -21,20 +20,19 @@ export default {
     }
 
     if (address.length == 0) {
-      interaction.reply('User not registered in the name service. Please ping warpik with `warpiklinkwallet` first.');
+      interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
     }
 
-    let balance: string;
+    let result: { messages: number; reactions: number; points: number }[];
     try {
-      balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
+      result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
     } catch (e) {
-      console.log(e);
       interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     interaction.reply({
-      content: `User's tokens balance.`,
+      content: `User stats.`,
       tts: true,
       components: [
         {
@@ -53,6 +51,7 @@ export default {
       embeds: [
         {
           type: 'rich',
+          description: `Below is shown number of messages and reactions sent by user along with total RSG collected.`,
           color: 0xdd72cb,
           fields: [
             {
@@ -60,12 +59,20 @@ export default {
               value: `<@${userId}>`,
             },
             {
-              name: `Tokens balance`,
-              value: `${balance.length > 0 ? balance : 0}`,
+              name: `Messages`,
+              value: `${result[0].messages || 0}`,
+            },
+            {
+              name: `Reactions`,
+              value: `${result[0].reactions || 0}`,
+            },
+            {
+              name: `RSG`,
+              value: `${result[0].points} :RSG:`,
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

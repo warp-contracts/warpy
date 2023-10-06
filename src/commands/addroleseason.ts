@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpikIconUrl } from '../utils';
+import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpikaddroleseason')
+    .setName('addroleseason')
     .setDescription(`Set role season for specific timestamps (only available for admins).`)
     .addStringOption((option) => option.setName('name').setDescription('Role season name.').setRequired(true))
     .addIntegerOption((option) =>
@@ -42,6 +42,7 @@ export default {
     const to = interaction.options.getInteger('to');
     const boostValue = interaction.options.getInteger('boostvalue');
     const role = interaction.options.getString('role');
+    const adminId = interaction.user.id;
 
     if (isNaN(Number(boostValue))) {
       interaction.reply('Incorrect boost value.');
@@ -54,6 +55,7 @@ export default {
       boost,
       boostValue,
       role,
+      adminId,
     })) as WriteInteractionResponse;
 
     interaction.reply({
@@ -104,7 +106,7 @@ export default {
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

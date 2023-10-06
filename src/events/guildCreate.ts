@@ -2,7 +2,7 @@ import { Guild } from 'discord.js';
 import { Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
 
-const BOT_CONTRACT_SRC = 'VSy03fG-mF2cCDyiZ-3Vt34lSDy6x9mF5D96tH8qop4';
+const BOT_CONTRACT_SRC = 'naaec73rwPnO3LI64zcgEt_ec-lwMhFw7-JMiaS1dKQ';
 
 export default {
   name: 'guildCreate',
@@ -30,6 +30,10 @@ export default {
         boosts: {},
         admins: ['304935610089734150', '769844280767807520'],
         seasons: {},
+        reactions: {
+          max: 10,
+          timeLagInSeconds: 3600,
+        },
       }),
       evaluationManifest: {
         evaluationOptions: {

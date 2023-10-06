@@ -40,12 +40,11 @@ import { Message } from 'discord.js';
 // }
 
 import { Tag, Warp } from 'warp-contracts';
-import { connectToServerContract } from '../utils';
+import { connectToServerContract, getStateFromDre } from '../utils';
 
 export default {
   name: 'messageCreate',
   async execute(message: Message, warp: Warp, wallet: any) {
-    console.log('test');
     // const id = `${message.guildId}_${message.author.id}`;
     if (message.author.bot) return;
     // if (userToMessages[id] > DAILY_MESSAGES_LIMIT) return null;
@@ -54,6 +53,14 @@ export default {
       return;
     } else {
       const contract = await connectToServerContract(warp, wallet, message.guildId);
+      try {
+        const result = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result[0];
+        if (result.length == 0) {
+          return;
+        }
+      } catch (e) {
+        return;
+      }
       await contract.writeInteraction(
         {
           function: 'addMessage',

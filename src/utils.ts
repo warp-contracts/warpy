@@ -5,7 +5,7 @@ import path from 'path';
 import * as ethers from 'ethers';
 import { Message } from 'discord.js';
 
-const SERVERS_CONTRACT = '1DtnAYKfC2QFnxrVL6KJE1ZGGzm3JeNnt8oLLvNUl-o';
+const SERVERS_CONTRACT = 'WdzzFBrpNXyJ2jdw4kB1XMFInOik8ydW3U2VnJci5aQ';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
@@ -74,8 +74,8 @@ export function getMessageArgs(message: Message) {
   return message.content.trim().split(/ +/g);
 }
 
-export const warpikIconUrl =
-  'https://hngsugmbwjg66knpan5kih3juwqufuempw7xu3jujuflmslg3bva.arweave.dev/O00qGYGyTe8prwN6pB9ppaFC0Ix9v3ptNE0Ktklm2Go';
+export const warpyIconUrl =
+  'https://citcz3hukepydjkha2c4lthzf6mhxlzqxvtpgcwr2gx3tmg2mwlq.arweave.dev/EiYs7PRRH4GlRwaFxcz5L5h7rzC9ZvMK0dGvubDaZZc';
 
 export const errorEmbed = (errorMessage: string) => {
   return {

@@ -24,3 +24,5 @@ export const validateTxId = (txId: string) => {
     throw new ContractError(`Incorrect contract tx id.`);
   }
 };
+
+export const LAST_HOUR_BLOCKS = 30;

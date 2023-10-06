@@ -2,14 +2,14 @@ import { checkArgumentSet, validateString } from '../../../utils';
 import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix } from '../../types/types';
 
 export const addMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
-  checkArgumentSet(input, 'id');
-  validateString(input, 'id');
+  checkArgumentSet(input, 'userId');
+  validateString(input, 'userId');
   checkArgumentSet(input, 'messageId');
   validateString(input, 'messageId');
   checkArgumentSet(input, 'content');
   checkArgumentSet(input, 'roles');
 
-  const { id, messageId, content, roles } = input;
+  const { userId, messageId, content, roles } = input;
   let effectiveContent: string = '';
   if (content.length > 2000) {
     effectiveContent = content.substring(0, 2000);
@@ -17,11 +17,11 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
     effectiveContent = content;
   }
 
-  const effectiveCaller = `${id}_${messageId}_${SmartWeave.block.timestamp}`;
+  const effectiveCaller = `${userId}_${messageId}_${SmartWeave.block.timestamp}`;
 
   await SmartWeave.kv.put(`${messagesPrefix}${effectiveCaller}`, effectiveContent);
 
-  const counter = state.counter[id];
+  const counter = state.counter[userId];
 
   let boostsPoints = state.messagesTokenWeight;
   let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
@@ -40,9 +40,9 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
     counterObj = { messages: 1, reactions: 0, boosts: [], points: boostsPoints };
   }
 
-  state.counter[id] = counterObj;
+  state.counter[userId] = counterObj;
 
-  addTokensBalance(state, id, boostsPoints);
+  addTokensBalance(state, userId, boostsPoints);
 
   await SmartWeave.kv.put(`${pointsPrefix}${effectiveCaller}`, boostsPoints);
 

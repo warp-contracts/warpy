@@ -1,59 +1,59 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { warpikIconUrl } from '../utils';
+import { warpyIconUrl } from '../utils';
 
 export default {
-  data: new SlashCommandBuilder().setName('warpikhelp').setDescription(`Displays list of possible commands.`),
+  data: new SlashCommandBuilder().setName('help').setDescription(`Displays list of possible commands.`),
   async execute(interaction: any) {
     interaction.channel.sendTyping();
 
     interaction.reply({
-      content: `Warpik commands.`,
+      content: `Warpy commands.`,
       tts: true,
       embeds: [
         {
           type: 'rich',
-          description: `All commands that can be sent to Warpik.`,
+          description: `All commands that can be sent to Warpy.`,
           color: 0xdd72cb,
           fields: [
             {
-              name: `💼 **/warpiklinkwallet**`,
+              name: `💼 **/linkwallet**`,
               value: `link you wallet address to start receiving tokens for your activity`,
             },
             {
-              name: `💰 **/warpikbalance**`,
+              name: `💰 **/balance**`,
               value: `check your tokens balance`,
             },
             {
-              name: `📊 **/warpikcounter**`,
+              name: `📊 **/counter**`,
               value: `check number of the messages and reactions you've sent so far`,
             },
             {
-              name: `📃 **/warpikcontract**`,
-              value: `get link to this server's warpik contract`,
+              name: `📃 **/contract**`,
+              value: `get link to this server's  contract`,
             },
             {
-              name: `🏋🏼‍♂️ **/warpikaddrsg**`,
+              name: `🏋🏼‍♂️ **/addrsg**`,
               value: `add RSG to specific user (only available for admins)`,
             },
             {
-              name: `🚴🏼‍♀️ **/warpikaddrsgtorole**`,
+              name: `🚴🏼‍♀️ **/addrsgtorole**`,
               value: `add RSG to specific role (only available for admins)`,
             },
             {
-              name: `🤸🏼‍♀️ **/warpikaddroleseason**`,
+              name: `🤸🏼‍♀️ **/addroleseason**`,
               value: `set new season for role (only available for admins)`,
             },
             {
-              name: `📉 **/warpikranking**`,
+              name: `📉 **/ranking**`,
               value: `display current server's ranking`,
             },
             {
-              name: `💁🏼 **/warpikhelp**`,
-              value: `show warpik commands`,
+              name: `💁🏼 **/help**`,
+              value: `show  commands`,
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

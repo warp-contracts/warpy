@@ -100,7 +100,7 @@ async function main() {
   // const serversContract = connectToServersContract(warp, wallet);
 
   // client.once(Events.ClientReady, () => {
-  //   console.log('Warpik is online!');
+  //   console.log('Warpy is online!');
   // });
 
   // client.on('guildCreate', async (guild) => {

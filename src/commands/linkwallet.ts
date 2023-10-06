@@ -1,10 +1,10 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { isEthWallet, getStateFromDre, connectToServerContract, warpikIconUrl } from '../utils';
+import { isEthWallet, getStateFromDre, connectToServerContract, warpyIconUrl } from '../utils';
 import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
-    .setName('warpiklinkwallet')
+    .setName('linkwallet')
     .setDescription('Links ETH wallet to the discord account.')
     .addStringOption((option) =>
       option.setName('address').setDescription('Your ETH wallet address.').setRequired(true)
@@ -93,7 +93,7 @@ export default {
             },
           ],
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },

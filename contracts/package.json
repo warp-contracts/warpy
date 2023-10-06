@@ -1,7 +1,7 @@
 {
-  "name": "warpik-contracts",
+  "name": "warpy-contracts",
   "version": "0.0.1",
-  "description": "Warpik Discord Bot - contracts",
+  "description": "Warpy Discord Bot - contracts",
   "main": "index.js",
   "author": "Asia Zioła <asia@warp.cc>",
   "license": "MIT",

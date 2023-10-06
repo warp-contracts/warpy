@@ -5,6 +5,7 @@ import path from 'path';
 import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import { ContractState } from '../src/warpDiscordBot/types/types';
 import { LoggerFactory, Warp, WarpFactory, Contract } from 'warp-contracts';
+import { timeLog } from 'console';
 
 jest.setTimeout(30000);
 
@@ -54,6 +55,10 @@ describe('Testing warpDiscordBot contract', () => {
       boosts: {},
       admins: ['asia'],
       seasons: {},
+      reactions: {
+        max: 5,
+        timeLagInSeconds: 50,
+      },
     };
 
     contractSrc = fs.readFileSync(path.join(__dirname, '../dist/warpDiscordBot/warpDiscordBotContract.js'), 'utf8');
@@ -206,7 +211,7 @@ describe('Testing warpDiscordBot contract', () => {
   it('should not add message with no content', async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addMessage', id: 'asia', messageId: '1', roles: ['admin'] },
+        { function: 'addMessage', userId: 'asia', messageId: '1', roles: ['admin'] },
         { strict: true }
       )
     ).rejects.toThrow('content should be provided.');
@@ -218,13 +223,13 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addMessage', content: 'randomContent', messageId: '1', roles: ['admin'] },
         { strict: true }
       )
-    ).rejects.toThrow(`id should be provided.`);
+    ).rejects.toThrow(`userId should be provided.`);
   });
 
   it('should not add message with no messageId', async () => {
     await expect(
       contract.writeInteraction(
-        { function: 'addMessage', content: 'randomContent', id: 'asia', roles: ['admin'] },
+        { function: 'addMessage', content: 'randomContent', userId: 'asia', roles: ['admin'] },
         { strict: true }
       )
     ).rejects.toThrow(`messageId should be provided.`);
@@ -233,7 +238,7 @@ describe('Testing warpDiscordBot contract', () => {
   it('should properly add message', async () => {
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       content: 'randomContent',
       messageId: '1',
       roles: ['admin'],
@@ -254,7 +259,7 @@ describe('Testing warpDiscordBot contract', () => {
   it('should properly add second message', async () => {
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       messageId: '2',
       content: 'randomContent',
       roles: ['admin'],
@@ -275,7 +280,7 @@ describe('Testing warpDiscordBot contract', () => {
   it('should properly add second user message', async () => {
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'tomek',
+      userId: 'tomek',
       content: 'randomContent',
       messageId: '3',
       roles: ['admin'],
@@ -298,7 +303,7 @@ describe('Testing warpDiscordBot contract', () => {
       function: 'addReaction',
       userId: 'asia',
       messageId: '123',
-      emoji: 'hearthpulse',
+      emojiId: 'hearthpulse',
       roles: ['admin'],
     });
     const counter = (
@@ -386,7 +391,7 @@ describe('Testing warpDiscordBot contract', () => {
       function: 'removeReaction',
       userId: 'asia',
       messageId: '123',
-      emoji: 'hearthpulse',
+      emojiId: 'hearthpulse',
     });
 
     const balance = (
@@ -759,7 +764,7 @@ describe('Testing warpDiscordBot contract', () => {
     });
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       content: 'randomContent',
       messageId: '66',
       roles: ['admin'],
@@ -789,7 +794,7 @@ describe('Testing warpDiscordBot contract', () => {
       function: 'addReaction',
       userId: 'asia',
       messageId: '1234',
-      emoji: 'hearthpulse',
+      emojiId: 'hearthpulse',
       roles: ['admin'],
     });
 
@@ -842,7 +847,7 @@ describe('Testing warpDiscordBot contract', () => {
       function: 'removeReaction',
       userId: 'asia',
       messageId: '1234',
-      emoji: 'hearthpulse',
+      emojiId: 'hearthpulse',
     });
 
     const balance = (
@@ -878,13 +883,13 @@ describe('Testing warpDiscordBot contract', () => {
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
-      messageId: '123',
-      emoji: 'hearthpulse',
+      messageId: '12345',
+      emojiId: 'hearthpulse',
       roles: ['admin'],
     });
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       content: 'randomContent',
       messageId: '77',
       roles: ['admin'],
@@ -1150,7 +1155,7 @@ describe('Testing warpDiscordBot contract', () => {
     });
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       messageId: '55',
       content: 'randomContent',
       roles: ['admin'],
@@ -1180,8 +1185,8 @@ describe('Testing warpDiscordBot contract', () => {
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
-      messageId: '123',
-      emoji: 'hearthpulse',
+      messageId: '123456',
+      emojiId: 'hearthpulse',
       roles: ['admin'],
     });
 
@@ -1338,7 +1343,7 @@ describe('Testing warpDiscordBot contract', () => {
     });
     await contract.writeInteraction({
       function: 'addMessage',
-      id: 'asia',
+      userId: 'asia',
       messageId: '00',
       content: 'randomContent',
       roles: ['admin'],
@@ -1368,8 +1373,8 @@ describe('Testing warpDiscordBot contract', () => {
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
-      messageId: '123',
-      emoji: 'hearthpulse',
+      messageId: '1234567',
+      emojiId: 'hearthpulse',
       roles: ['admin'],
     });
 
@@ -1500,5 +1505,77 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).result?.counter;
     expect(counter2.points).toEqual(100 + 1);
+  });
+
+  it('should not allow to send more than maximum number of reactions in specific time lag', async () => {
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    const currentNumberOfReactions = counter.reactions;
+    expect(currentNumberOfReactions).toBe(3);
+    await contract.writeInteraction({
+      function: 'addReaction',
+      userId: 'asia',
+      messageId: '9',
+      emojiId: 'sad',
+      roles: ['admin'],
+    });
+    await contract.writeInteraction({
+      function: 'addReaction',
+      userId: 'asia',
+      messageId: '99',
+      emojiId: 'happy',
+      roles: ['admin'],
+    });
+
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'addReaction',
+          userId: 'asia',
+          messageId: '999',
+          emojiId: 'angry',
+          roles: ['admin'],
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow('User cannot sent more than 5 reactions in 50 seconds.');
+  });
+
+  it('should allow user to send another reaction in specific time lag if last reaction in this time lag has been removed', async () => {
+    await contract.writeInteraction({
+      function: 'removeReaction',
+      userId: 'asia',
+      messageId: '99',
+      emojiId: 'happy',
+    });
+
+    await expect(
+      contract.writeInteraction({
+        function: 'addReaction',
+        userId: 'asia',
+        messageId: '999',
+        emojiId: 'angry',
+        roles: ['admin'],
+      })
+    ).resolves.toBeTruthy();
+
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+    const currentNumberOfReactions = counter.reactions;
+    expect(currentNumberOfReactions).toBe(5);
   });
 });

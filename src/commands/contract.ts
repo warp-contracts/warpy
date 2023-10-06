@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { getServerContractId, warpikIconUrl } from '../utils';
+import { getServerContractId, warpyIconUrl } from '../utils';
 
 export default {
-  data: new SlashCommandBuilder().setName('warpikcontract').setDescription(`Returns server contract's link on SonAr.`),
+  data: new SlashCommandBuilder().setName('contract').setDescription(`Returns server contract's link on SonAr.`),
   async execute(interaction: any) {
     const contractTxId = await getServerContractId(interaction.guildId);
     interaction.reply({
-      content: `Warpik server's contract.`,
+      content: `Warpy server's contract.`,
       tts: true,
       components: [
         {
@@ -28,7 +28,7 @@ export default {
           description: `Click the link to view this server's contract info, all the interactions and current state.`,
           color: 0xdd72cb,
           thumbnail: {
-            url: warpikIconUrl,
+            url: warpyIconUrl,
             height: 0,
             width: 0,
           },
