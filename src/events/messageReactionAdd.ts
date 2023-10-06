@@ -24,7 +24,7 @@ export default {
           userId: user.id,
           roles: reactionOrigin.message.member?.roles.cache.map((r: any) => r.name),
           messageId: reactionOrigin.message.id,
-          emoji: reactionOrigin.emoji.id,
+          emojiId: reactionOrigin.emoji.id,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-add;${user.id};${reactionOrigin.message.guildId};`)],

@@ -22,7 +22,8 @@ export default {
         {
           function: 'removeReaction',
           userId: user.id,
-          roles: reactionOrigin.message.member?.roles.cache.map((r: any) => r.name),
+          messageId: reactionOrigin.message.id,
+          emojiId: reactionOrigin.emoji.id,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-delete;${user.id};${reactionOrigin.message.guildId};`)],
