@@ -13,14 +13,11 @@ export default {
     try {
       balances = (await getStateFromDre(contract.txId())).state.balances;
       const balancesArray: [string, number][] = Object.entries(balances);
-      console.log(balancesArray);
-      const balancesSortedLong = balancesArray.sort((a, b) => Number(b[1]) - Number(a[1]));
-      console.log(balancesSortedLong);
-      const balancesSorted = balancesSortedLong.slice(0, 10);
-      console.log(balancesSorted);
+      const balancesArraySorted = balancesArray.sort((a, b) => Number(b[1]) - Number(a[1]));
+      const balancesArraySortedSliced = balancesArraySorted.slice(0, 10);
 
       const rankingArray: any = await Promise.all(
-        balancesSorted.map(async (b) => {
+        balancesArraySortedSliced.map(async (b) => {
           try {
             const result = await getStateFromDre(contract.txId());
             const userId = Object.keys(result.state.users).find((key) => result.state.users[key] === b[0]);
