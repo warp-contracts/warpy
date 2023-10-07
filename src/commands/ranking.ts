@@ -14,7 +14,9 @@ export default {
       balances = (await getStateFromDre(contract.txId())).state.balances;
       const balancesArray: [string, number][] = Object.entries(balances);
       console.log(balancesArray);
-      const balancesSorted = balancesArray.sort((a, b) => Number(a[1]) - Number(b[1])).slice(0 - 10);
+      const balances = balancesArray.sort((a, b) => Number(b[1]) - Number(a[1]));
+      console.log(balances);
+      const balancesSorted = balances.slice(0, 10);
       console.log(balancesSorted);
 
       const rankingArray: any = await Promise.all(
