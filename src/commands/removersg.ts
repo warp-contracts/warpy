@@ -28,6 +28,7 @@ export default {
     const rsg = interaction.options.getInteger('rsg');
     if (isNaN(Number(rsg))) {
       await interaction.reply('Incorrect number of RSG.');
+      return;
     }
     const adminId = interaction.user.id;
     const user = interaction.options.getString('user');

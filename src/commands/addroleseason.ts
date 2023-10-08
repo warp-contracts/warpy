@@ -46,6 +46,7 @@ export default {
 
     if (isNaN(Number(boostValue))) {
       await interaction.reply('Incorrect boost value.');
+      return;
     }
     const { originalTxId } = (await contract.writeInteraction({
       function: 'addSeasonToRole',

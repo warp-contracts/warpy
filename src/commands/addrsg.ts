@@ -27,6 +27,7 @@ export default {
 
     if (isNaN(Number(interaction.options.getInteger('rsg')))) {
       await interaction.reply('Incorrect number of RSG.');
+      return;
     }
     const user = interaction.options.getString('user');
     const userId = user.replace(/[<>@]/g, '');

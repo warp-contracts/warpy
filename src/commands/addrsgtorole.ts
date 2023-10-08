@@ -31,6 +31,7 @@ export default {
     const role = interaction.options.getString('role');
     if (isNaN(Number(rsg))) {
       await interaction.reply('Incorrect number of RSG.');
+      return;
     }
     const roleManager = interaction.guild.roles.cache.find((r: any) => r.name === role);
     const members = roleManager.members.map((member: any) => ({

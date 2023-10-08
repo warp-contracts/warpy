@@ -20,6 +20,7 @@ export default {
 
     if (address.length == 0) {
       await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      return;
     }
 
     let balance: string;
