@@ -84,7 +84,7 @@ export const errorEmbed = (errorMessage: string) => {
     embeds: [
       {
         type: 'rich',
-        color: 0xdd72cb,
+        color: 0x6c8cfd,
         fields: [
           {
             name: `Reason for error`,

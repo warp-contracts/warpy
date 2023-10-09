@@ -79,7 +79,7 @@ export default {
         {
           type: 'rich',
           description: `Admins decided to award you with some extra RSG. Here you can find info about awarded RSG and your current balance. Check out interaction to see more details.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           fields: [
             {
               name: `RSG awarded`,

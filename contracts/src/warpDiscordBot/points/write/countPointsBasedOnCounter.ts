@@ -24,9 +24,10 @@ export const countPointsBasedOnCounter = async (
       points,
     };
 
-    counter = counterObj;
+    state.counter[users[i]] = counterObj;
 
-    addTokensBalance(state, users[i], points);
+    const address = state.users[users[i]];
+    state.balances[address] = points;
   }
 
   return { state };

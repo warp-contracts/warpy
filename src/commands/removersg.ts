@@ -81,7 +81,7 @@ export default {
         {
           type: 'rich',
           description: `Admins decided to subtract some RSG from your balance.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           fields: [
             {
               name: `RSG subtracted`,

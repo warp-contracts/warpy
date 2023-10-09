@@ -53,7 +53,7 @@ export default {
         {
           type: 'rich',
           description: `Below is shown number of messages and reactions sent by user along with total RSG collected.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           fields: [
             {
               name: `User`,

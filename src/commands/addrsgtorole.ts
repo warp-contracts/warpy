@@ -75,7 +75,7 @@ export default {
         {
           type: 'rich',
           description: `All users having below role have been rewarded with RSG <:RSG:1131247707017715882>.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           fields: [
             {
               name: `Role`,

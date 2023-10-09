@@ -13,7 +13,7 @@ export default {
         {
           type: 'rich',
           description: `All commands that can be sent to Warpy.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           fields: [
             {
               name: `💼 **/linkwallet**`,

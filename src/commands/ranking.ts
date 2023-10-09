@@ -54,7 +54,7 @@ export default {
           {
             type: 'rich',
             description: `Here is the list of 10 best results on this server.`,
-            color: 0xdd72cb,
+            color: 0x6c8cfd,
             fields,
             thumbnail: {
               url: warpyIconUrl,

@@ -26,7 +26,7 @@ export default {
         {
           type: 'rich',
           description: `Click the link to view this server's contract info, all the interactions and current state.`,
-          color: 0xdd72cb,
+          color: 0x6c8cfd,
           thumbnail: {
             url: warpyIconUrl,
             height: 0,
