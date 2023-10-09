@@ -52,7 +52,7 @@ export default {
     ).result?.counter;
 
     await interaction.reply({
-      content: `Congrats ${user}! You have been rewarded with **RSG** <:RSG:1159789917107400765>.`,
+      content: `Congrats ${user}! You have been rewarded with **RSG** <:RSG:1131247707017715882>.`,
       tts: true,
       components: [
         {
@@ -83,11 +83,11 @@ export default {
           fields: [
             {
               name: `RSG awarded`,
-              value: `${rsg} <:RSG:1159789917107400765>`,
+              value: `${rsg} <:RSG:1131247707017715882>`,
             },
             {
               name: 'Current RSG balance',
-              value: `${counter.points} <:RSG:1159789917107400765>`,
+              value: `${counter.points} <:RSG:1131247707017715882>`,
             },
           ],
           thumbnail: {

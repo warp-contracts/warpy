@@ -85,11 +85,11 @@ export default {
           fields: [
             {
               name: `RSG subtracted`,
-              value: `${rsg} <:RSG:1159789917107400765>`,
+              value: `${rsg} <:RSG:1131247707017715882>`,
             },
             {
               name: 'Current RSG balance',
-              value: `${counter.points} <:RSG:1159789917107400765>`,
+              value: `${counter.points} <:RSG:1131247707017715882>`,
             },
           ],
           thumbnail: {

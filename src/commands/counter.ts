@@ -69,7 +69,7 @@ export default {
             },
             {
               name: `RSG`,
-              value: `${result[0].points} <:RSG:1159789917107400765>`,
+              value: `${result[0].points} <:RSG:1131247707017715882>`,
             },
           ],
           thumbnail: {
