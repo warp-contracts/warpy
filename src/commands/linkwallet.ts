@@ -16,7 +16,7 @@ export default {
     const wallet = interaction.options.getString('address');
     const userId = interaction.user.id;
     if (!isEthWallet(wallet)) {
-      await interaction.reply('Wallet address is not valid.');
+      await interaction.reply({ content: 'Wallet address is not valid.', ephemeral: true });
       return null;
     }
 
@@ -24,12 +24,12 @@ export default {
     try {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
       return;
     }
 
     if (address.length > 0) {
-      await interaction.reply('User already registered.');
+      await interaction.reply({ content: 'User already registered.', ephemeral: true });
       return null;
     }
 
@@ -44,7 +44,7 @@ export default {
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.reply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
       return;
     }
 
@@ -100,6 +100,7 @@ export default {
           timestamp: new Date().toISOString(),
         },
       ],
+      ephemeral: true,
     });
   },
 };

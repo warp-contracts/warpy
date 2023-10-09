@@ -23,9 +23,11 @@ export const removePoints = async (state: ContractState, { input }: ContractActi
     if (!noBoost) {
       boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
     }
+
+    const pointsAfterSubtraction = counter.points - boostsPoints;
     const counterObj = {
       ...counter,
-      points: counter.points - boostsPoints,
+      points: pointsAfterSubtraction >= 0 ? pointsAfterSubtraction : 0,
     };
     state.counter[id] = counterObj;
 

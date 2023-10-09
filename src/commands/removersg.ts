@@ -43,16 +43,6 @@ export default {
       ...(noBoost && { noBoost }),
     })) as WriteInteractionResponse;
 
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: userId,
-      })
-    ).result?.counter;
-
     await interaction.reply({
       content: `RSG have been subtracted from ${user} balance.`,
       tts: true,
@@ -86,10 +76,6 @@ export default {
             {
               name: `RSG subtracted`,
               value: `${rsg} <:RSG:1131247707017715882>`,
-            },
-            {
-              name: 'Current RSG balance',
-              value: `${counter.points} <:RSG:1131247707017715882>`,
             },
           ],
           thumbnail: {

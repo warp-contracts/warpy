@@ -61,15 +61,15 @@ export default {
             },
             {
               name: `Messages`,
-              value: `${result[0].messages || 0}`,
+              value: `${result[0]?.messages || 0}`,
             },
             {
               name: `Reactions`,
-              value: `${result[0].reactions || 0}`,
+              value: `${result[0]?.reactions || 0}`,
             },
             {
               name: `RSG`,
-              value: `${result[0].points} <:RSG:1131247707017715882>`,
+              value: `${result[0]?.points} <:RSG:1131247707017715882>`,
             },
           ],
           thumbnail: {

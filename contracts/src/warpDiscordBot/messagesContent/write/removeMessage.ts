@@ -45,7 +45,7 @@ export const subtractTokensBalance = (state: ContractState, id: string, boostsPo
   const address = state.users[id];
   if (address) {
     const tokens = state.balances[address];
-
-    state.balances[address] = tokens - boostsPoints;
+    const pointsAfterSubtraction = tokens - boostsPoints;
+    state.balances[address] = pointsAfterSubtraction >= 0 ? pointsAfterSubtraction : 0;
   }
 };
