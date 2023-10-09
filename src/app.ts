@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { Client, Collection, Events, IntentsBitField, Partials } from 'discord.js';
-import { connectToServersContract, initializeWarp, readWallet } from './utils';
+import { initializeWarp, readWallet } from './utils';
 import { LoggerFactory } from 'warp-contracts';
 import path from 'path';
 import fs from 'fs';
@@ -21,7 +21,7 @@ async function main() {
   const wallet = readWallet();
   LoggerFactory.INST.logLevel('error');
   const warp = initializeWarp();
-  const serversContract = connectToServersContract(warp, wallet);
+  // const serversContract = connectToServersContract(warp, wallet);
 
   client.commands = new Collection();
 
@@ -73,11 +73,11 @@ async function main() {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
       } else if (event.default.name == 'messageReactionRemove') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
-      } else if (event.default.name == 'guildCreate') {
-        client.on(
-          event.default.name,
-          async (...args) => await event.default.execute(...args, warp, wallet, serversContract)
-        );
+        // } else if (event.default.name == 'guildCreate') {
+        // client.on(
+        //   event.default.name,
+        //   async (...args) => await event.default.execute(...args, warp, wallet, serversContract)
+        // );
       }
     }
   }
