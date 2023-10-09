@@ -299,11 +299,13 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly add reaction', async () => {
+    const emoji = '🫡';
+    let updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
       messageId: '123',
-      emojiId: 'hearthpulse',
+      emojiId: updated,
       roles: ['admin'],
     });
     const counter = (
@@ -387,11 +389,14 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should properly remove reaction', async () => {
+    const emoji = '🫡';
+    const updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
+
     await contract.writeInteraction({
       function: 'removeReaction',
       userId: 'asia',
       messageId: '123',
-      emojiId: 'hearthpulse',
+      emojiId: updated,
     });
 
     const balance = (
@@ -790,11 +795,14 @@ describe('Testing warpDiscordBot contract', () => {
   });
 
   it('should correctly calculate points based on boost - reaction', async () => {
+    const emoji = ':RSG';
+    const updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
+
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
       messageId: '1234',
-      emojiId: 'hearthpulse',
+      emojiId: updated,
       roles: ['admin'],
     });
 
@@ -842,12 +850,29 @@ describe('Testing warpDiscordBot contract', () => {
     expect(counter.points).toEqual(160);
   });
 
+  it('should throw when removing non-existing', async () => {
+    await expect(
+      contract.writeInteraction(
+        {
+          function: 'removeReaction',
+          userId: 'asia',
+          messageId: '1234',
+          emojiId: ':TEST:RSG:',
+        },
+        { strict: true }
+      )
+    ).rejects.toThrow('Reaction not found.');
+  });
+
   it('should properly remove reaction', async () => {
+    const emoji = ':RSG';
+    const updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
+
     await contract.writeInteraction({
       function: 'removeReaction',
       userId: 'asia',
       messageId: '1234',
-      emojiId: 'hearthpulse',
+      emojiId: updated,
     });
 
     const balance = (
@@ -1553,7 +1578,7 @@ describe('Testing warpDiscordBot contract', () => {
       function: 'removeReaction',
       userId: 'asia',
       messageId: '99',
-      emojiId: 'happy',
+      emojiId: '🫡',
     });
 
     await expect(
@@ -1577,5 +1602,51 @@ describe('Testing warpDiscordBot contract', () => {
     ).result?.counter;
     const currentNumberOfReactions = counter.reactions;
     expect(currentNumberOfReactions).toBe(5);
+  });
+
+  it('should correctly recalculate points', async () => {
+    const counter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+
+    const counterPoints = counter.points;
+    console.log(counterPoints);
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    console.log(balance);
+
+    await contract.writeInteraction({ function: 'countPointsBasedOnCounter', adminId: 'asia' });
+
+    const recalculatedCounter = (
+      await contract.viewState<
+        { function: string; id: string },
+        { counter: { messages: number; reactions: number; points: number } }
+      >({
+        function: 'getCounter',
+        id: 'asia',
+      })
+    ).result?.counter;
+
+    const recalculatedCounterPoints = recalculatedCounter.points;
+    expect(recalculatedCounterPoints).toEqual(counterPoints);
+    const recalculatedBalance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(recalculatedBalance).toEqual(balance);
   });
 });

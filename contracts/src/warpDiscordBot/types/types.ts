@@ -132,7 +132,8 @@ export type ContractFunction =
   | 'removeAdmin'
   | 'addSeason'
   | 'addSeasonToRole'
-  | 'addPointsToMultipleMembers';
+  | 'addPointsToMultipleMembers'
+  | 'countPointsBasedOnCounter';
 
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 

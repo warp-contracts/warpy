@@ -22,6 +22,7 @@ import { removePoints } from './points/write/removePoints';
 import { addSeason } from './seasons/write/addSeason';
 import { addSeasonToRole } from './seasons/write/addSeasonToRole';
 import { addPoints } from './points/write/addPoints';
+import { countPointsBasedOnCounter } from './points/write/countPointsBasedOnCounter';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -77,6 +78,8 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await addSeason(state, action);
     case 'addSeasonToRole':
       return await addSeasonToRole(state, action);
+    case 'countPointsBasedOnCounter':
+      return await countPointsBasedOnCounter(state, action);
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
   }

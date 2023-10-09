@@ -18,12 +18,13 @@ export default {
       } catch (e) {
         return;
       }
+      const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
       await contract.writeInteraction(
         {
           function: 'removeReaction',
           userId: user.id,
           messageId: reactionOrigin.message.id,
-          emojiId: reactionOrigin.emoji.name,
+          emojiId,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-delete;${user.id};${reactionOrigin.message.guildId};`)],

@@ -21,13 +21,17 @@ export default {
       const guild = user.client.guilds.cache.get(reactionOrigin.message.guildId);
       const member = guild?.members.cache.get(user.id);
       const roles = member?.roles.cache.map((r: any) => r.name);
+      const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) =>
+        m.codePointAt(0).toString(16)
+      );
+
       await contract.writeInteraction(
         {
           function: 'addReaction',
           userId: user.id,
           roles,
           messageId: reactionOrigin.message.id,
-          emojiId: reactionOrigin.emoji.name,
+          emojiId,
         },
         {
           tags: [new Tag('Indexed-By', `reaction-add;${user.id};${reactionOrigin.message.guildId};`)],

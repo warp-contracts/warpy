@@ -20,6 +20,11 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
 
   const boostsPointsValue = [...boostsPoints.values()][0];
   const boostsPointsKey = [...boostsPoints.keys()][0];
+
+  if (boostsPoints.size == 0) {
+    throw new ContractError('Reaction not found.');
+  }
+
   await SmartWeave.kv.del(boostsPointsKey);
   await SmartWeave.kv.put(`${removedReactionsPrefix}${userId}_${emojiId}_${messageId}`, 'removed');
 
