@@ -4,7 +4,7 @@ import { warpyIconUrl } from '../utils';
 export default {
   data: new SlashCommandBuilder().setName('help').setDescription(`Displays list of possible commands.`),
   async execute(interaction: any) {
-    interaction.channel.sendTyping();
+    // interaction.channel.sendTyping();
 
     await interaction.reply({
       content: `Warpy commands.`,

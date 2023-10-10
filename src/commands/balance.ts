@@ -5,7 +5,7 @@ import { Warp } from 'warp-contracts';
 export default {
   data: new SlashCommandBuilder().setName('balance').setDescription(`Returns balance for the given wallet address.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    interaction.channel.sendTyping();
+    // interaction.channel.sendTyping();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 
     let address: string | [];

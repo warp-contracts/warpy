@@ -7,7 +7,7 @@ export default {
     .setName('counter')
     .setDescription(`Returns number of user's RSG, messages and interactions.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    interaction.channel.sendTyping();
+    // interaction.channel.sendTyping();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const userId = interaction.user.id;
     let address: string | [];

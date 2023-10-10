@@ -11,7 +11,7 @@ export default {
     ),
   async execute(interaction: any, warp: Warp, warpWallet: any) {
     const contract = await connectToServerContract(warp, warpWallet, interaction.guildId);
-    interaction.channel.sendTyping();
+    // interaction.channel.sendTyping();
 
     const wallet = interaction.options.getString('address');
     const userId = interaction.user.id;
