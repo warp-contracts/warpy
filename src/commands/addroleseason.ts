@@ -59,11 +59,6 @@ export default {
       adminId,
     })) as WriteInteractionResponse;
 
-    let date = new Date(from * 1000);
-    const offset = date.getTimezoneOffset(); // Returns the offset in minutes
-    date = new Date(date.getTime() + offset * 60 * 1000); // Adds the offset in milliseconds
-    console.log(date.toLocaleString());
-
     await interaction.reply({
       content: `Role season added.`,
       tts: true,
@@ -104,11 +99,11 @@ export default {
             },
             {
               name: `From`,
-              value: new Date(from * 1000).toISOString(),
+              value: `<t:${from}>`,
             },
             {
               name: `To`,
-              value: new Date(to * 1000).toISOString(),
+              value: `<t:${to}>`,
             },
           ],
           thumbnail: {
