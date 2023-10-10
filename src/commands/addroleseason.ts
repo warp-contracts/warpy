@@ -41,7 +41,8 @@ export default {
     const from = interaction.options.getInteger('from');
     const to = interaction.options.getInteger('to');
     const boostValue = interaction.options.getInteger('boostvalue');
-    const role = interaction.options.getString('role');
+    const roleId = interaction.options.getString('role');
+    const role = interaction.guild.roles.cache.find((r: any) => r.id == roleId.replace(/[<>@&]/g, '')).name;
     const adminId = interaction.user.id;
 
     if (isNaN(Number(boostValue))) {
@@ -86,7 +87,7 @@ export default {
       embeds: [
         {
           type: 'rich',
-          description: `New role season: **${name}** for role: **${role}** has been set.`,
+          description: `New role season: **${name}** for role: **${roleId}** has been set.`,
           color: 0x6c8cfd,
           fields: [
             {
