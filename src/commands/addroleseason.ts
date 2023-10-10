@@ -99,11 +99,11 @@ export default {
             },
             {
               name: `From`,
-              value: new Date(from * 1000).toLocaleString(),
+              value: new Date(from * 1000).toISOString(),
             },
             {
               name: `To`,
-              value: new Date(to * 1000).toLocaleString(),
+              value: new Date(to * 1000).toISOString(),
             },
           ],
           thumbnail: {
