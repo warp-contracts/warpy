@@ -1,5 +1,13 @@
 # Warpy Discord Bot
 
+Warpy is a transparent, cost-effective, onchain Points System designed to enhance engagement on the web3-related community Discord server.
+
+- **Transparency**: everyone can verify the point calculation for any account
+- **Economic Viability**: low data storage costs, even on a decentralized layer
+- **Onchain Integrity**: ensures equal access to information and tech stack for all
+
+Built on [Warp Contracts](https://github.com/warp-contracts), a smart contract SDK on [Arweave](https://www.arweave.org), and integrating with Discord's development tools, Warpy makes it feasible to uphold a fully transparent and cost-effective onchain Points System that seamlessly merges with the leading community platform.
+
 Here's the repo for our app and the Warpy Discord Bot, set to pilot on the [*RedStone Oracles Discord Community*](https://discord.com/invite/PVxBZKFr46).
 
 ## Warpy’s infrastructure
