@@ -4,8 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import * as ethers from 'ethers';
 import { Message } from 'discord.js';
+import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 
-const SERVERS_CONTRACT = 'ESC8nqUQB6yFPtZJ1homWzsA1CXzcWTkp3mvvwcNikU';
+const SERVERS_CONTRACT = 'Jz3hDK_UAthQQCH-Asc6-X2_F7IDHIR9J0cbHZAy8Ec';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
@@ -27,7 +28,7 @@ export async function getServerContractId(serverId: string | null) {
   }
 }
 export function initializeWarp(): Warp {
-  return WarpFactory.forMainnet().use(new DeployPlugin());
+  return WarpFactory.forMainnet().use(new DeployPlugin()).use(new VRFPlugin());
 }
 
 export function connectToServersContract(warp: Warp, wallet: JWKInterface) {
@@ -39,22 +40,28 @@ export function readWallet() {
 }
 
 export async function getStateFromDre(contractId: string, propertyToGet?: string, id?: string) {
+  const dreWarpy = `dre-warpy`;
   const dre1 = `dre-1`;
   const dre3 = `dre-3`;
   const dre5 = `dre-5`;
   try {
-    const response = await fetchDre(dre1, contractId, propertyToGet, id);
+    const response = await fetchDre(dreWarpy, contractId, propertyToGet, id);
     return response;
   } catch (e) {
     try {
-      const response = await fetchDre(dre3, contractId, propertyToGet, id);
+      const response = await fetchDre(dre1, contractId, propertyToGet, id);
       return response;
     } catch (e) {
       try {
-        const response = await fetchDre(dre5, contractId, propertyToGet, id);
+        const response = await fetchDre(dre3, contractId, propertyToGet, id);
         return response;
       } catch (e) {
-        throw new Error(`Could not load state from DRE nodes.`);
+        try {
+          const response = await fetchDre(dre5, contractId, propertyToGet, id);
+          return response;
+        } catch (e) {
+          throw new Error(`Could not load state from DRE nodes.`);
+        }
       }
     }
   }

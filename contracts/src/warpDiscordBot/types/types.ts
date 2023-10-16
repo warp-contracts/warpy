@@ -35,6 +35,10 @@ export interface ContractState {
     max: number;
     timeLagInSeconds: number;
   };
+  divisibility: number;
+  rouletteEntry: number;
+  roulettePicks?: WeightedOption[];
+  rouletteOn: boolean;
 }
 
 export interface Season {
@@ -72,7 +76,21 @@ export interface BoostResult {
   boost: number;
 }
 
-export type ContractReadResult = NameServiceResult | MessagesContentResult | PstResult | BoostResult;
+export interface RoulettePickResult {
+  pick: number;
+}
+
+export interface RouletteSwitchResult {
+  rouletteSwitch: boolean;
+}
+
+export type ContractReadResult =
+  | NameServiceResult
+  | MessagesContentResult
+  | PstResult
+  | BoostResult
+  | RoulettePickResult
+  | RouletteSwitchResult;
 
 export interface ContractInput {
   function: ContractFunction;
@@ -105,6 +123,13 @@ export interface ContractInput {
   members: { id: string; roles: string[] }[];
   userId: string;
   emojiId: string;
+  roulettePicks: WeightedOption[];
+  interactionId: string;
+}
+
+export interface WeightedOption {
+  value: number;
+  weight: number;
 }
 
 export type ContractFunction =
@@ -133,7 +158,12 @@ export type ContractFunction =
   | 'addSeason'
   | 'addSeasonToRole'
   | 'addPointsToMultipleMembers'
-  | 'countPointsBasedOnCounter';
+  | 'countPointsBasedOnCounter'
+  | 'playRoulette'
+  | 'switchRoulette'
+  | 'addRoulettePicks'
+  | 'getRoulettePick'
+  | 'getRouletteSwitch';
 
 export type ContractResult = { state: ContractState } | { result: ContractReadResult };
 
@@ -145,3 +175,4 @@ export const usersPrefix = `users.`;
 export const pointsPrefix = `points.`;
 export const timePrefix = `time.`;
 export const removedReactionsPrefix = `removedReactions.`;
+export const roulettePrefix = `roulette.`;

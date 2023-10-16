@@ -1,3 +1,5 @@
+import { ContractAction, ContractState } from './warpDiscordBot/types/types';
+
 export const validateString = (input: any, argumentName: string) => {
   if (typeof input[argumentName] != 'string') {
     throw new ContractError(`${argumentName} should be of type 'string'.`);
@@ -26,3 +28,9 @@ export const validateTxId = (txId: string) => {
 };
 
 export const LAST_HOUR_BLOCKS = 30;
+
+export const validateOwnerFunction = (state: ContractState, action: ContractAction) => {
+  if (!state.owners.includes(action.caller)) {
+    throw new ContractError(`Only owner of the contract can perform interactions.`);
+  }
+};

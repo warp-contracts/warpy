@@ -5,32 +5,27 @@ import { Warp } from 'warp-contracts';
 export default {
   data: new SlashCommandBuilder().setName('balance').setDescription(`Returns balance for the given wallet address.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    // interaction.channel.sendTyping();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
+    const contractId = contract.txId();
 
-    let address: string | [];
     const userId = interaction.user.id;
+
+    let response;
     try {
-      address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
+      response = (await getStateFromDre(contractId)).state;
     } catch (e) {
       console.log(e);
       await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
-    if (address.length == 0) {
+    const address = response.users[userId];
+    if (!address) {
       await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
       return;
     }
 
-    let balance: string;
-    try {
-      balance = (await getStateFromDre(contract.txId(), 'balances', address as string)).result;
-    } catch (e) {
-      console.log(e);
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
-      return;
-    }
+    const balance = response.balances[address];
 
     await interaction.reply({
       content: `User's tokens balance.`,
@@ -42,7 +37,7 @@ export default {
             {
               style: 5,
               label: `Check out contract state`,
-              url: `https://sonar.warp.cc/#/app/contract/${contract.txId()}?network=mainnet#current-state`,
+              url: `https://sonar.warp.cc/#/app/contract/${contractId}?network=mainnet#current-state`,
               disabled: false,
               type: 2,
             },
@@ -60,7 +55,7 @@ export default {
             },
             {
               name: `Tokens balance`,
-              value: `${balance.length > 0 ? balance : 0}`,
+              value: `${balance || 0}`,
             },
           ],
           thumbnail: {

@@ -35,6 +35,7 @@
   "dependencies": {
     "warp-contracts": "^1.4.8",
     "warp-contracts-lmdb": "^1.1.10",
-    "warp-contracts-plugin-deploy": "^1.0.8"
+    "warp-contracts-plugin-deploy": "^1.0.8",
+    "warp-contracts-plugin-vrf": "^1.0.4"
   }
 }

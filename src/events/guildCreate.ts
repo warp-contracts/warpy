@@ -1,13 +1,21 @@
 import { Guild } from 'discord.js';
 import { Tag, Warp } from 'warp-contracts';
 import { ArweaveSigner } from 'warp-contracts-plugin-deploy';
+import { getStateFromDre } from '../utils';
 
-const BOT_CONTRACT_SRC = 'q6uux2HImYsjHH3bBqYTpcGbG4qrfD5zctkLOgDnRFU';
+const BOT_CONTRACT_SRC = 'Mp2I319hteB4UxLldiHuv9QRa1QJ9LwDjkT6BDVtFGU';
 
 export default {
   name: 'guildCreate',
   async execute(guild: Guild, warp: Warp, wallet: any, serversContract: any) {
     const walletAddress = await warp.arweave.wallets.jwkToAddress(wallet);
+    let response;
+    try {
+      const contractId = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
+      response = (await getStateFromDre(contractId)).state;
+    } catch (e) {
+      console.log(e);
+    }
     const { contractTxId } = await warp.deployFromSourceTx({
       wallet: new ArweaveSigner(wallet),
       srcTxId: BOT_CONTRACT_SRC,
@@ -23,10 +31,9 @@ export default {
         name: `${guild.name} PST`,
         messagesTokenWeight: 10,
         reactionsTokenWeight: 1,
-        balances: {},
-        messages: {},
-        users: {},
-        counter: {},
+        balances: response.balances,
+        users: response.users,
+        counter: response.counter,
         boosts: {},
         admins: ['304935610089734150', '769844280767807520'],
         seasons: {},
@@ -34,6 +41,34 @@ export default {
           max: 10,
           timeLagInSeconds: 3600,
         },
+        roulettePicks: [
+          {
+            value: 1,
+            weight: 400,
+          },
+          {
+            value: 250,
+            weight: 270,
+          },
+          {
+            value: 500,
+            weight: 200,
+          },
+          {
+            value: 1000,
+            weight: 95,
+          },
+          {
+            value: 10000,
+            weight: 25,
+          },
+          {
+            value: 100000,
+            weight: 10,
+          },
+        ],
+        rouletteOn: false,
+        rouletteEntry: 500,
       }),
       evaluationManifest: {
         evaluationOptions: {
