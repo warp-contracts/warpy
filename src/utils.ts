@@ -46,10 +46,8 @@ export async function getStateFromDre(contractId: string, propertyToGet?: string
   const dre5 = `dre-5`;
   try {
     const response = await fetchDre(dreWarpy, contractId, propertyToGet, id);
-    console.log(response);
     return response;
   } catch (e) {
-    console.log(e);
     try {
       const response = await fetchDre(dre1, contractId, propertyToGet, id);
       return response;
