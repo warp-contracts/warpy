@@ -6,7 +6,7 @@ import * as ethers from 'ethers';
 import { Message } from 'discord.js';
 import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 
-const SERVERS_CONTRACT = 'Jz3hDK_UAthQQCH-Asc6-X2_F7IDHIR9J0cbHZAy8Ec';
+const SERVERS_CONTRACT = 'ESC8nqUQB6yFPtZJ1homWzsA1CXzcWTkp3mvvwcNikU';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
