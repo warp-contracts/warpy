@@ -556,6 +556,11 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@fastify/busboy@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.0.0.tgz#f22824caff3ae506b18207bad4126dbc6ccdb6b8"
+  integrity sha512-JUFJad5lv7jxj926GPgymrWQxxjPYuJNiNjNMzqT+HiuP6Vl3dk5xzG+8sTX96np0ZAluvaMzPsjhHZ5rNuNQQ==
+
 "@gar/promisify@^1.0.1":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
@@ -1758,6 +1763,16 @@ arweave@1.13.7, arweave@^1.10.13, arweave@^1.10.5, arweave@^1.11.4:
   version "1.13.7"
   resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.13.7.tgz#cda8534c833baec372a7052c61f53b4e39a886d7"
   integrity sha512-Hv+x2bSI6UyBHpuVbUDMMpMje1ETfpJWj52kKfz44O0IqDRi/LukOkkDUptup1p6OT6KP1/DdpnUnsNHoskFeA==
+  dependencies:
+    arconnect "^0.4.2"
+    asn1.js "^5.4.1"
+    base64-js "^1.5.1"
+    bignumber.js "^9.0.2"
+
+arweave@^1.13.7:
+  version "1.14.4"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.14.4.tgz#5ba22136aa0e7fd9495258a3931fb770c9d6bf21"
+  integrity sha512-tmqU9fug8XAmFETYwgUhLaD3WKav5DaM4p1vgJpEj/Px2ORPPMikwnSySlFymmL2qgRh2ZBcZsg11+RXPPGLsA==
   dependencies:
     arconnect "^0.4.2"
     asn1.js "^5.4.1"
@@ -6023,6 +6038,13 @@ undici@5.22.1, undici@^5.8.0:
   dependencies:
     busboy "^1.6.0"
 
+undici@^5.19.1:
+  version "5.26.3"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.26.3.tgz#ab3527b3d5bb25b12f898dfd22165d472dd71b79"
+  integrity sha512-H7n2zmKEWgOllKkIUkLvFmsJQj062lSm3uA4EYApG8gLuiOM0/go9bIoC3HVaSnfg4xunowDE2i9p8drkXuvDw==
+  dependencies:
+    "@fastify/busboy" "^2.0.0"
+
 unique-filename@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unique-filename/-/unique-filename-1.1.1.tgz#1d69769369ada0583103a1e6ae87681b56573230"
@@ -6120,6 +6142,16 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
+warp-arbundles@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/warp-arbundles/-/warp-arbundles-1.0.4.tgz#10c0cd662ab41b0dabad9159c7110f43425cc5cc"
+  integrity sha512-KeRac/EJ7VOK+v5+PSMh2SrzpCKOAFnJICLlqZWt6qPkDCzVwcrNE5wFxOlEk5U170ewMDAB3e86UHUblevXpw==
+  dependencies:
+    arweave "^1.13.7"
+    base64url "^3.0.1"
+    buffer "^6.0.3"
+    warp-isomorphic "^1.0.7"
+
 warp-contracts-lmdb@^1.1.10:
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/warp-contracts-lmdb/-/warp-contracts-lmdb-1.1.10.tgz#f81f85c36bc7c5afdfa7aab897187051acf7479f"
@@ -6144,10 +6176,10 @@ warp-contracts-plugin-vrf@^1.0.4:
     "@idena/vrf-js" "^1.0.1"
     elliptic "^6.5.4"
 
-warp-contracts@^1.4.8:
-  version "1.4.8"
-  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.8.tgz#33a049b321f1769011ee1aa5214015f0e8458420"
-  integrity sha512-FzSVIp4rp7BboC3F7ir1KRhtpMDlCjHqJLIRTOnu6z3d2F1jaapmi+BHcuJ1soMww4tRFuoVz3qzY800o4k/Sw==
+warp-contracts@1.4.20-beta.1:
+  version "1.4.20-beta.1"
+  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.20-beta.1.tgz#2de722722803ea6642cb79a90208f9ab0a4a083d"
+  integrity sha512-UDkzz4ef9u7KsbtroihTTZ31BEaj+tDt1dhWiMUFZnH0Dp2hn2w7fURrEtcziUJDxj6VpcdJ+1rT4yXIL3mqRg==
   dependencies:
     archiver "^5.3.0"
     arweave "1.13.7"
@@ -6160,7 +6192,8 @@ warp-contracts@^1.4.8:
     safe-stable-stringify "2.4.1"
     stream-buffers "^3.0.2"
     unzipit "^1.4.0"
-    warp-isomorphic "1.0.4"
+    warp-arbundles "^1.0.4"
+    warp-isomorphic "^1.0.7"
     warp-wasm-metering "1.0.1"
 
 warp-isomorphic@1.0.0:
@@ -6171,13 +6204,13 @@ warp-isomorphic@1.0.0:
     buffer "^6.0.3"
     undici "^5.8.0"
 
-warp-isomorphic@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/warp-isomorphic/-/warp-isomorphic-1.0.4.tgz#1017eba260e0f0228b33b94b9e36a1afe54e09d8"
-  integrity sha512-W77IoLjq/eu5bY1uRrlmVt5lLDoIHeZ0ozJ/j67FTnxvZRXu887biEnom1nx8q1UgOKyJh8eQYFQaE2FLlKhFg==
+warp-isomorphic@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/warp-isomorphic/-/warp-isomorphic-1.0.7.tgz#abf1ee7bce44bec7c6b97547859e614876869aa7"
+  integrity sha512-fXHbUXwdYqPm9fRPz8mjv5ndPco09aMQuTe4kXfymzOq8V6F3DLsg9cIafxvjms9/mc6eijzkLBJ63yjEENEjA==
   dependencies:
     buffer "^6.0.3"
-    undici "^5.8.0"
+    undici "^5.19.1"
 
 warp-wasm-json-toolkit@1.0.2:
   version "1.0.2"

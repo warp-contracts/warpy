@@ -1,5 +1,5 @@
 import { checkArgumentSet, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix } from '../../types/types';
+import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix, rolesPrefix } from '../../types/types';
 
 export const addMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'userId');
@@ -45,8 +45,9 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
   addTokensBalance(state, userId, boostsPoints);
 
   await SmartWeave.kv.put(`${pointsPrefix}${effectiveCaller}`, boostsPoints);
+  await SmartWeave.kv.put(`${rolesPrefix}${effectiveCaller}`, roles);
 
-  return { state };
+  return { state, event: { userId, points: boostsPoints, roles } };
 };
 
 export const addTokensBalance = (state: ContractState, id: string, boostsPoints: number) => {

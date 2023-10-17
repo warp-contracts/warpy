@@ -28,5 +28,5 @@ export const addSeasonToRole = async (state: ContractState, { input }: ContractA
     boost,
     role,
   };
-  return { state };
+  return { state, event: { name, from, to, role } };
 };

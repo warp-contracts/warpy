@@ -1,5 +1,12 @@
 import { checkArgumentSet, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix } from '../../types/types';
+import {
+  ContractAction,
+  ContractState,
+  ContractResult,
+  messagesPrefix,
+  pointsPrefix,
+  rolesPrefix,
+} from '../../types/types';
 
 export const removeMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'userId');
@@ -21,12 +28,20 @@ export const removeMessage = async (state: ContractState, { input }: ContractAct
   const boostsPointsValue = [...boostsPoints.values()][0];
   const boostsPointsKey = [...boostsPoints.keys()][0];
 
+  const roles = await SmartWeave.kv.kvMap({
+    gte: `${rolesPrefix}${userId}_${messageId}`,
+    lt: `${rolesPrefix}${userId}_${messageId}\xff`,
+  });
+  const rolesValue = [...roles.values()][0];
+  const rolesKey = [...roles.keys()][0];
+
   if (message.length == 0) {
     throw new ContractError(`Message not found.`);
   }
 
   await SmartWeave.kv.del(message[0]);
   await SmartWeave.kv.del(boostsPointsKey);
+  await SmartWeave.kv.del(rolesKey);
 
   const counter = state.counter[userId];
   const counterObj = {
@@ -38,7 +53,7 @@ export const removeMessage = async (state: ContractState, { input }: ContractAct
 
   subtractTokensBalance(state, userId, boostsPointsValue);
 
-  return { state };
+  return { state, event: { userId, roles: rolesValue, points: -boostsPointsValue } };
 };
 
 export const subtractTokensBalance = (state: ContractState, id: string, boostsPoints: number) => {

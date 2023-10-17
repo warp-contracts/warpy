@@ -132,6 +132,25 @@ export interface WeightedOption {
   weight: number;
 }
 
+export interface PointsEvent {
+  userId: string;
+  roles: string[];
+  points: number;
+}
+
+export interface BatchPointsEvent {
+  users: PointsEvent[];
+}
+
+export interface SeasonEvent {
+  name: string;
+  from: number;
+  to: number;
+  role?: string;
+}
+
+export type ContractEvent = PointsEvent | BatchPointsEvent | SeasonEvent;
+
 export type ContractFunction =
   | 'addActivity'
   | 'registerUser'
@@ -165,7 +184,7 @@ export type ContractFunction =
   | 'getRoulettePick'
   | 'getRouletteSwitch';
 
-export type ContractResult = { state: ContractState } | { result: ContractReadResult };
+export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 
 export const messagesPrefix = `messages.`;
 export const reactionsPrefix = `reactions.`;
@@ -176,3 +195,4 @@ export const pointsPrefix = `points.`;
 export const timePrefix = `time.`;
 export const removedReactionsPrefix = `removedReactions.`;
 export const roulettePrefix = `roulette.`;
+export const rolesPrefix = `roles.`;

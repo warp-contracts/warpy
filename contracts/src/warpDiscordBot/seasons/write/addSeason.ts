@@ -28,5 +28,5 @@ export const addSeason = async (state: ContractState, { input }: ContractAction)
     to,
     boost,
   };
-  return { state };
+  return { state, event: { name, from, to } };
 };

@@ -6,6 +6,7 @@ import {
   pointsPrefix,
   timePrefix,
   removedReactionsPrefix,
+  rolesPrefix,
 } from '../../types/types';
 import { addTokensBalance, countBoostsPoints } from './addMessage';
 
@@ -54,8 +55,9 @@ export const addReaction = async (state: ContractState, { input }: ContractActio
     `${timePrefix}${userId}_${SmartWeave.block.timestamp}_${emojiId}_${messageId}`,
     `${emojiId}_${messageId}`
   );
+  await SmartWeave.kv.put(`${rolesPrefix}${userId}_${emojiId}_${messageId}_${SmartWeave.block.timestamp}`, roles);
 
-  return { state };
+  return { state, event: { userId, roles, points: boostsPoints } };
 };
 
 const exceedsMaxReactionsInTimeLag = async (state: ContractState, userId: string) => {

@@ -14,6 +14,8 @@ export const addPoints = async (state: ContractState, { input }: ContractAction)
     throw new ContractError(`Only admin can award points.`);
   }
 
+  const addPointsEvent: { userId: string; points: number; roles: string[] }[] = [];
+
   for (let i = 0; i < members.length; i++) {
     const id = members[i].id;
     const roles = members[i].roles;
@@ -38,7 +40,8 @@ export const addPoints = async (state: ContractState, { input }: ContractAction)
     state.counter[id] = counterObj;
 
     addTokensBalance(state, id, boostsPoints);
+    addPointsEvent.push({ userId: id, points: boostsPoints, roles });
   }
 
-  return { state };
+  return { state, event: { users: addPointsEvent } };
 };

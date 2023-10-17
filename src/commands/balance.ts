@@ -14,7 +14,6 @@ export default {
     try {
       response = (await getStateFromDre(contractId)).state;
     } catch (e) {
-      console.log(e);
       await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }

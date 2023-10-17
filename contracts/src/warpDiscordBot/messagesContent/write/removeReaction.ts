@@ -1,5 +1,12 @@
 import { checkArgumentSet, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, pointsPrefix, removedReactionsPrefix } from '../../types/types';
+import {
+  ContractAction,
+  ContractState,
+  ContractResult,
+  pointsPrefix,
+  removedReactionsPrefix,
+  rolesPrefix,
+} from '../../types/types';
 import { subtractTokensBalance } from './removeMessage';
 
 export const removeReaction = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
@@ -21,12 +28,20 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
   const boostsPointsValue = [...boostsPoints.values()][0];
   const boostsPointsKey = [...boostsPoints.keys()][0];
 
+  const roles = await SmartWeave.kv.kvMap({
+    gte: `${rolesPrefix}${userId}_${emojiId}_${messageId}`,
+    lt: `${rolesPrefix}${userId}_${emojiId}_${messageId}\xff`,
+  });
+  const rolesValue = [...roles.values()][0];
+  const rolesKey = [...roles.keys()][0];
+
   if (boostsPoints.size == 0) {
     throw new ContractError('Reaction not found.');
   }
 
   await SmartWeave.kv.del(boostsPointsKey);
   await SmartWeave.kv.put(`${removedReactionsPrefix}${userId}_${emojiId}_${messageId}`, 'removed');
+  await SmartWeave.kv.del(rolesKey);
 
   const counterObj = {
     ...counter,
@@ -37,5 +52,5 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
 
   subtractTokensBalance(state, userId, boostsPointsValue);
 
-  return { state };
+  return { state, event: { userId, roles: rolesValue, points: -boostsPointsValue } };
 };

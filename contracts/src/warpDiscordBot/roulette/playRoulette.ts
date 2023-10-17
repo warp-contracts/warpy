@@ -6,6 +6,7 @@ import { ContractAction, ContractResult, ContractState, WeightedOption, roulette
 export const playRoulette = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'userId');
   validateString(input, 'userId');
+  checkArgumentSet(input, 'roles');
   checkArgumentSet(input, 'interactionId');
   validateString(input, 'interactionId');
 
@@ -19,7 +20,7 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
     throw new ContractError('Roulette picks not set.');
   }
 
-  const { userId, interactionId } = input;
+  const { userId, interactionId, roles } = input;
 
   const user = state.users[userId];
   if (!user) {
@@ -45,7 +46,9 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
   state.counter[userId].points += winningOption;
   addTokensBalance(state, userId, winningOption);
 
-  return { state };
+  const rouletteBalance = winningOption - state.rouletteEntry;
+
+  return { state, event: { userId, points: rouletteBalance, roles } };
 };
 
 class WeightedRandomPicker {
