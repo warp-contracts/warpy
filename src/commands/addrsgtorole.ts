@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
-import { Warp, WriteInteractionResponse } from 'warp-contracts';
+import { Warp } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
@@ -16,9 +16,10 @@ export default {
   async execute(interaction: any, warp: Warp, wallet: any) {
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 
+    let response: any;
     try {
-      const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
-      if (!result.includes(interaction.user.id)) {
+      response = (await getStateFromDre(contract.txId())).state;
+      if (!response['admins'].includes(interaction.user.id)) {
         await interaction.reply('Only admin can award RSG.');
         return;
       }
@@ -29,6 +30,7 @@ export default {
 
     const rsg = interaction.options.getInteger('rsg');
     const role = interaction.options.getString('role');
+    const noBoost = interaction.options.getBoolean('noboost');
     if (isNaN(Number(rsg))) {
       await interaction.reply('Incorrect number of RSG.');
       return;
@@ -36,20 +38,25 @@ export default {
     const roleId = role.replace(/[<>@&]/g, '');
     await interaction.guild.members.fetch();
 
-    const members = interaction.guild.roles.cache.get(roleId).members.map((member: any) => ({
-      id: member.user.id,
-      roles: member.roles.cache.map((r: any) => r.name),
-    }));
-
-    console.log(JSON.stringify(members).length);
-    const noBoost = interaction.options.getBoolean('noboost');
-    const { originalTxId } = (await contract.writeInteraction({
-      function: 'addPoints',
-      points: rsg,
-      adminId: interaction.user.id,
-      members,
-      ...(noBoost && { noBoost }),
-    })) as WriteInteractionResponse;
+    const members = interaction.guild.roles.cache.get(roleId).members;
+    const membersInWarpy = members
+      .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
+      .map((member: any) => ({
+        id: member.user.id,
+        roles: member.roles.cache.map((r: any) => r.name),
+      }));
+    const chunkSize = 20;
+    for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
+      const chunk = membersInWarpy.slice(i, i + chunkSize);
+      console.log('chunk', chunk);
+      await contract.writeInteraction({
+        function: 'addPoints',
+        points: rsg,
+        adminId: interaction.user.id,
+        members: chunk,
+        ...(noBoost && { noBoost }),
+      });
+    }
 
     await interaction.reply({
       content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
@@ -58,13 +65,13 @@ export default {
         {
           type: 1,
           components: [
-            {
-              style: 5,
-              label: `Check out interaction`,
-              url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
-              disabled: false,
-              type: 2,
-            },
+            // {
+            //   style: 5,
+            //   label: `Check out interaction`,
+            //   url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
+            //   disabled: false,
+            //   type: 2,
+            // },
             {
               style: 5,
               label: `Check out contract state`,
