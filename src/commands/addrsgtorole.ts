@@ -40,7 +40,7 @@ export default {
 
     const members = interaction.guild.roles.cache.get(roleId).members;
     const membersInWarpy = members
-      .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
+      // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
       .map((member: any) => ({
         id: member.user.id,
         roles: member.roles.cache.map((r: any) => r.name),
@@ -48,8 +48,6 @@ export default {
     const chunkSize = 5;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
-      console.log('chunk', chunk);
-      console.log('chunk size', JSON.stringify(chunk).length);
       await contract.writeInteraction({
         function: 'addPoints',
         points: rsg,
