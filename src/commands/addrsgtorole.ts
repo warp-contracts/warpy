@@ -40,6 +40,8 @@ export default {
       id: member.user.id,
       roles: member.roles.cache.map((r: any) => r.name),
     }));
+
+    console.log(JSON.stringify(members).length);
     const noBoost = interaction.options.getBoolean('noboost');
     const { originalTxId } = (await contract.writeInteraction({
       function: 'addPoints',
