@@ -34,10 +34,9 @@ export default {
       return;
     }
     const roleId = role.replace(/[<>@&]/g, '');
-    const roleManager = interaction.guild.roles.cache.find((r: any) => r.id === roleId);
-    console.log(interaction.guild.roles.cache.find((r: any) => r.name == '@everyone').members);
+    await interaction.guild.members.fetch();
 
-    const members = roleManager.members.map((member: any) => ({
+    const members = interaction.guild.roles.cache.get(roleId).members.map((member: any) => ({
       id: member.user.id,
       roles: member.roles.cache.map((r: any) => r.name),
     }));
