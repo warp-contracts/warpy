@@ -45,7 +45,7 @@ export default {
         id: member.user.id,
         roles: member.roles.cache.map((r: any) => r.name),
       }));
-    const chunkSize = 20;
+    const chunkSize = 10;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       console.log('chunk', chunk);
