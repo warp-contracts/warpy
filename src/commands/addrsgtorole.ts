@@ -45,10 +45,11 @@ export default {
         id: member.user.id,
         roles: member.roles.cache.map((r: any) => r.name),
       }));
-    const chunkSize = 10;
+    const chunkSize = 5;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       console.log('chunk', chunk);
+      console.log('chunk size', JSON.stringify(chunk).length);
       await contract.writeInteraction({
         function: 'addPoints',
         points: rsg,
