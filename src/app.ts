@@ -5,16 +5,15 @@ import { LoggerFactory } from 'warp-contracts';
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
+import routes from './routes';
+import { RequestWithContext } from './types/express';
 
 dotenv.config();
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 async function main() {
-  app.get('/', (req, res) => {
-    res.send('Hello world!');
-  });
   const client = new Client({
     intents: [
       IntentsBitField.Flags.Guilds,
@@ -91,6 +90,16 @@ async function main() {
   }
 
   client.login(process.env.DISCORD_TOKEN);
+
+  const ctx = {
+    client,
+  };
+  app.use((req: RequestWithContext, res, next) => {
+    req.ctx = ctx;
+    next();
+  });
+  app.use('/', routes);
+
   app.listen(port, () => {
     console.log(`Warpy Discord Bot app listening on port ${port}`);
   });
