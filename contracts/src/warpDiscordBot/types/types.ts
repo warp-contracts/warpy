@@ -177,12 +177,12 @@ export type ContractFunction =
   | 'addSeason'
   | 'addSeasonToRole'
   | 'addPointsToMultipleMembers'
-  | 'countPointsBasedOnCounter'
   | 'playRoulette'
   | 'switchRoulette'
   | 'addRoulettePicks'
   | 'getRoulettePick'
-  | 'getRouletteSwitch';
+  | 'getRouletteSwitch'
+  | 'clearSeasonsAndBoosts';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 

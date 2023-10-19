@@ -22,13 +22,13 @@ import { removePoints } from './points/write/removePoints';
 import { addSeason } from './seasons/write/addSeason';
 import { addSeasonToRole } from './seasons/write/addSeasonToRole';
 import { addPoints } from './points/write/addPoints';
-import { countPointsBasedOnCounter } from './points/write/countPointsBasedOnCounter';
 import { playRoulette } from './roulette/playRoulette';
 import { switchRoulette } from './roulette/switchRoulette';
 import { addRoulettePicks } from './roulette/addRoulettePicks';
 import { getRoulettePick } from './roulette/read/getRoulettePick';
 import { validateOwnerFunction } from '../utils';
 import { getRouletteSwitch } from './roulette/read/getRouletteSwitch';
+import { clearSeasonsAndBoosts } from './general/write/clearSeasonsAndBoosts';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -100,9 +100,6 @@ export async function handle(state: ContractState, action: ContractAction): Prom
     case 'addSeasonToRole':
       validateOwnerFunction(state, action);
       return await addSeasonToRole(state, action);
-    case 'countPointsBasedOnCounter':
-      validateOwnerFunction(state, action);
-      return await countPointsBasedOnCounter(state, action);
     case 'playRoulette':
       validateOwnerFunction(state, action);
       return await playRoulette(state, action);
@@ -116,6 +113,8 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await getRoulettePick(state, action);
     case 'getRouletteSwitch':
       return await getRouletteSwitch(state);
+    case 'clearSeasonsAndBoosts':
+      return await clearSeasonsAndBoosts(state, action);
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
   }
