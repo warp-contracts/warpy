@@ -4,10 +4,17 @@ import { connectToServersContract, initializeWarp, readWallet } from './utils';
 import { LoggerFactory } from 'warp-contracts';
 import path from 'path';
 import fs from 'fs';
+import express from 'express';
 
 dotenv.config();
 
+const app = express();
+const port = 3000;
+
 async function main() {
+  app.get('/', (req, res) => {
+    res.send('Hello world!');
+  });
   const client = new Client({
     intents: [
       IntentsBitField.Flags.Guilds,
@@ -83,34 +90,10 @@ async function main() {
     }
   }
 
-  // const wallet = readWallet();
-  // LoggerFactory.INST.logLevel('error');
-  // const warp = initializeWarp();
-  // const serversContract = connectToServersContract(warp, wallet);
-
-  // client.once(Events.ClientReady, () => {
-  //   console.log('Warpy is online!');
-  // });
-
-  // client.on('guildCreate', async (guild) => {
-  //   await onGuildCreate(guild, warp, wallet, serversContract);
-  // });
-
-  // client.on('messageCreate', async (message) => {
-  //   const result = await onMessageCreate(message, warp, wallet, userToMessages);
-  //   if (result) {
-  //     userToMessages = result;
-  //   }
-  // });
-
-  // client.on('messageReactionAdd', async (reactionOrigin, user) => {
-  //   const result = await onMessageReactionAdd(reactionOrigin, user, warp, wallet, userToReactions);
-  //   if (result) {
-  //     userToReactions = result;
-  //   }
-  // });
-
   client.login(process.env.DISCORD_TOKEN);
+  app.listen(port, () => {
+    console.log(`Warpy Discord Bot app listening on port ${port}`);
+  });
 }
 
 main().catch((e) => console.log(e));
