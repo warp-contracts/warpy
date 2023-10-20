@@ -14,6 +14,8 @@ export default {
       option.setName('noboost').setDescription('If true - boost will not be applied to the number of RSG.')
     ),
   async execute(interaction: any, warp: Warp, wallet: any) {
+    await interaction.deferReply({ ephemeral: true });
+
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 
     let response: any;
@@ -38,7 +40,12 @@ export default {
     const roleId = role.replace(/[<>@&]/g, '');
     await interaction.guild.members.fetch();
 
-    const members = interaction.guild.roles.cache.get(roleId).members;
+    let members;
+    if (roleId == 'everyone') {
+      members = interaction.guild.members.cache;
+    } else {
+      members = interaction.guild.roles.cache.get(roleId).members;
+    }
     const membersInWarpy = members
       // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
       .map((member: any) => ({
@@ -57,7 +64,7 @@ export default {
       });
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
       tts: true,
       components: [
