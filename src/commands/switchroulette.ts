@@ -1,5 +1,11 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { connectToServerContract, getStateFromDre, warpyIconUrl } from '../utils';
+import {
+  connectToServerContract,
+  getSonarContractUrl,
+  getSonarInteractionUrl,
+  getStateFromDre,
+  warpyIconUrl,
+} from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
@@ -45,14 +51,14 @@ export default {
             {
               style: 5,
               label: `Check out interaction`,
-              url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
+              url: getSonarInteractionUrl(originalTxId),
               disabled: false,
               type: 2,
             },
             {
               style: 5,
               label: `Check out contract state`,
-              url: `https://sonar.warp.cc/#/app/contract/${contract.txId()}?network=mainnet#current-state`,
+              url: getSonarContractUrl(contract.txId(), true),
               disabled: false,
               type: 2,
             },

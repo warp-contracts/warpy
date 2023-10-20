@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { getServerContractId, warpyIconUrl } from '../utils';
+import { getServerContractId, getSonarContractUrl, warpyIconUrl } from '../utils';
 
 export default {
   data: new SlashCommandBuilder().setName('contract').setDescription(`Returns server contract's link on SonAr.`),
@@ -15,7 +15,7 @@ export default {
             {
               style: 5,
               label: `Check out contract`,
-              url: `https://sonar.warp.cc/#/app/contract/${contractTxId}`,
+              url: getSonarContractUrl(contractTxId),
               disabled: false,
               type: 2,
             },

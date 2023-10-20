@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { isEthWallet, getStateFromDre, connectToServerContract, warpyIconUrl } from '../utils';
+import { isEthWallet, getStateFromDre, connectToServerContract, warpyIconUrl, getSonarInteractionUrl, getSonarContractUrl } from '../utils';
 import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
@@ -67,14 +67,14 @@ export default {
             {
               style: 5,
               label: `Check out interaction`,
-              url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
+              url: getSonarInteractionUrl(originalTxId),
               disabled: false,
               type: 2,
             },
             {
               style: 5,
               label: `Check out contract state`,
-              url: `https://sonar.warp.cc/#/app/contract/${contract.txId()}?network=mainnet#current-state`,
+              url: getSonarContractUrl(contract.txId(), true),
               disabled: false,
               type: 2,
             },
