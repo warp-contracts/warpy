@@ -65,8 +65,9 @@ export default {
       try {
         await contract.writeInteraction(removePointsInput);
       } catch (e) {
-        console.log(
-          `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(removePointsInput)}`
+        console.error(
+          `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(removePointsInput)}`,
+          e
         );
         continue;
       }
