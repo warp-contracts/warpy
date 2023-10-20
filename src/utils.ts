@@ -102,3 +102,13 @@ export const errorEmbed = (errorMessage: string) => {
     ],
   };
 };
+
+export const getSonarContractUrl = (contractId: string, withState?: boolean) => {
+  return `https://sonar.warp.cc/#/app/contract/${contractId}?network=mainnet&dre=dreWarpy${
+    withState ? '#current-state' : ''
+  }`;
+};
+
+export const getSonarInteractionUrl = (interactionId: string) => {
+  return `https://sonar.warp.cc/#/app/interaction/${interactionId}?network=mainnet&dre=dreWarpy`;
+};
