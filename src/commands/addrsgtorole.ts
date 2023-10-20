@@ -55,13 +55,21 @@ export default {
     const chunkSize = 5;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
-      await contract.writeInteraction({
+      const addPointsInput = {
         function: 'addPoints',
         points: rsg,
         adminId: interaction.user.id,
         members: chunk,
         ...(noBoost && { noBoost }),
-      });
+      };
+      try {
+        await contract.writeInteraction(addPointsInput);
+      } catch (e) {
+        console.log(
+          `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`
+        );
+        continue;
+      }
     }
 
     await interaction.editReply({
