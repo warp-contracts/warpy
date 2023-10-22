@@ -13,6 +13,8 @@ export default {
     .setName('roulette')
     .setDescription(`Play roulette (in order to play the game Warpy will charge you with 500 RSG:RSG: fee.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
+    await interaction.deferReply({ ephemeral: true });
+
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
     const userId = interaction.user.id;
@@ -60,7 +62,7 @@ export default {
         console.log(e);
       }
 
-      await interaction.reply({
+      await interaction.editReply({
         content: `Congrats <@${userId}>! You won **RSG** <:RSG:1131247707017715882>.`,
         tts: true,
         components: [
