@@ -13,7 +13,7 @@ export default {
     .setName('roulette')
     .setDescription(`Play roulette (in order to play the game Warpy will charge you with 500 RSG:RSG: fee.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
@@ -54,10 +54,16 @@ export default {
       )) as WriteInteractionResponse;
 
       let rouletteResult;
+      console.log(
+        `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
+      );
       try {
         rouletteResult = await fetch(
-          `https://dre-2.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
-        ).then((res) => res.json());
+          `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
+        ).then((res) => {
+          console.log(res);
+          return res.json();
+        });
       } catch (e) {
         console.log(e);
       }

@@ -14,7 +14,7 @@ export default {
       option.setName('noboost').setDescription('If true - boost will not be applied to the number of RSG.')
     ),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 

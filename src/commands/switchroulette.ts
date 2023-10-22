@@ -13,7 +13,7 @@ export default {
     .setName('switchroulette')
     .setDescription(`Switch on/off roulette (only available for admins).`),
   async execute(interaction: any, warp: Warp, wallet: any) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
@@ -37,7 +37,7 @@ export default {
     let rouletteOn;
     try {
       rouletteOn = await fetch(
-        `https://dre-2.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRouletteSwitch"}`
+        `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRouletteSwitch"}`
       ).then((res) => res.json());
     } catch (e) {
       console.log(e);
