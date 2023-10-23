@@ -24,25 +24,26 @@ export default {
       response = (await getStateFromDre(contractId)).state;
     } catch (e) {
       console.log(e);
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
       return;
     }
     if (!response['users'][userId]) {
-      await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      await interaction.editReply(
+        'User not registered in the name service. Please ping warpy with `linkwallet` first.'
+      );
       return;
     }
 
     if (!response.rouletteOn) {
-      await interaction.reply('Roulette is not switched on.');
+      await interaction.editReply('Roulette is not switched on.');
       return;
     }
 
     if (!response.counter[userId] || response.counter[userId].points < response.rouletteEntry) {
-      await interaction.reply(`User does not have enough RSG. Required balance: ${response.rouletteEntry}.`);
+      await interaction.editReply(`User does not have enough RSG. Required balance: ${response.rouletteEntry}.`);
       return;
     }
     interaction.member.fetch().then(async (member: GuildMember) => {
-      console.log(member);
       const { originalTxId } = (await contract.writeInteraction(
         {
           function: 'playRoulette',
@@ -54,14 +55,10 @@ export default {
       )) as WriteInteractionResponse;
 
       let rouletteResult;
-      console.log(
-        `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
-      );
       try {
         rouletteResult = await fetch(
           `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
         ).then((res) => {
-          console.log(res);
           return res.json();
         });
       } catch (e) {
