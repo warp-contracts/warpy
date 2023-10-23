@@ -21,11 +21,11 @@ export default {
     try {
       const result = (await getStateFromDre(contractId, 'admins')).result[0];
       if (!result.includes(interaction.user.id)) {
-        await interaction.reply('Only admin can switch roulette.');
+        await interaction.editReply('Only admin can switch roulette.');
         return;
       }
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
@@ -36,13 +36,14 @@ export default {
 
     let rouletteOn;
     try {
-      rouletteOn = await fetch(
-        `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRouletteSwitch"}`
-      ).then((res) => res.json());
+      rouletteOn = (
+        await fetch(
+          `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRouletteSwitch"}`
+        ).then((res) => res.json())
+      ).result.rouletteSwitch;
     } catch (e) {
       console.log(e);
     }
-
     await interaction.editReply({
       content: `**Warpy Roulette** :ferris_wheel: is now ${rouletteOn ? '**ON**' : '**OFF**'}!`,
       tts: true,

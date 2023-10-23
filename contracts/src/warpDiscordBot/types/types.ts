@@ -125,6 +125,7 @@ export interface ContractInput {
   emojiId: string;
   roulettePicks: WeightedOption[];
   interactionId: string;
+  rouletteEntry: number;
 }
 
 export interface WeightedOption {
@@ -182,7 +183,8 @@ export type ContractFunction =
   | 'addRoulettePicks'
   | 'getRoulettePick'
   | 'getRouletteSwitch'
-  | 'clearSeasonsAndBoosts';
+  | 'clearSeasonsAndBoosts'
+  | 'addRouletteEntry';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 

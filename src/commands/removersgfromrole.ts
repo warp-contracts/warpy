@@ -22,11 +22,11 @@ export default {
     try {
       response = (await getStateFromDre(contract.txId())).state;
       if (!response['admins'].includes(interaction.user.id)) {
-        await interaction.reply('Only admin can award RSG.');
+        await interaction.editReply('Only admin can award RSG.');
         return;
       }
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
@@ -34,7 +34,7 @@ export default {
     const role = interaction.options.getString('role');
     const noBoost = interaction.options.getBoolean('noboost');
     if (isNaN(Number(rsg))) {
-      await interaction.reply('Incorrect number of RSG.');
+      await interaction.editReply('Incorrect number of RSG.');
       return;
     }
     const roleId = role.replace(/[<>@&]/g, '');
