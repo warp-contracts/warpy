@@ -5,7 +5,7 @@ import { LoggerFactory } from 'warp-contracts';
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
-import routes from './routes';
+import routes from './router/app';
 import { RequestWithContext } from './types/express';
 
 dotenv.config();

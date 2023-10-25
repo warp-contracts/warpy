@@ -4,5 +4,6 @@ import { Request } from 'express';
 export interface RequestWithContext extends Request {
   ctx?: {
     client: Client;
+    serverId?: string;
   };
 }
