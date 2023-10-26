@@ -4,7 +4,7 @@ import { health } from '../routes/listener/health';
 
 const router = express.Router();
 
-router.get('/v1/handlers', usernames);
+router.get('/v1/usernames', usernames);
 router.get('/v1/health', health);
 
 export default router;
