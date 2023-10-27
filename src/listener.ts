@@ -3,10 +3,12 @@ import express from 'express';
 import { RequestWithContext } from './types/express';
 import { Client, IntentsBitField, Partials } from 'discord.js';
 import routes from './router/listener';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 const port = process.env.PORT_LISTENER || 8081;
 
 async function main() {
