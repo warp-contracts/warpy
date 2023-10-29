@@ -36,7 +36,6 @@ export async function handle(state: ContractState, action: ContractAction): Prom
 
   switch (input.function) {
     case 'getAddress':
-      validateOwnerFunction(state, action);
       return await getAddress(state, action);
     case 'registerUser':
       validateOwnerFunction(state, action);

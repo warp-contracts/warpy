@@ -17,6 +17,6 @@ import { ArweaveSigner, DeployPlugin } from 'warp-contracts-plugin-deploy';
   // const srcId = await warp.saveSource(src);
   const contract = warp.contract('p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU').connect(wallet);
   // const contract = warp.contract('p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU').connect(wallet);
-  await contract.writeInteraction({ function: 'evolve', value: 'tKymg9ZKWr5vGx86J9vUedwGhMYCzy1f1eUohf3-URs' });
+  await contract.writeInteraction({ function: 'evolve', value: 'GNjIt8jphwCYDCg0E5exrnq6BijOzXz5WxAKDErfrl8' });
   // await contract.writeInteraction({ function: 'clearSeasonsAndBoosts', adminId: '769844280767807520' });
 })();
