@@ -30,6 +30,7 @@ import { validateOwnerFunction } from '../utils';
 import { getRouletteSwitch } from './roulette/read/getRouletteSwitch';
 import { clearSeasonsAndBoosts } from './general/write/clearSeasonsAndBoosts';
 import { addRouletteEntry } from './roulette/addRouletteEntry';
+import { getRanking } from './points/read/getRanking';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -114,9 +115,13 @@ export async function handle(state: ContractState, action: ContractAction): Prom
     case 'getRouletteSwitch':
       return await getRouletteSwitch(state);
     case 'clearSeasonsAndBoosts':
+      validateOwnerFunction(state, action);
       return await clearSeasonsAndBoosts(state, action);
     case 'addRouletteEntry':
+      validateOwnerFunction(state, action);
       return await addRouletteEntry(state, action);
+    case 'getRanking':
+      return await getRanking(state, action);
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
   }

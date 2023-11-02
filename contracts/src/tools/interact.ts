@@ -10,7 +10,19 @@ async function main() {
 
   // const { cachedValue } = await contract.readState();
   // console.log(cachedValue.state);
-  await contract.writeInteraction({ function: 'addRouletteEntry', adminId: '769844280767807520', rouletteEntry: 500 });
+  await contract.writeInteraction({
+    function: 'addRoulettePicks',
+    roulettePicks: [
+      { value: 1, weight: 400 },
+      { value: 250, weight: 300 },
+      { value: 500, weight: 200 },
+      { value: 1000, weight: 50 },
+      { value: 5000, weight: 40 },
+      { value: 10000, weight: 8 },
+      { value: 100000, weight: 2 },
+    ],
+    adminId: '769844280767807520',
+  });
   // const test = await contract.viewState({
   //   function: 'getRoulettePick',
   //   userId: '769844280767807520',

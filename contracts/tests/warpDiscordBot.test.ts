@@ -1813,4 +1813,36 @@ describe('Testing warpDiscordBot contract', () => {
 
     expect(result.pick).toBeTruthy();
   });
+
+  it('should correctly display ranking', async () => {
+    const result = (
+      await contract.viewState<
+        { function: string; limit: number },
+        { ranking: { lp: number; userId: string; balance: number }[] }
+      >({
+        function: 'getRanking',
+        limit: 15,
+      })
+    ).result;
+    expect(result.ranking.length).toBe(3);
+  });
+
+  it('should correctly display user position in ranking', async () => {
+    console.log(owner);
+    const result = (
+      await contract.viewState<
+        { function: string; limit: number; address: string },
+        {
+          ranking: { lp: number; userId: string; balance: number }[];
+          userPosition: { lp: number; userId: string; balance: number };
+        }
+      >({
+        function: 'getRanking',
+        limit: 15,
+        address: owner,
+      })
+    ).result;
+    console.log(result);
+    expect(result.userPosition.userId).toBe('asia');
+  });
 });

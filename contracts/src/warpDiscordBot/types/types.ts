@@ -84,13 +84,27 @@ export interface RouletteSwitchResult {
   rouletteSwitch: boolean;
 }
 
+export interface RankingResult {
+  ranking: {
+    lp: number;
+    userId: string;
+    balance: number;
+  }[];
+  userPosition?: {
+    lp: number;
+    userId: string;
+    balance: number;
+  };
+}
+
 export type ContractReadResult =
   | NameServiceResult
   | MessagesContentResult
   | PstResult
   | BoostResult
   | RoulettePickResult
-  | RouletteSwitchResult;
+  | RouletteSwitchResult
+  | RankingResult;
 
 export interface ContractInput {
   function: ContractFunction;
@@ -126,6 +140,7 @@ export interface ContractInput {
   roulettePicks: WeightedOption[];
   interactionId: string;
   rouletteEntry: number;
+  limit: number;
 }
 
 export interface WeightedOption {
@@ -184,7 +199,8 @@ export type ContractFunction =
   | 'getRoulettePick'
   | 'getRouletteSwitch'
   | 'clearSeasonsAndBoosts'
-  | 'addRouletteEntry';
+  | 'addRouletteEntry'
+  | 'getRanking';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 
