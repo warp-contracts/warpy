@@ -112,3 +112,7 @@ export const getSonarContractUrl = (contractId: string, withState?: boolean) => 
 export const getSonarInteractionUrl = (interactionId: string) => {
   return `https://sonar.warp.cc/#/app/interaction/${interactionId}?network=mainnet&dre=dreWarpy`;
 };
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

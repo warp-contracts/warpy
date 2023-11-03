@@ -4,6 +4,7 @@ import {
   getSonarContractUrl,
   getSonarInteractionUrl,
   getStateFromDre,
+  sleep,
   warpyIconUrl,
 } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
@@ -64,6 +65,8 @@ export default {
       } catch (e) {
         console.log(e);
       }
+
+      await sleep(1000);
 
       await interaction.editReply({
         content: `Congrats <@${userId}>! You won **RSG** <:RSG:1131247707017715882>.`,
