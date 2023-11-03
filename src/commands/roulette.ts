@@ -66,7 +66,7 @@ export default {
         console.log(e);
       }
 
-      await sleep(1000);
+      await sleep(2000);
 
       await interaction.editReply({
         content: `Congrats <@${userId}>! You won **RSG** <:RSG:1131247707017715882>.`,
