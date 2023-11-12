@@ -1,5 +1,12 @@
 import { checkArgumentSet, validateString } from '../../../utils';
-import { ContractAction, ContractState, ContractResult, messagesPrefix, pointsPrefix, rolesPrefix } from '../../types/types';
+import {
+  ContractAction,
+  ContractState,
+  ContractResult,
+  messagesPrefix,
+  pointsPrefix,
+  rolesPrefix,
+} from '../../types/types';
 
 export const addMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'userId');
@@ -61,8 +68,9 @@ export const addTokensBalance = (state: ContractState, id: string, boostsPoints:
 
 export const countBoostsPoints = (state: ContractState, boosts: string[], roles: string[]) => {
   let points = 1;
+  let boostsValue = 0;
   boosts.forEach((boost) => {
-    points *= state.boosts[boost];
+    boostsValue += state.boosts[boost];
   });
   const seasons = state.seasons;
   const currentTimestamp = Number(SmartWeave.block.timestamp);
@@ -73,14 +81,15 @@ export const countBoostsPoints = (state: ContractState, boosts: string[], roles:
         if (roles.includes(seasons[s].role as string)) {
           const boost = seasons[s].boost;
           const boostsPoints = state.boosts[boost];
-          points *= boostsPoints;
+          boostsValue += boostsPoints;
         }
       } else {
         const boost = seasons[s].boost;
         const boostsPoints = state.boosts[boost];
-        points *= boostsPoints;
+        boostsValue += boostsPoints;
       }
     }
   });
+  points = boostsValue > 0 ? points * boostsValue : points;
   return points;
 };

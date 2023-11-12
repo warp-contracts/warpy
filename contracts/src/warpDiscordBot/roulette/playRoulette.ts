@@ -11,7 +11,6 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
   validateString(input, 'interactionId');
 
   const rouletteOn = state.rouletteOn;
-
   if (!rouletteOn) {
     throw new ContractError(`Roulette not switched on.`);
   }
@@ -39,7 +38,7 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
   const weightedRandomPicker = new WeightedRandomPicker(state.roulettePicks);
   const winningOption = weightedRandomPicker.pick();
 
-  const effectiveCaller = `${userId}_${interactionId}_${SmartWeave.block.timestamp}`;
+  const effectiveCaller = `${userId}_${interactionId}`;
 
   await SmartWeave.kv.put(`${roulettePrefix}${effectiveCaller}`, winningOption);
 

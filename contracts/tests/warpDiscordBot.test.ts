@@ -903,7 +903,7 @@ describe('Testing warpDiscordBot contract', () => {
     expect(counter.reactions).toEqual(0);
     expect(counter.points).toEqual(100);
   });
-
+  90;
   it('should properly add second boost and calculate points and balance based on it', async () => {
     await contract.writeInteraction({ function: 'addBoost', name: 'secondTestBoost', boostValue: 3, adminId: 'asia' });
     await contract.writeInteraction({
@@ -934,7 +934,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800);
+    expect(balance).toEqual(9 * 10 + 9 * 100);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -944,7 +944,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100);
   });
 
   it(`should not allow to add points when members are not provided`, async () => {
@@ -997,7 +997,7 @@ describe('Testing warpDiscordBot contract', () => {
     ).result?.balance;
 
     // boost - 18, points: 5
-    expect(balance).toEqual(180 + 1800 + 18 * 5);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 5 * 9);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1007,7 +1007,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 18 * 5);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 5 * 9);
   });
 
   it(`should not allow to remove points when members are not provided`, async () => {
@@ -1063,7 +1063,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800);
+    expect(balance).toEqual(9 * 10 + 9 * 100);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1073,7 +1073,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100);
   });
 
   it(`should not allow to add season when name is not provided`, async () => {
@@ -1200,7 +1200,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1210,7 +1210,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100);
   });
 
   it('should add reaction points according to season boost', async () => {
@@ -1229,7 +1229,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1239,7 +1239,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10);
   });
 
   it(`should not allow to add season to role when name is not provided`, async () => {
@@ -1388,7 +1388,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1398,7 +1398,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100);
   });
 
   it('should add reaction points according to season to role boost', async () => {
@@ -1417,7 +1417,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1427,7 +1427,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10);
   });
 
   it('should not boost points when noBoost flag is set to true', async () => {
@@ -1446,7 +1446,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1456,7 +1456,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1);
   });
 
   it('should not boost removed points when noBoost flag is set to true', async () => {
@@ -1475,7 +1475,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1485,7 +1485,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1);
   });
 
   it('should correctly award points to multiple members', async () => {
@@ -1507,7 +1507,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1 + 1);
+    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1);
     const counter = (
       await contract.viewState<
         { function: string; id: string },
@@ -1517,7 +1517,7 @@ describe('Testing warpDiscordBot contract', () => {
         id: 'asia',
       })
     ).result?.counter;
-    expect(counter.points).toEqual(100 + 180 + 1800 + 3600 + 360 + 1000 + 100 + 1 - 1 + 1);
+    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1);
 
     const balance2 = (
       await contract.viewState<
