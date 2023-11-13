@@ -10,11 +10,11 @@ async function main() {
   if (isNaN(Number(process.argv.slice(2)[0]))) {
     throw new Error(`Incorrect points format.`);
   }
-  const points = Number(process.argv.slice(2));
+  const points = Number(process.argv.slice(2)[0]);
   const contractId = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
   const wallet = JSON.parse(fs.readFileSync(path.resolve('./.secrets', 'wallet.json'), 'utf-8'));
   const addresses: { id: string; address: string; points: number }[] = [];
-  const chunkSize = 2;
+  const chunkSize = Number(process.argv.slice(3)[0]) || 5;
   const warp = WarpFactory.forMainnet();
   const contract = warp.contract(contractId).connect(wallet);
 
