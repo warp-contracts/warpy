@@ -6,7 +6,7 @@
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "eslint --ext .js,.ts . --fix",
     "format": "prettier --write \"**/*.+(js|ts|json)\"",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "dev": "yarn run lint:fix && nodemon"
   },
   "license": "MIT",
@@ -15,6 +15,7 @@
     "discord.js": "^14.13.0",
     "dotenv": "^16.0.3",
     "ethers": "^6.4.2",
+    "exponential-backoff": "^3.1.1",
     "express": "^4.18.2",
     "warp-contracts": "1.4.20-beta.1",
     "warp-contracts-lmdb": "^1.1.10",

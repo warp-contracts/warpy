@@ -4,10 +4,10 @@ import {
   getSonarContractUrl,
   getSonarInteractionUrl,
   getStateFromDre,
-  sleep,
   warpyIconUrl,
 } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
+import { backOff } from 'exponential-backoff';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,7 +19,6 @@ export default {
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
     const userId = interaction.user.id;
-
     let response;
     try {
       response = (await getStateFromDre(contractId)).state;
@@ -56,17 +55,25 @@ export default {
       )) as WriteInteractionResponse;
 
       let rouletteResult;
-      try {
-        rouletteResult = await fetch(
+
+      const request = async () => {
+        return fetch(
           `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRoulettePick","userId":"${userId}","interactionId":"${interaction.id}"}`
         ).then((res) => {
-          return res.json();
+          console.log(res);
+          return res.ok ? res.json() : Promise.reject(res);
         });
-      } catch (e) {
-        console.log(e);
+      };
+      try {
+        rouletteResult = (await backOff(request, {
+          delayFirstAttempt: false,
+          maxDelay: 1000,
+          numOfAttempts: 5,
+        })) as any;
+        console.log(rouletteResult);
+      } catch (error: any) {
+        console.log(error);
       }
-
-      await sleep(2000);
 
       await interaction.editReply({
         content: `Congrats <@${userId}>! You won **RSG** <:RSG:1131247707017715882>.`,
