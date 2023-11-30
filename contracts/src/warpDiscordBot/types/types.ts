@@ -200,7 +200,8 @@ export type ContractFunction =
   | 'getRouletteSwitch'
   | 'clearSeasonsAndBoosts'
   | 'addRouletteEntry'
-  | 'getRanking';
+  | 'getRanking'
+  | 'addPointsCsv';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 

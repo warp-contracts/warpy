@@ -31,6 +31,7 @@ import { getRouletteSwitch } from './roulette/read/getRouletteSwitch';
 import { clearSeasonsAndBoosts } from './general/write/clearSeasonsAndBoosts';
 import { addRouletteEntry } from './roulette/addRouletteEntry';
 import { getRanking } from './points/read/getRanking';
+import { addPointsCsv } from './points/write/addPointsCsv';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -122,6 +123,9 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await addRouletteEntry(state, action);
     case 'getRanking':
       return await getRanking(state, action);
+    case 'addPointsCsv':
+      return await addPointsCsv(state, action);
+
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
   }

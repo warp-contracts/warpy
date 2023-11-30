@@ -34,7 +34,7 @@ async function main() {
   app.use('/', routes);
 
   app.listen(port, () => {
-    console.log(`Warpy Discord Bot app listening on port ${port}`);
+    console.log(`Warpy Api listening on port ${port}`);
   });
 }
 
