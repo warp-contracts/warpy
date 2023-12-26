@@ -19,7 +19,7 @@ export async function connectToServerContract(warp: Warp, wallet: JWKInterface, 
   return warp
     .contract(contractTxId)
     .connect(wallet)
-    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: ' https://gw.warp.cc/' });
+    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: 'https://gw.warp.cc/' });
 }
 
 export async function getServerContractId(serverId: string | null) {
@@ -38,7 +38,7 @@ export function connectToServersContract(warp: Warp, wallet: JWKInterface) {
   return warp
     .contract(SERVERS_CONTRACT)
     .connect(wallet)
-    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: ' https://gw.warp.cc/' });
+    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: 'https://gw.warp.cc/' });
 }
 
 export function readWallet() {
