@@ -16,7 +16,10 @@ export function isEthWallet(txId: string): boolean {
 
 export async function connectToServerContract(warp: Warp, wallet: JWKInterface, serverId: string | null) {
   const contractTxId = await getServerContractId(serverId);
-  return warp.contract(contractTxId).connect(wallet).setEvaluationOptions({ useKVStorage: true });
+  return warp
+    .contract(contractTxId)
+    .connect(wallet)
+    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: ' https://gw.warp.cc/' });
 }
 
 export async function getServerContractId(serverId: string | null) {
@@ -28,11 +31,14 @@ export async function getServerContractId(serverId: string | null) {
   }
 }
 export function initializeWarp(): Warp {
-  return WarpFactory.forMainnet().use(new DeployPlugin()).use(new VRFPlugin());
+  return WarpFactory.forMainnet().use(new DeployPlugin()).use(new VRFPlugin()).useGwUrl('https://gw.warp.cc');
 }
 
 export function connectToServersContract(warp: Warp, wallet: JWKInterface) {
-  return warp.contract(SERVERS_CONTRACT).connect(wallet).setEvaluationOptions({ useKVStorage: true });
+  return warp
+    .contract(SERVERS_CONTRACT)
+    .connect(wallet)
+    .setEvaluationOptions({ useKVStorage: true, sequencerUrl: ' https://gw.warp.cc/' });
 }
 
 export function readWallet() {

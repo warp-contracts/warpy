@@ -38,6 +38,7 @@ export async function handle(state: ContractState, action: ContractAction): Prom
 
   switch (input.function) {
     case 'getAddress':
+      validateOwnerFunction(state, action);
       return await getAddress(state, action);
     case 'registerUser':
       validateOwnerFunction(state, action);
@@ -52,8 +53,10 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       validateOwnerFunction(state, action);
       return await addReaction(state, action);
     case 'getCounter':
+      validateOwnerFunction(state, action);
       return await getCounter(state, action);
     case 'balance':
+      validateOwnerFunction(state, action);
       return await balance(state, action);
     case 'transfer':
       validateOwnerFunction(state, action);
@@ -71,6 +74,7 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       validateOwnerFunction(state, action);
       return await addBoost(state, action);
     case 'getBoost':
+      validateOwnerFunction(state, action);
       return await getBoost(state, action);
     case 'removeBoost':
       validateOwnerFunction(state, action);
@@ -112,8 +116,10 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       validateOwnerFunction(state, action);
       return await addRoulettePicks(state, action);
     case 'getRoulettePick':
+      validateOwnerFunction(state, action);
       return await getRoulettePick(state, action);
     case 'getRouletteSwitch':
+      validateOwnerFunction(state, action);
       return await getRouletteSwitch(state);
     case 'clearSeasonsAndBoosts':
       validateOwnerFunction(state, action);
@@ -122,8 +128,10 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       validateOwnerFunction(state, action);
       return await addRouletteEntry(state, action);
     case 'getRanking':
+      validateOwnerFunction(state, action);
       return await getRanking(state, action);
     case 'addPointsCsv':
+      validateOwnerFunction(state, action);
       return await addPointsCsv(state, action);
 
     default:

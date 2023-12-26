@@ -16,32 +16,34 @@ import { ArweaveSigner, DeployPlugin } from 'warp-contracts-plugin-deploy';
   const src = await warp.createSource({ src: contractSrc }, new ArweaveSigner(wallet));
   const srcId = await warp.saveSource(src);
 
-  const { contractTxId } = await warp.deployFromSourceTx({
-    wallet: new ArweaveSigner(wallet),
-    srcTxId: srcId,
-    initState: JSON.stringify({
-      owners: ['0xD284e567A89136406F45614F4D06cdddF4125fBa', '0x64937ab314bc1999396De341Aa66897C30008852'],
-      serverName: 'test',
-      creationTimestamp: Date.now(),
-      ticker: `TEST_TICKER`,
-      name: `TEST PST`,
-      messagesTokenWeight: 10,
-      reactionsTokenWeight: 1,
-      balances: {},
-      messages: {},
-      users: {},
-      counter: {},
-      boosts: {},
-      admins: ['304935610089734150', '769844280767807520'],
-      seasons: {},
-    }),
-    evaluationManifest: {
-      evaluationOptions: {
-        useKVStorage: true,
-      },
-    },
-  });
-  console.log(contractTxId);
+  console.log(srcId);
+
+  // const { contractTxId } = await warp.deployFromSourceTx({
+  //   wallet: new ArweaveSigner(wallet),
+  //   srcTxId: srcId,
+  //   initState: JSON.stringify({
+  //     owners: ['0xD284e567A89136406F45614F4D06cdddF4125fBa', '0x64937ab314bc1999396De341Aa66897C30008852'],
+  //     serverName: 'test',
+  //     creationTimestamp: Date.now(),
+  //     ticker: `TEST_TICKER`,
+  //     name: `TEST PST`,
+  //     messagesTokenWeight: 10,
+  //     reactionsTokenWeight: 1,
+  //     balances: {},
+  //     messages: {},
+  //     users: {},
+  //     counter: {},
+  //     boosts: {},
+  //     admins: ['304935610089734150', '769844280767807520'],
+  //     seasons: {},
+  //   }),
+  //   evaluationManifest: {
+  //     evaluationOptions: {
+  //       useKVStorage: true,
+  //     },
+  //   },
+  // });
+  // console.log(contractTxId);
   await console.log(
     `Deployment completed. Checkout contract source in SonAr: https://sonar.warp.cc/#/app/source/${srcId}?network=testnet`
   );
