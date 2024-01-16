@@ -57,6 +57,10 @@ export interface NameServiceResult {
   address: string;
 }
 
+export interface UserId {
+  userId: string;
+}
+
 export interface MessagesContentResult {
   counter?: {
     messages: number;
@@ -99,6 +103,7 @@ export interface RankingResult {
 
 export type ContractReadResult =
   | NameServiceResult
+  | UserId
   | MessagesContentResult
   | PstResult
   | BoostResult
@@ -134,7 +139,7 @@ export interface ContractInput {
   roles: string[];
   role: string;
   noBoost?: boolean;
-  members: { id: string; roles: string[] }[];
+  members: { id: string; roles: string[]; txId?: string }[];
   userId: string;
   emojiId: string;
   roulettePicks: WeightedOption[];
@@ -171,6 +176,7 @@ export type ContractFunction =
   | 'addActivity'
   | 'registerUser'
   | 'getAddress'
+  | 'getUserId'
   | 'evolve'
   | 'transfer'
   | 'mint'
@@ -201,7 +207,7 @@ export type ContractFunction =
   | 'clearSeasonsAndBoosts'
   | 'addRouletteEntry'
   | 'getRanking'
-  | 'addPointsCsv';
+  | 'addPointsForAddress';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 
@@ -215,3 +221,4 @@ export const timePrefix = `time.`;
 export const removedReactionsPrefix = `removedReactions.`;
 export const roulettePrefix = `roulette.`;
 export const rolesPrefix = `roles.`;
+export const onChainTransactionsPrefix = `onChainTransactions.`;

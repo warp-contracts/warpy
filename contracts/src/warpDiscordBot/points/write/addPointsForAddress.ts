@@ -1,8 +1,8 @@
 import { checkArgumentSet, validateInteger, validateString } from '../../../utils';
 import { addTokensBalance, countBoostsPoints } from '../../messagesContent/write/addMessage';
-import { ContractAction, ContractState, ContractResult } from '../../types/types';
+import { ContractAction, ContractState, ContractResult, onChainTransactionsPrefix } from '../../types/types';
 
-export const addPointsCsv = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
+export const addPointsForAddress = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'points');
   validateInteger(input, 'points');
   checkArgumentSet(input, 'adminId');
@@ -17,6 +17,14 @@ export const addPointsCsv = async (state: ContractState, { input }: ContractActi
   const addPointsEvent: { userId: string; points: number; roles: string[] }[] = [];
 
   for (let i = 0; i < members.length; i++) {
+    const txId = members[i].txId;
+    if (txId) {
+      const txPoints = await SmartWeave.kv.get(`${onChainTransactionsPrefix}${txId}_${members[i].id}`);
+      if (txPoints) {
+        logger.warn(`Transaction: ${txId} for wallet address: ${members[i].id} already rewarded.`);
+        continue;
+      }
+    }
     const userId = Object.keys(state.users).find((u) => state.users[u] == members[i].id);
 
     if (userId) {
@@ -46,6 +54,10 @@ export const addPointsCsv = async (state: ContractState, { input }: ContractActi
       const tokens = state.balances[members[i].id];
       const newTokensAmount = tokens ? tokens + points : points;
       state.balances[members[i].id] = newTokensAmount;
+    }
+
+    if (txId) {
+      await SmartWeave.kv.put(`${onChainTransactionsPrefix}${txId}_${members[i].id}`, points);
     }
   }
 

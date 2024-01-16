@@ -31,108 +31,81 @@ import { getRouletteSwitch } from './roulette/read/getRouletteSwitch';
 import { clearSeasonsAndBoosts } from './general/write/clearSeasonsAndBoosts';
 import { addRouletteEntry } from './roulette/addRouletteEntry';
 import { getRanking } from './points/read/getRanking';
-import { addPointsCsv } from './points/write/addPointsCsv';
+import { addPointsForAddress } from './points/write/addPointsForAddress';
+import { getUserId } from './namesService/read/getUserId';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
 
+  validateOwnerFunction(state, action);
+
   switch (input.function) {
     case 'getAddress':
-      validateOwnerFunction(state, action);
       return await getAddress(state, action);
+    case 'getUserId':
+      return await getUserId(state, action);
     case 'registerUser':
-      validateOwnerFunction(state, action);
       return await registerUser(state, action);
     case 'evolve':
-      validateOwnerFunction(state, action);
       return await evolve(state, action);
     case 'addMessage':
-      validateOwnerFunction(state, action);
       return await addMessage(state, action);
     case 'addReaction':
-      validateOwnerFunction(state, action);
       return await addReaction(state, action);
     case 'getCounter':
-      validateOwnerFunction(state, action);
       return await getCounter(state, action);
     case 'balance':
-      validateOwnerFunction(state, action);
       return await balance(state, action);
     case 'transfer':
-      validateOwnerFunction(state, action);
       return await transfer(state, action);
     case 'mint':
-      validateOwnerFunction(state, action);
       return await mint(state, action);
     case 'removeMessage':
-      validateOwnerFunction(state, action);
       return await removeMessage(state, action);
     case 'removeReaction':
-      validateOwnerFunction(state, action);
       return await removeReaction(state, action);
     case 'addBoost':
-      validateOwnerFunction(state, action);
       return await addBoost(state, action);
     case 'getBoost':
-      validateOwnerFunction(state, action);
       return await getBoost(state, action);
     case 'removeBoost':
-      validateOwnerFunction(state, action);
       return await removeBoost(state, action);
     case 'changeBoost':
-      validateOwnerFunction(state, action);
       return await changeBoost(state, action);
     case 'addUserBoost':
-      validateOwnerFunction(state, action);
       return await addUserBoost(state, action);
     case 'removeUserBoost':
-      validateOwnerFunction(state, action);
       return await removeUserBoost(state, action);
     case 'addPoints':
-      validateOwnerFunction(state, action);
       return await addPoints(state, action);
     case 'removePoints':
-      validateOwnerFunction(state, action);
       return await removePoints(state, action);
     case 'addAdmin':
-      validateOwnerFunction(state, action);
       return await addAdmin(state, action);
     case 'removeAdmin':
-      validateOwnerFunction(state, action);
       return await removeAdmin(state, action);
     case 'addSeason':
-      validateOwnerFunction(state, action);
       return await addSeason(state, action);
     case 'addSeasonToRole':
-      validateOwnerFunction(state, action);
       return await addSeasonToRole(state, action);
     case 'playRoulette':
-      validateOwnerFunction(state, action);
       return await playRoulette(state, action);
     case 'switchRoulette':
-      validateOwnerFunction(state, action);
       return await switchRoulette(state, action);
     case 'addRoulettePicks':
-      validateOwnerFunction(state, action);
       return await addRoulettePicks(state, action);
     case 'getRoulettePick':
-      validateOwnerFunction(state, action);
       return await getRoulettePick(state, action);
     case 'getRouletteSwitch':
-      validateOwnerFunction(state, action);
       return await getRouletteSwitch(state);
     case 'clearSeasonsAndBoosts':
-      validateOwnerFunction(state, action);
       return await clearSeasonsAndBoosts(state, action);
     case 'addRouletteEntry':
-      validateOwnerFunction(state, action);
       return await addRouletteEntry(state, action);
     case 'getRanking':
-      validateOwnerFunction(state, action);
       return await getRanking(state, action);
-    case 'addPointsCsv':
-      validateOwnerFunction(state, action);
-      return await addPointsCsv(state, action);
+    case 'addPointsForAddress':
+      return await addPointsForAddress(state, action);
 
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
