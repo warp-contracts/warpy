@@ -12,19 +12,21 @@ export default {
 
     let response;
     try {
-      response = (await getStateFromDre(contractId)).state;
+      response = await fetch(`https://dre-warpy.warp.cc/warpy/user-balance?userId=${userId}`).then((res) => {
+        return res.json();
+      });
     } catch (e) {
       await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
-    const address = response.users[userId];
+    const address = response[0].wallet_address;
+
     if (!address) {
       await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
-      return;
     }
 
-    const balance = response.balances[address];
+    const balance = response[0].balance;
 
     await interaction.reply({
       content: `User's tokens balance.`,
