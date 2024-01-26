@@ -7,6 +7,7 @@ export default {
     .setName('counter')
     .setDescription(`Returns number of user's RSG, messages and interactions.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
+    await interaction.deferReply();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
     const userId = interaction.user.id;
@@ -17,18 +18,20 @@ export default {
         return res.json();
       });
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     const counter = response[0].counter;
 
     if (!counter) {
-      await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      await interaction.editReply(
+        'User not registered in the name service. Please ping warpy with `linkwallet` first.'
+      );
       return;
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `User stats.`,
       tts: true,
       components: [

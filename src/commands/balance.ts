@@ -5,6 +5,7 @@ import { Warp } from 'warp-contracts';
 export default {
   data: new SlashCommandBuilder().setName('balance').setDescription(`Returns balance for the given wallet address.`),
   async execute(interaction: any, warp: Warp, wallet: any) {
+    await interaction.deferReply();
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
     const contractId = contract.txId();
 
@@ -16,20 +17,22 @@ export default {
         return res.json();
       });
     } catch (e) {
-      await interaction.reply(`Could not load state from D.R.E. nodes.`);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
     const address = response[0].wallet_address;
 
     if (!address) {
-      await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
+      await interaction.editReply(
+        'User not registered in the name service. Please ping warpy with `linkwallet` first.'
+      );
       return;
     }
 
     const balance = response[0].balance;
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `User's tokens balance.`,
       tts: true,
       components: [
