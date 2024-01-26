@@ -13,21 +13,20 @@ export default {
 
     let response;
     try {
-      response = (await getStateFromDre(contractId)).state;
+      response = await fetch(`https://dre-warpy.warp.cc/warpy/user-counter?userId=${userId}`).then((res) => {
+        return res.json();
+      });
     } catch (e) {
-      console.log(e);
       await interaction.reply(`Could not load state from D.R.E. nodes.`);
       return;
     }
 
-    const address = response.users[userId];
+    const counter = response[0].counter;
 
-    if (!address) {
+    if (!counter) {
       await interaction.reply('User not registered in the name service. Please ping warpy with `linkwallet` first.');
       return;
     }
-
-    const counter: { messages: number; reactions: number; points: number } = response.counter[userId];
 
     await interaction.reply({
       content: `User stats.`,
@@ -39,7 +38,7 @@ export default {
             {
               style: 5,
               label: `Check out contract state`,
-              url: getSonarContractUrl(contract.txId(), true),
+              url: getSonarContractUrl(contractId, true),
               disabled: false,
               type: 2,
             },
