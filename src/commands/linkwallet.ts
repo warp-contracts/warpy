@@ -1,5 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { isEthWallet, getStateFromDre, connectToServerContract, warpyIconUrl, getSonarInteractionUrl, getSonarContractUrl } from '../utils';
+import {
+  isEthWallet,
+  getStateFromDre,
+  connectToServerContract,
+  warpyIconUrl,
+  getSonarInteractionUrl,
+  getSonarContractUrl,
+} from '../utils';
 import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
@@ -10,13 +17,14 @@ export default {
       option.setName('address').setDescription('Your ETH wallet address.').setRequired(true)
     ),
   async execute(interaction: any, warp: Warp, warpWallet: any) {
+    await interaction.deferReply();
     const contract = await connectToServerContract(warp, warpWallet, interaction.guildId);
     // interaction.channel.sendTyping();
 
     const wallet = interaction.options.getString('address');
     const userId = interaction.user.id;
     if (!isEthWallet(wallet)) {
-      await interaction.reply({ content: 'Wallet address is not valid.', ephemeral: true });
+      await interaction.editReply({ content: 'Wallet address is not valid.', ephemeral: true });
       return null;
     }
 
@@ -24,12 +32,12 @@ export default {
     try {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
-      await interaction.reply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
+      await interaction.editReply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
       return;
     }
 
     if (address.length > 0) {
-      await interaction.reply({ content: 'User already registered.', ephemeral: true });
+      await interaction.editReply({ content: 'User already registered.', ephemeral: true });
       return null;
     }
 
@@ -44,7 +52,7 @@ export default {
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
     } catch (e) {
-      await interaction.reply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
+      await interaction.editReply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
       return;
     }
 
@@ -57,7 +65,7 @@ export default {
       );
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `User registered correctly.`,
       tts: true,
       components: [
