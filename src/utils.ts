@@ -7,6 +7,7 @@ import { Message } from 'discord.js';
 import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 
 const SERVERS_CONTRACT = 'ESC8nqUQB6yFPtZJ1homWzsA1CXzcWTkp3mvvwcNikU';
+const REDSTONE_SERVER_CONTRACT_ID = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 
@@ -15,7 +16,8 @@ export function isEthWallet(txId: string): boolean {
 }
 
 export async function connectToServerContract(warp: Warp, wallet: JWKInterface, serverId: string | null) {
-  const contractTxId = await getServerContractId(serverId);
+  const contractTxId = REDSTONE_SERVER_CONTRACT_ID;
+  // const contractTxId = await getServerContractId(serverId);
   return warp
     .contract(contractTxId)
     .connect(wallet)
