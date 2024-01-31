@@ -90,7 +90,6 @@ export const countBoostsPoints = (state: ContractState, boosts: string[], roles:
       }
     }
   });
-  logger.info('BOOST VALUE', boostsValue);
   points = boostsValue > 0 ? points * boostsValue : points;
   return points;
 };

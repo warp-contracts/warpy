@@ -21,11 +21,12 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
     if (txId) {
       const txPoints = await SmartWeave.kv.get(`${onChainTransactionsPrefix}${txId}_${members[i].id}`);
       if (txPoints) {
-        logger.warn(`Transaction: ${txId} for wallet address: ${members[i].id} already rewarded.`);
+        logger.info(`Transaction: ${txId} for wallet address: ${members[i].id} already rewarded.`);
         continue;
       }
     }
-    const userId = Object.keys(state.users).find((u) => state.users[u] == members[i].id);
+    const userId = Object.keys(state.users).find((u) => state.users[u].toLowerCase() == members[i].id.toLowerCase());
+    logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: wallet_id: ${userId}.`);
 
     if (userId) {
       const roles = members[i].roles;
@@ -50,7 +51,9 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
 
       addTokensBalance(state, userId, boostsPoints);
       addPointsEvent.push({ userId, points: boostsPoints, roles });
+      logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: event: ${addPointsEvent}.`);
     } else {
+      logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: user not registered in Warpy.`);
       const tokens = state.balances[members[i].id];
       const newTokensAmount = tokens ? tokens + points : points;
       state.balances[members[i].id] = newTokensAmount;
