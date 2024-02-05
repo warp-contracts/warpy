@@ -27,7 +27,7 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
           sortKey: SmartWeave.transaction.sortKey,
           avaxTxId: txId,
           member: members[i].id,
-          points: JSON.stringify(txPoints)
+          points: JSON.stringify(txPoints),
         });
         continue;
       }
@@ -67,6 +67,14 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
     }
 
     if (txId) {
+      logger.warn(`Putting transaction: ${txId} for wallet address: ${members[i].id} in KV Storage.`, {
+        txId: SmartWeave.transaction.id,
+        kvKey: `${onChainTransactionsPrefix}${txId}_${members[i].id}`,
+        sortKey: SmartWeave.transaction.sortKey,
+        avaxTxId: txId,
+        member: members[i].id,
+        points: JSON.stringify(points),
+      });
       await SmartWeave.kv.put(`${onChainTransactionsPrefix}${txId}_${members[i].id}`, points);
     }
   }
