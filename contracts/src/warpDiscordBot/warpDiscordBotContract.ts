@@ -33,6 +33,8 @@ import { addRouletteEntry } from './roulette/addRouletteEntry';
 import { getRanking } from './points/read/getRanking';
 import { addPointsForAddress } from './points/write/addPointsForAddress';
 import { getUserId } from './namesService/read/getUserId';
+import { changeWallet } from './namesService/write/changeWallet';
+import { setMessagesLimit } from './general/write/setMessagesLimit';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -106,6 +108,10 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await getRanking(state, action);
     case 'addPointsForAddress':
       return await addPointsForAddress(state, action);
+    case 'changeWallet':
+      return await changeWallet(state, action);
+    case 'setMessagesLimit':
+      return await setMessagesLimit(state, action);
 
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);

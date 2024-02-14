@@ -27,17 +27,26 @@ async function main() {
     // adminId: '769844280767807520',
     // members: [{ id: '769844280767807520', roles: 'user' }],
     // noBoost: true,
-    function: 'addPointsForAddress',
-    points: 50,
-    adminId: '769844280767807520',
-    members: [
-      {
-        id: '0xD284e567A89136406F45614F4D06cdddF4125fBa',
-        roles: ['Server Booster', 'Ore Digger', '@everyone'],
-        txId: '0xc29996b7f5a8b108add50c994c742a6ba990231723c933132af1ab47929a1b72',
-      },
-    ],
-    noBoost: false,
+    // function: 'addPointsForAddress',
+    // points: 50,
+    // adminId: '769844280767807520',
+    // members: [
+    //   {
+    //     id: '0xD284e567A89136406F45614F4v06cdddF4127fBa',
+    //     roles: ['Team Warp', 'Verified', '⛏️Early Miner', '@everyone'],
+    //     txId: '0xc399997f5a89108add50c9946742a6ba990231823c933132a1ab47909ab79',
+    //   },
+    // ],
+    // noBoost: false,
+    // function: 'setMessagesLimit',
+    // messagesLimit: {
+    //   max: 10,
+    //   timeLagInSeconds: 3600,
+    // },
+    // adminId: '769844280767807520',
+    function: 'changeWallet',
+    id: '769844280767807520',
+    address: '0x825999DB01C9D7b9A96411FfAd24a6Db6e11dC0c',
   });
   // const test = await contract.viewState({
   //   function: 'getRoulettePick',

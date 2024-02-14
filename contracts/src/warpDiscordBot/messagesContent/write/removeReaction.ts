@@ -40,7 +40,7 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
   }
 
   await SmartWeave.kv.del(boostsPointsKey);
-  await SmartWeave.kv.put(`${removedReactionsPrefix}${userId}_${emojiId}_${messageId}`, 'removed');
+  await SmartWeave.kv.put(`${removedReactionsPrefix}${userId}_${emojiId}${messageId}`, 'removed');
   await SmartWeave.kv.del(rolesKey);
 
   const counterObj = {

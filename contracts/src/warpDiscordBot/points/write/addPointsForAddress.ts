@@ -32,7 +32,8 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
         continue;
       }
     }
-    const userId = Object.keys(state.users).find((u) => state.users[u].toLowerCase() == members[i].id.toLowerCase());
+
+    const userId = getUser(members[i].id, state);
     logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: wallet_id: ${userId}.`);
 
     if (userId) {
@@ -81,3 +82,12 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
 
   return { state, event: { users: addPointsEvent } };
 };
+
+function getUser(address: string, state: ContractState) {
+  for (const user in state.users) {
+    if (state.users[user].toLowerCase() == address.toLowerCase()) {
+      return user;
+    }
+  }
+  return false;
+}

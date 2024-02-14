@@ -7,7 +7,7 @@
     "downlevelIteration": true,
     "allowJs": true,
     "resolveJsonModule": true,
-    "types": ["@types/jest"],
+    "types": ["jest", "node"],
     "typeRoots": ["./node_modules/@types"]
   },
   "exclude": ["./node_modules", "./scrpts"],

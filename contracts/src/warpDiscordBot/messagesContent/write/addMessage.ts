@@ -6,7 +6,10 @@ import {
   messagesPrefix,
   pointsPrefix,
   rolesPrefix,
+  timePrefixMessages,
+  removedMessagesPrefix,
 } from '../../types/types';
+import { exceedsMaxTxsInTimeLag } from './addReaction';
 
 export const addMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
   checkArgumentSet(input, 'userId');
@@ -22,6 +25,20 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
     effectiveContent = content.substring(0, 2000);
   } else {
     effectiveContent = content;
+  }
+
+  if (
+    await exceedsMaxTxsInTimeLag(
+      userId,
+      state.messagesLimit.timeLagInSeconds,
+      timePrefixMessages,
+      state.messagesLimit.max,
+      removedMessagesPrefix
+    )
+  ) {
+    throw new ContractError(
+      `User cannot sent more than ${state.messagesLimit.max} messages in ${state.messagesLimit.timeLagInSeconds} seconds.`
+    );
   }
 
   const effectiveCaller = `${userId}_${messageId}_${SmartWeave.block.timestamp}`;
@@ -53,6 +70,7 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
 
   await SmartWeave.kv.put(`${pointsPrefix}${effectiveCaller}`, boostsPoints);
   await SmartWeave.kv.put(`${rolesPrefix}${effectiveCaller}`, roles);
+  await SmartWeave.kv.put(`${timePrefixMessages}${userId}_${SmartWeave.block.timestamp}_${messageId}`, `${messageId}`);
 
   return { state, event: { userId, points: boostsPoints, roles } };
 };

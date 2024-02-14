@@ -19,8 +19,10 @@ async function main() {
   const wallet = JSON.parse(fs.readFileSync(path.resolve('./.secrets', 'wallet.json'), 'utf-8'));
   const addresses: { id: string; address: string }[] = [];
   const chunkSize = Number(process.argv.slice(3)[0]) || 150;
-  const warp = WarpFactory.forMainnet();
-  const contract = warp.contract(contractId).connect(wallet);
+  const warp = WarpFactory.forMainnet().useGwUrl('https://gw.warp.cc');
+  const contract = warp.contract(contractId).connect(wallet).setEvaluationOptions({
+    sequencerUrl: 'https://gw.warp.cc/',
+  });
 
   let users: { [id: string]: string };
   try {
@@ -49,7 +51,11 @@ async function main() {
           members = await Promise.all(
             chunk.map(async (c) => {
               let roles;
-              const userId = Object.keys(users).find((u) => users[u] == c.address || users[u] == getAddress(c.address));
+              const userId = Object.keys(users).find(
+                (u) =>
+                  users[u].toLowerCase() == c.address.toLowerCase() ||
+                  users[u].toLowerCase() == getAddress(c.address).toLowerCase()
+              );
 
               if (userId) {
                 const request = async () => {
@@ -89,7 +95,7 @@ async function main() {
           continue;
         }
         const addPointsInput = {
-          function: 'addPointsCsv',
+          function: 'addPointsForAddress',
           points,
           adminId: '769844280767807520',
           members,

@@ -102,6 +102,21 @@ describe('Testing warpDiscordBot contract', () => {
     expect((await contract.readState()).cachedValue.state).toEqual(initialState);
   });
 
+  it('should correctly set messages limit', async () => {
+    await contract.writeInteraction({
+      function: 'setMessagesLimit',
+      messagesLimit: {
+        max: 10,
+        timeLagInSeconds: 50,
+      },
+      adminId: 'asia',
+    });
+
+    const { cachedValue } = await contract.readState();
+    expect(cachedValue.state.messagesLimit.max).toBe(10);
+    expect(cachedValue.state.messagesLimit.timeLagInSeconds).toBe(50);
+  });
+
   it('should correctly register user', async () => {
     await contract.writeInteraction({ function: 'registerUser', id: 'asia', address: owner });
 
@@ -2005,5 +2020,44 @@ describe('Testing warpDiscordBot contract', () => {
     ).result;
 
     expect(result.pick).toBeTruthy();
+  });
+
+  it('should not allow to change user wallet to an existing one', async () => {
+    await expect(
+      contract.writeInteraction({ function: 'changeWallet', id: 'tomek', address: owner }, { strict: true })
+    ).rejects.toThrow('Address already assigned');
+  });
+
+  it('should not allow to change user wallet if there is no id', async () => {
+    await expect(
+      contract.writeInteraction(
+        { function: 'changeWallet', id: 'non-existing', address: 'new address' },
+        { strict: true }
+      )
+    ).rejects.toThrow('Id not registered');
+  });
+
+  it('should correctly change user wallet', async () => {
+    await contract.writeInteraction(
+      { function: 'changeWallet', id: 'tomek', address: 'new address' },
+      { strict: true }
+    );
+
+    const address = (
+      await contract.viewState<{ function: string; id: string }, { address: string }>({
+        function: 'getAddress',
+        id: 'tomek',
+      })
+    ).result.address;
+    expect(address).toEqual('new address');
+  });
+
+  it('should return the same balance after changing the wallet', async () => {
+    const result = await contract.viewState<
+      { function: string; target: string },
+      { target: string; ticker: string; balance: number }
+    >({ function: 'balance', target: 'new address' });
+
+    expect(result.result.balance).toEqual(201);
   });
 });

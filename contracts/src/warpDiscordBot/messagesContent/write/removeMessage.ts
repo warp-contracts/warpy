@@ -6,6 +6,7 @@ import {
   messagesPrefix,
   pointsPrefix,
   rolesPrefix,
+  removedMessagesPrefix,
 } from '../../types/types';
 
 export const removeMessage = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
@@ -42,6 +43,7 @@ export const removeMessage = async (state: ContractState, { input }: ContractAct
   await SmartWeave.kv.del(message[0]);
   await SmartWeave.kv.del(boostsPointsKey);
   await SmartWeave.kv.del(rolesKey);
+  await SmartWeave.kv.put(`${removedMessagesPrefix}${userId}_${messageId}`, 'removed');
 
   const counter = state.counter[userId];
   const counterObj = {

@@ -6387,10 +6387,10 @@ warp-contracts-plugin-vrf@^1.0.4:
     "@idena/vrf-js" "^1.0.1"
     elliptic "^6.5.4"
 
-warp-contracts@1.4.20-beta.1:
-  version "1.4.20-beta.1"
-  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.20-beta.1.tgz#2de722722803ea6642cb79a90208f9ab0a4a083d"
-  integrity sha512-UDkzz4ef9u7KsbtroihTTZ31BEaj+tDt1dhWiMUFZnH0Dp2hn2w7fURrEtcziUJDxj6VpcdJ+1rT4yXIL3mqRg==
+warp-contracts@^1.4.34:
+  version "1.4.34"
+  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.34.tgz#896c6ab62e20c1230f6e9bcdcf0c18c454e172f5"
+  integrity sha512-2xqMd3GRoMbTByRiPUknPD0+Egeq+qebPpP2jkkTBimu3z2VncTc9GDWh23X9FXlo5sYjcNpNxj8yLaryCi3zw==
   dependencies:
     archiver "^5.3.0"
     arweave "1.13.7"

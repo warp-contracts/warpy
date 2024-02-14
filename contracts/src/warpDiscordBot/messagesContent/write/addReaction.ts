@@ -21,7 +21,15 @@ export const addReaction = async (state: ContractState, { input }: ContractActio
 
   const { userId, roles, messageId, emojiId } = input;
 
-  if (await exceedsMaxReactionsInTimeLag(state, userId)) {
+  if (
+    await exceedsMaxTxsInTimeLag(
+      userId,
+      state.reactions.timeLagInSeconds,
+      timePrefix,
+      state.reactions.max,
+      removedReactionsPrefix
+    )
+  ) {
     throw new ContractError(
       `User cannot sent more than ${state.reactions.max} reactions in ${state.reactions.timeLagInSeconds} seconds.`
     );
@@ -53,36 +61,42 @@ export const addReaction = async (state: ContractState, { input }: ContractActio
   );
   await SmartWeave.kv.put(
     `${timePrefix}${userId}_${SmartWeave.block.timestamp}_${emojiId}_${messageId}`,
-    `${emojiId}_${messageId}`
+    `${emojiId}${messageId}`
   );
   await SmartWeave.kv.put(`${rolesPrefix}${userId}_${emojiId}_${messageId}_${SmartWeave.block.timestamp}`, roles);
 
   return { state, event: { userId, roles, points: boostsPoints } };
 };
 
-const exceedsMaxReactionsInTimeLag = async (state: ContractState, userId: string) => {
+export const exceedsMaxTxsInTimeLag = async (
+  userId: string,
+  timeLagInSeconds: number,
+  prefix: string,
+  max: number,
+  removedTxsPrefix: string
+) => {
   const currentTimestamp = SmartWeave.block.timestamp;
-  const timeLagTimestamp = currentTimestamp - state.reactions.timeLagInSeconds;
-  const timeLagReactions = await SmartWeave.kv.kvMap({
-    gte: `${timePrefix}${userId}_${timeLagTimestamp}`,
-    lt: `${timePrefix}${userId}_${currentTimestamp}\xff`,
+  const timeLagTimestamp = currentTimestamp - timeLagInSeconds;
+  const timeLagTxs = await SmartWeave.kv.kvMap({
+    gte: `${prefix}${userId}_${timeLagTimestamp}`,
+    lt: `${prefix}${userId}_${currentTimestamp}\xff`,
   });
-  const timeLagReactionsValues = [...timeLagReactions.values()];
-  const timeLagReactionsKeys = [...timeLagReactions.keys()];
+  const timeLagValues = [...timeLagTxs.values()];
+  const timeLagKeys = [...timeLagTxs.keys()];
 
-  const removedReactions = await SmartWeave.kv.keys({
-    gte: `${removedReactionsPrefix}`,
-    lt: `${removedReactionsPrefix}\xff`,
+  const removedTxs = await SmartWeave.kv.keys({
+    gte: `${removedTxsPrefix}${userId}`,
+    lt: `${removedTxsPrefix}${userId}\xff`,
   });
-  for (let i = 0; i < timeLagReactionsValues.length; i++) {
-    for (let j = 0; j < removedReactions.length; j++) {
-      const n = removedReactions[j].lastIndexOf('_', removedReactions[j].lastIndexOf('_') - 1);
-      const removedReactionId = removedReactions[j].substring(n + 1);
-      if (timeLagReactionsValues[i] == removedReactionId) {
-        timeLagReactions.delete(timeLagReactionsKeys[i]);
+  for (let i = 0; i < timeLagValues.length; i++) {
+    for (let j = 0; j < removedTxs.length; j++) {
+      // const n = removedTxs[j].lastIndexOf('_', removedTxs[j].lastIndexOf('_') - 1);
+      const removedTxId = removedTxs[j].split('_')[1];
+      if (timeLagValues[i] == removedTxId) {
+        timeLagTxs.delete(timeLagKeys[i]);
         break;
       }
     }
   }
-  return timeLagReactions.size == state.reactions.max;
+  return timeLagTxs.size == max;
 };

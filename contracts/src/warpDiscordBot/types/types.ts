@@ -35,6 +35,10 @@ export interface ContractState {
     max: number;
     timeLagInSeconds: number;
   };
+  messagesLimit?: {
+    max: number;
+    timeLagInSeconds: number;
+  };
   divisibility: number;
   rouletteEntry: number;
   roulettePicks?: WeightedOption[];
@@ -146,6 +150,10 @@ export interface ContractInput {
   interactionId: string;
   rouletteEntry: number;
   limit: number;
+  messagesLimit: {
+    max: number;
+    timeLagInSeconds: number;
+  };
 }
 
 export interface WeightedOption {
@@ -207,7 +215,9 @@ export type ContractFunction =
   | 'clearSeasonsAndBoosts'
   | 'addRouletteEntry'
   | 'getRanking'
-  | 'addPointsForAddress';
+  | 'addPointsForAddress'
+  | 'changeWallet'
+  | 'setMessagesLimit';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 
@@ -222,3 +232,5 @@ export const removedReactionsPrefix = `removedReactions.`;
 export const roulettePrefix = `roulette.`;
 export const rolesPrefix = `roles.`;
 export const onChainTransactionsPrefix = `onChainTransactions.`;
+export const timePrefixMessages = `timeMessages.`;
+export const removedMessagesPrefix = `removedMessages.`;
