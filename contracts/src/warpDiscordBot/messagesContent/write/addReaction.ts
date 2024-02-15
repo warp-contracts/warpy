@@ -90,7 +90,6 @@ export const exceedsMaxTxsInTimeLag = async (
   });
   for (let i = 0; i < timeLagValues.length; i++) {
     for (let j = 0; j < removedTxs.length; j++) {
-      // const n = removedTxs[j].lastIndexOf('_', removedTxs[j].lastIndexOf('_') - 1);
       const removedTxId = removedTxs[j].split('_')[1];
       if (timeLagValues[i] == removedTxId) {
         timeLagTxs.delete(timeLagKeys[i]);

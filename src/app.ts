@@ -7,11 +7,14 @@ import fs from 'fs';
 import express from 'express';
 import routes from './router/app';
 import { RequestWithContext } from './types/express';
+import { TransactionsPerTimeLag } from './types/discord';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8080;
+
+const messages: TransactionsPerTimeLag = {};
 
 async function main() {
   const client = new Client({
@@ -75,7 +78,7 @@ async function main() {
       client.once(event.default.name, (...args) => event.default.execute(...args));
     } else {
       if (event.default.name == 'messageCreate' || event.default.name == 'messageDelete') {
-        client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
+        client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet, messages));
       } else if (event.default.name == 'messageReactionAdd') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet));
       } else if (event.default.name == 'messageReactionRemove') {

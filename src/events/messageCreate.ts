@@ -1,57 +1,31 @@
 import { Message } from 'discord.js';
-// import { JWKInterface, Tag, Warp } from 'warp-contracts';
-// import {
-//   connectToServerContract,
-//   DAILY_MESSAGES_LIMIT,
-//   getMessageArgs,
-//   getServerContractId,
-//   getStateFromDre,
-// } from '../utils';
-
-// export async function onMessageCreate(
-//   message: Message<boolean>,
-//   warp: Warp,
-//   wallet: JWKInterface,
-//   userToMessages: { [userId: string]: number }
-// ): Promise<{ [userId: string]: number } | null> {
-//   const id = `${message.guildId}_${message.author.id}`;
-//   if (message.author.bot) return null;
-//   if (userToMessages[id] > DAILY_MESSAGES_LIMIT) return null;
-
-//   const contract = await connectToServerContract(warp, wallet, message.guildId);
-
-//   } else {
-//     await contract.writeInteraction(
-//       {
-//         function: 'addMessage',
-//         id: message.author.id,
-//         content: message.content,
-//         messageId: message.id,
-//       },
-//       {
-//         tags: [new Tag('Indexed-By', `message-add;${message.author.id};${message.guildId};`)],
-//       }
-//     );
-//     return {
-//       ...userToMessages,
-//       [id]: (userToMessages[id] || 0) + 1,
-//     };
-//   }
-// }
 
 import { Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, getStateFromDre } from '../utils';
+import { TransactionsPerTimeLag } from '../types/discord';
+
+const MESSAGES_LIMIT = 10;
+const MESSAGES_TIMESTAMP_LIMIT = 3600000;
 
 export default {
   name: 'messageCreate',
-  async execute(message: Message, warp: Warp, wallet: any) {
-    // const id = `${message.guildId}_${message.author.id}`;
+  async execute(message: Message, warp: Warp, wallet: any, messagesPerTimeLag: TransactionsPerTimeLag) {
     if (message.author.bot) return;
-    // if (userToMessages[id] > DAILY_MESSAGES_LIMIT) return null;
 
     if (message.content == '') {
       return;
     } else {
+      if (message.channelId == '1207350735545700373') {
+        limitTransactionsPerTimeLag(
+          MESSAGES_TIMESTAMP_LIMIT,
+          messagesPerTimeLag,
+          message.author.id,
+          message.createdTimestamp,
+          message.id,
+          MESSAGES_LIMIT,
+          'message'
+        );
+      }
       const contract = await connectToServerContract(warp, wallet, message.guildId);
       try {
         const result = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result[0];
@@ -75,4 +49,34 @@ export default {
       );
     }
   },
+};
+
+export const limitTransactionsPerTimeLag = (
+  timestampLimit: number,
+  transactions: TransactionsPerTimeLag,
+  userId: string,
+  transactionTimestamp: number,
+  transactionId: string,
+  transactionsLimit: number,
+  typeOfTransaction: 'message' | 'reaction'
+) => {
+  const currentTimestamp = Date.now();
+  const limitedTimestamp = currentTimestamp - timestampLimit;
+  const userTransactions = transactions[userId];
+  if (userTransactions) {
+    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= limitedTimestamp);
+    transactions[userId] = userTransactionsLimited;
+    if (userTransactions.length < transactionsLimit) {
+      transactions[userId].push({ timestamp: transactionTimestamp, txId: transactionId });
+    } else {
+      console.warn(
+        `Skipping ${typeOfTransaction} sending. Trasaction author: ${userId}, transaction id: ${transactionId}.`
+      );
+      return;
+    }
+  } else {
+    console.info(`Adding user to ${typeOfTransaction} transactionsPerTimeLag: ${userId}.`);
+    transactions[userId] = [{ timestamp: transactionTimestamp, txId: transactionId }];
+    console.dir(transactions, { depth: null });
+  }
 };
