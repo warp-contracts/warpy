@@ -1,13 +1,35 @@
 import { User } from 'discord.js';
 import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, getStateFromDre } from '../utils';
+import { limitTransactionsPerTimeLag } from './messageCreate';
+import { TransactionsPerTimeLag } from '../types/discord';
+
+const REACTIONS_TIMESTAMP_LIMIT = 3600000;
+const REACTIONS_LIMIT = 10;
 
 export default {
   name: 'messageReactionAdd',
-  async execute(reactionOrigin: any, user: User, warp: Warp, wallet: JWKInterface) {
-    // const id = `${reactionOrigin.message.guildId}_${user.id}`;
+  async execute(
+    reactionOrigin: any,
+    user: User,
+    warp: Warp,
+    wallet: JWKInterface,
+    reactionsPerTimeLag: TransactionsPerTimeLag
+  ) {
     if (user.bot) return;
-    // if (userToReactions[id] > DAILY_REACTIONS_LIMIT) return;
+
+    const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
+
+    limitTransactionsPerTimeLag(
+      REACTIONS_TIMESTAMP_LIMIT,
+      reactionsPerTimeLag,
+      user.id,
+      Date.now(),
+      `${reactionOrigin.message.id}_${emojiId}`,
+      REACTIONS_LIMIT,
+      'reaction'
+    );
+
     try {
       const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
       try {
@@ -21,9 +43,6 @@ export default {
       const guild = user.client.guilds.cache.get(reactionOrigin.message.guildId);
       const member = guild?.members.cache.get(user.id);
       const roles = member?.roles.cache.map((r: any) => r.name);
-      const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) =>
-        m.codePointAt(0).toString(16)
-      );
 
       await contract.writeInteraction(
         {

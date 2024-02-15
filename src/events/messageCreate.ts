@@ -15,17 +15,15 @@ export default {
     if (message.content == '') {
       return;
     } else {
-      if (message.channelId == '1207350735545700373') {
-        limitTransactionsPerTimeLag(
-          MESSAGES_TIMESTAMP_LIMIT,
-          messagesPerTimeLag,
-          message.author.id,
-          message.createdTimestamp,
-          message.id,
-          MESSAGES_LIMIT,
-          'message'
-        );
-      }
+      limitTransactionsPerTimeLag(
+        MESSAGES_TIMESTAMP_LIMIT,
+        messagesPerTimeLag,
+        message.author.id,
+        message.createdTimestamp,
+        message.id,
+        MESSAGES_LIMIT,
+        'message'
+      );
       const contract = await connectToServerContract(warp, wallet, message.guildId);
       try {
         const result = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result[0];

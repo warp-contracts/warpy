@@ -1,13 +1,29 @@
 import { User } from 'discord.js';
 import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, getStateFromDre } from '../utils';
+import { TransactionsPerTimeLag } from '../types/discord';
+import { deleteFromLimitedTransactionsIfExists } from './messageDelete';
 
 export default {
   name: 'messageReactionRemove',
-  async execute(reactionOrigin: any, user: User, warp: Warp, wallet: JWKInterface) {
-    // const id = `${reactionOrigin.message.guildId}_${user.id}`;
+  async execute(
+    reactionOrigin: any,
+    user: User,
+    warp: Warp,
+    wallet: JWKInterface,
+    reactionsPerTimeLag: TransactionsPerTimeLag
+  ) {
     if (user.bot) return;
-    // if (userToReactions[id] > DAILY_REACTIONS_LIMIT) return;
+
+    const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
+
+    deleteFromLimitedTransactionsIfExists(
+      reactionsPerTimeLag,
+      user.id,
+      `${reactionOrigin.message.id}_${emojiId}`,
+      'reaction'
+    );
+
     try {
       const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
       try {
@@ -18,7 +34,6 @@ export default {
       } catch (e) {
         return;
       }
-      const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
       await contract.writeInteraction(
         {
           function: 'removeReaction',
