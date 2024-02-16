@@ -10,6 +10,7 @@ const SERVERS_CONTRACT = 'ESC8nqUQB6yFPtZJ1homWzsA1CXzcWTkp3mvvwcNikU';
 const REDSTONE_SERVER_CONTRACT_ID = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
+export const DRE_WARPY = 'https://dre-warpy.warp.cc';
 
 export function isEthWallet(txId: string): boolean {
   return ethers.isAddress(txId);
