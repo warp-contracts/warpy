@@ -18,6 +18,7 @@ export default {
         return;
       }
     } catch (e) {
+      console.dir(e, { depth: null });
       console.error(`Could not load state from DRE in roleAdd event.`);
       return;
     }
@@ -40,6 +41,7 @@ export default {
             points: r.points,
             adminId: process.env.ADMIN_ID,
             members: [{ id: newMember.id, roles: newMember.roles.cache.map((r: any) => r.name) }],
+            noBoost: true,
           },
           {
             tags: [new Tag('Indexed-By', `role-reward;${memberId};${newMember.guild.id};`)],
