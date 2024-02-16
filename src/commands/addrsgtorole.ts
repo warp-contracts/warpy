@@ -52,7 +52,7 @@ export default {
         id: member.user.id,
         roles: member.roles.cache.map((r: any) => r.name),
       }));
-    const chunkSize = 5;
+    const chunkSize = 150;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       const addPointsInput = {
