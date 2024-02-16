@@ -12,3 +12,8 @@ interface TransactionsPerTimeLag {
     txId: string;
   }[];
 }
+
+interface RolesToBeRewarded {
+  role: string;
+  points: number;
+}
