@@ -12,11 +12,10 @@ export async function userRoles(req: RequestWithContext, res: Response) {
       res.status(422).send(`Server id is not set.`);
     } else {
       const guild = await req.ctx?.client.guilds.fetch(req.ctx?.serverId);
-      await guild?.members.fetch(id as string).then((member: GuildMember) => {
-        const roles = member.roles.cache.map((r: Role) => r.name);
-        res.send(roles);
-        res.status(200);
-      });
+      const member = await guild?.members.fetch(id as string);
+      const roles = member.roles.cache.map((r: Role) => r.name);
+      res.send(roles);
+      res.status(200);
     }
   } catch (e: any) {
     res.status(500).send(e.message);
