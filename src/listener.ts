@@ -22,7 +22,7 @@ async function main() {
     ],
     partials: [Partials.Message, Partials.Reaction],
   });
-  client.login(process.env.DISCORD_TOKEN);
+  await client.login(process.env.DISCORD_TOKEN);
   const ctx = {
     client,
     serverId: process.env.SERVER_ID,
