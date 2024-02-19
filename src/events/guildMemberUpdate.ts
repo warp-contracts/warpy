@@ -13,13 +13,13 @@ export default {
   async execute(oldMember: GuildMember, newMember: GuildMember, warp: Warp, wallet: JWKInterface) {
     const contract = await connectToServerContract(warp, wallet, newMember.guild.id);
     try {
-      const result = (await getStateFromDre(contract.txId(), 'users', newMember.id)).result[0];
+      const result = (await getStateFromDre(contract.txId(), 'users', newMember.id)).result;
       if (result.length == 0) {
+        console.info(`User not registered in Warpy. User id: ${newMember.id}.`);
         return;
       }
     } catch (e) {
-      console.dir(e, { depth: null });
-      console.error(`Could not load state from DRE in roleAdd event.`);
+      console.error(`Could not load state from DRE in roleAdd event. User: ${newMember.id}. ${JSON.stringify(e)}`);
       return;
     }
 
