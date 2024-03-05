@@ -6,7 +6,7 @@ import { RolesToBeRewarded } from '../types/discord';
 const rolesToBeRewarded: RolesToBeRewarded[] = [
   { role: 'Ore Digger', points: 1000 },
   { role: 'Rock Breaker', points: 5000 },
-  { role: '🤝frens', points: 100000 },
+  { role: '🤝Frens', points: 100000 },
 ];
 
 export default {
