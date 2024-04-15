@@ -28,7 +28,7 @@ export default {
       return null;
     }
 
-    let address: string | [];
+    let address: string | undefined;
     try {
       address = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
@@ -36,7 +36,7 @@ export default {
       return;
     }
 
-    if (address.length > 0) {
+    if (!address) {
       await interaction.editReply({ content: 'User already registered.', ephemeral: true });
       return null;
     }
@@ -47,7 +47,7 @@ export default {
       address: wallet,
     })) as WriteInteractionResponse;
 
-    let result: { interactions: number; reactions: number }[];
+    let result: { interactions: number; reactions: number };
 
     try {
       result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
@@ -56,7 +56,7 @@ export default {
       return;
     }
 
-    if (result.length > 0) {
+    if (result) {
       await contract.writeInteraction(
         { function: 'mint', id: userId },
         {

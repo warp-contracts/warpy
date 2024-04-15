@@ -15,7 +15,7 @@ export default {
     const contract = await connectToServerContract(warp, wallet, newMember.guild.id);
     try {
       const result = (await getStateFromDre(contract.txId(), 'users', newMember.id)).result;
-      if (result.length == 0) {
+      if (!result) {
         console.info(`User not registered in Warpy. User id: ${newMember.id}.`);
         return;
       }

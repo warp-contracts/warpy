@@ -49,38 +49,25 @@ export function readWallet() {
 }
 
 export async function getStateFromDre(contractId: string, propertyToGet?: string, id?: string) {
-  const dreWarpy = `dre-warpy`;
-  const dre1 = `dre-1`;
-  const dre3 = `dre-3`;
-  const dre5 = `dre-5`;
   try {
-    const response = await fetchDre(dreWarpy, contractId, propertyToGet, id);
+    const response = await fetchDreWarpy(contractId, propertyToGet, id);
     return response;
   } catch (e) {
-    try {
-      const response = await fetchDre(dre1, contractId, propertyToGet, id);
-      return response;
-    } catch (e) {
-      try {
-        const response = await fetchDre(dre3, contractId, propertyToGet, id);
-        return response;
-      } catch (e) {
-        try {
-          const response = await fetchDre(dre5, contractId, propertyToGet, id);
-          return response;
-        } catch (e) {
-          throw new Error(`Could not load state from DRE nodes.`);
-        }
-      }
-    }
+    console.error(`Failed to fetch state from dre`, e);
+    throw new Error(`Could not load state from DRE nodes.`);
   }
 }
 
-async function fetchDre(dre: string, contractId: string, propertyToGet?: string, id?: string) {
+async function fetchDreWarpy(contractId: string, propertyToGet?: string, id?: string) {
+  if (propertyToGet) {
+    return await fetch(
+        `https://dre-warpy.warp.cc/pg/contract?id=${contractId}&query=$.${propertyToGet}${id ? `."${id}"` : ''}`
+    ).then((res) => {
+      return res.json();
+    });
+  }
   return await fetch(
-    `https://${dre}.warp.cc/contract?id=${contractId}${
-      propertyToGet ? `&query=$.${propertyToGet}${id ? `.${id}` : ''}` : ''
-    }`
+    `https://dre-warpy.warp.cc/contract?id=${contractId}`
   ).then((res) => {
     return res.json();
   });

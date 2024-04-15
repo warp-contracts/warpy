@@ -21,7 +21,7 @@ export default {
     const contract = await connectToServerContract(warp, wallet, interaction.guildId);
 
     try {
-      const result = (await getStateFromDre(contract.txId(), 'admins')).result[0];
+      const result = (await getStateFromDre(contract.txId(), 'admins')).result;
       if (!result.includes(interaction.user.id)) {
         await interaction.reply('Only admin can award RSG.');
         return;

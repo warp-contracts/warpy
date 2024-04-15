@@ -20,8 +20,8 @@ export default {
 
     let response: any;
     try {
-      response = (await getStateFromDre(contract.txId())).state;
-      if (!response['admins'].includes(interaction.user.id)) {
+      response = (await getStateFromDre(contract.txId(), 'admins')).result;
+      if (!response.includes(interaction.user.id)) {
         await interaction.editReply('Only admin can award RSG.');
         return;
       }

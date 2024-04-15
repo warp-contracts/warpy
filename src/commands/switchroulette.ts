@@ -19,7 +19,7 @@ export default {
     const contractId = contract.txId();
 
     try {
-      const result = (await getStateFromDre(contractId, 'admins')).result[0];
+      const result = (await getStateFromDre(contractId, 'admins')).result;
       if (!result.includes(interaction.user.id)) {
         await interaction.editReply('Only admin can switch roulette.');
         return;

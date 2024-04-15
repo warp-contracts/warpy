@@ -27,7 +27,7 @@ export default {
       return null;
     }
 
-    let user: string | [];
+    let user: string | undefined;
     try {
       user = (await getStateFromDre(contract.txId(), 'users', userId)).result;
     } catch (e) {
@@ -35,7 +35,7 @@ export default {
       return;
     }
 
-    if (user.length == 0) {
+    if (!user) {
       await interaction.editReply({ content: 'User not registered. Please use /linkwallet command.', ephemeral: true });
       return null;
     }

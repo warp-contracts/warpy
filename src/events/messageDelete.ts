@@ -21,8 +21,8 @@ export default {
       }
       const contract = await connectToServerContract(warp, wallet, message.guildId);
       try {
-        const result = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result[0];
-        if (result.length == 0) {
+        const result = (await getStateFromDre(contract.txId(), 'users', message.author.id)).result;
+        if (!result) {
           return;
         }
       } catch (e) {

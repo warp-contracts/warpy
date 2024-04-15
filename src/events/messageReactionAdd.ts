@@ -33,8 +33,8 @@ export default {
     try {
       const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
       try {
-        const result = (await getStateFromDre(contract.txId(), 'users', user.id)).result[0];
-        if (result.length == 0) {
+        const result = (await getStateFromDre(contract.txId(), 'users', user.id)).result;
+        if (!result) {
           return;
         }
       } catch (e) {
