@@ -143,7 +143,7 @@ export interface ContractInput {
   roles: string[];
   role: string;
   noBoost?: boolean;
-  members: { id: string; roles: string[]; txId?: string }[];
+  members: { id: string; roles: string[]; txId?: string; points?: number }[];
   userId: string;
   emojiId: string;
   roulettePicks: WeightedOption[];
