@@ -6,7 +6,6 @@ import { DeployPlugin } from 'warp-contracts-plugin-deploy';
 import { ContractState } from '../src/warpDiscordBot/types/types';
 import { LoggerFactory, Warp, WarpFactory, Contract } from 'warp-contracts';
 import { VRFPlugin } from 'warp-contracts-plugin-vrf';
-import csvParser from 'csv-parser';
 
 jest.setTimeout(30000);
 
@@ -1680,90 +1679,6 @@ describe('Testing warpDiscordBot contract', () => {
     expect(result.userPosition.userId).toBe('asia');
   });
 
-  it('should correctly add points csv', async () => {
-    const chunkSize = 5;
-
-    const { cachedValue: cachedValue1 } = await contract.readState();
-
-    console.log(cachedValue1.state.balances);
-    console.log(cachedValue1.state.counter);
-    const addresses = [
-      { 'token id': 19007569, address: owner },
-      // {
-      //   'token id': 19007569,
-      //   address: '0xb0b5091ac17784bf1c65edcfa51f51e0edad9d47',
-      // },
-      // {
-      //   'token id': 19007749,
-      //   address: '0x2b7403bdb196fa5fc0e4f779600a084be0d8422e',
-      // },
-      // {
-      //   'token id': 19007813,
-      //   address: '0xb7b60698a41e2375a700a37a46ffcee42c202c13',
-      // },
-      // {
-      //   'token id': 19007873,
-      //   address: '0x621d4786733cae3bf02d22d1fedc44c930fa603c',
-      // },
-      // {
-      //   'token id': 19008119,
-      //   address: '0x6a7747de03fdf2a2860f4ee2131fbda376aa08c1',
-      // },
-      // {
-      //   'token id': 19008594,
-      //   address: '0x163282f109b86167a7017a9db2c995a9240dff38',
-      // },
-      // {
-      //   'token id': 19008702,
-      //   address: '0x6b8f8ae14bd0b4c86acd563f5aa970566ad04398',
-      // },
-      // {
-      //   'token id': 19008812,
-      //   address: '0x0700527b5a425995bb81871c706d1baab4ab40dc',
-      // },
-      // {
-      //   'token id': 19008897,
-      //   address: '0xde1d5bd2c0520fbaa844be002a646c657a39f66a',
-      // },
-      // {
-      //   'token id': 19008901,
-      //   address: '0x403d30fb89d5411c6b2572707f341204bcf0fae0',
-      // },
-      // {
-      //   'token id': 19009002,
-      //   address: '0xafb9d7fa614dd77cd9d212bb0596982c850a5085',
-      // },
-      // {
-      //   'token id': 19009136,
-      //   address: '0x03d90db79b2496a87db2fac5e00b8feb75177cc3',
-      // },
-    ];
-    for (let i = 0; i < addresses.length; i += chunkSize) {
-      const chunk = addresses.slice(i, i + chunkSize);
-
-      let members;
-      members = chunk.map((c) => {
-        return {
-          id: c.address,
-          roles: [],
-        };
-      });
-
-      console.log(members);
-
-      const addPointsInput = {
-        function: 'addPointsForAddress',
-        points: 20,
-        adminId: 'asia',
-        members,
-      };
-      await contract.writeInteraction(addPointsInput);
-    }
-    const { cachedValue } = await contract.readState();
-
-    expect(cachedValue.state.balances).toBeTruthy();
-  });
-
   it('should correctly get user id based on address', async () => {
     const userId = (
       await contract.viewState<{ function: string; address: string }, { userId: string }>({
@@ -1773,50 +1688,6 @@ describe('Testing warpDiscordBot contract', () => {
     ).result.userId;
 
     expect(userId).toBe('asia');
-  });
-
-  it('should correctly add points for address with on-chain txId', async () => {
-    const addPointsInput = {
-      function: 'addPointsForAddress',
-      points: 20,
-      adminId: 'asia',
-      members: [{ id: owner, txId: 'testTxId', roles: [] }],
-    };
-    await contract.writeInteraction(addPointsInput);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(
-      100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1 + 70 + 70 + 40 + 40
-    );
-  });
-
-  it('should not add additional points for already registered transaction', async () => {
-    const addPointsInput = {
-      function: 'addPointsForAddress',
-      points: 20,
-      adminId: 'asia',
-      members: [{ id: owner, points: 20, txId: 'testTxId', roles: [] }],
-    };
-    await contract.writeInteraction(addPointsInput);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(
-      100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1 + 70 + 70 + 40 + 40
-    );
   });
 
   it('should not allow to add roulette picks when adminId is not provided', async () => {

@@ -9,7 +9,7 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
   validateString(input, 'adminId');
   checkArgumentSet(input, 'members');
 
-  const { points, adminId, members, noBoost } = input;
+  const { adminId, members, noBoost } = input;
   if (!state.admins.includes(adminId)) {
     throw new ContractError(`Only admin can award points.`);
   }
@@ -34,6 +34,7 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
     }
 
     const userId = getUser(members[i].id, state);
+    const points = members[i].points || input.points;
     logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: wallet_id: ${userId}.`);
 
     if (userId) {
