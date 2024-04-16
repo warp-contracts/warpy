@@ -36,7 +36,7 @@ export default {
       return;
     }
 
-    if (!address) {
+    if (address) {
       await interaction.editReply({ content: 'User already registered.', ephemeral: true });
       return null;
     }
