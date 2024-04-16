@@ -21,16 +21,28 @@ export default {
       return;
     }
 
-    const address = response[0].wallet_address;
+    let address: string | undefined;
+    let balance: number | null;
+
+    address = response[0].wallet_address;
 
     if (!address) {
-      await interaction.editReply(
-        `User not registered in the name service. Please ping warpy with 'linkwallet' first. If you've already registered to Warpy - you must gain some RSG in order to see the balance.`
-      );
-      return;
+      try {
+        address = (await getStateFromDre(contract.txId(), 'users', userId))?.result;
+      } catch (e) {
+        await interaction.editReply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
+        return;
+      }
+      if (!address) {
+        await interaction.editReply(
+          `User not registered in the name service. Please ping warpy with 'linkwallet' first.`
+        );
+        return;
+      }
+      balance = null;
+    } else {
+      balance = response[0].balance;
     }
-
-    const balance = response[0].balance;
 
     await interaction.editReply({
       content: `User's tokens balance.`,
