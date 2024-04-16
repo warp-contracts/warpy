@@ -26,8 +26,7 @@ export default {
 
     if (!counter) {
       await interaction.editReply(
-        `User not registered in the name service. Please ping warpy with 'linkwallet' first.\n
-        If you've already registered to Warpy - you must gain some RSG in order to see it here.`
+        `User not registered in the name service. Please ping warpy with 'linkwallet' first. If you've already registered to Warpy - you must gain some RSG in order to see it here.`
       );
       return;
     }
