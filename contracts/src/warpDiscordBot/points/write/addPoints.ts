@@ -3,8 +3,6 @@ import { addTokensBalance, countBoostsPoints } from '../../messagesContent/write
 import { ContractAction, ContractState, ContractResult } from '../../types/types';
 
 export const addPoints = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
-  checkArgumentSet(input, 'points');
-  validateInteger(input, 'points');
   checkArgumentSet(input, 'adminId');
   validateString(input, 'adminId');
   checkArgumentSet(input, 'members');
@@ -21,6 +19,9 @@ export const addPoints = async (state: ContractState, { input }: ContractAction)
     const roles = members[i].roles;
     const counter = state.counter[id];
     const points = members[i].points || input.points;
+    if (!Number.isInteger(points)) {
+      throw new ContractError(`Invalid points for member ${id}`);
+    }
 
     let boostsPoints = points;
     let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
