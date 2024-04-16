@@ -22,13 +22,25 @@ export default {
       return;
     }
 
-    const counter = response[0].counter;
+    let counter: any;
+    let address: string | null;
+
+    counter = response[0].counter;
 
     if (!counter) {
-      await interaction.editReply(
-        `User not registered in the name service. Please ping warpy with 'linkwallet' first. If you've already registered to Warpy - you must gain some RSG in order to see it here.`
-      );
-      return;
+      try {
+        address = (await getStateFromDre(contract.txId(), 'users', userId))?.result;
+      } catch (e) {
+        await interaction.editReply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
+        return;
+      }
+      if (!address) {
+        await interaction.editReply(
+          `User not registered in the name service. Please ping warpy with 'linkwallet' first.`
+        );
+        return;
+      }
+      counter = null;
     }
 
     await interaction.editReply({
