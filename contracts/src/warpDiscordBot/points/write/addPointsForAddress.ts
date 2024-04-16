@@ -3,8 +3,6 @@ import { addTokensBalance, countBoostsPoints } from '../../messagesContent/write
 import { ContractAction, ContractState, ContractResult, onChainTransactionsPrefix } from '../../types/types';
 
 export const addPointsForAddress = async (state: ContractState, { input }: ContractAction): Promise<ContractResult> => {
-  checkArgumentSet(input, 'points');
-  validateInteger(input, 'points');
   checkArgumentSet(input, 'adminId');
   validateString(input, 'adminId');
   checkArgumentSet(input, 'members');
@@ -35,6 +33,9 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
 
     const userId = getUser(members[i].id, state);
     const points = members[i].points || input.points;
+    if (!Number.isInteger(points)) {
+      throw new ContractError(`Invalid points for member ${userId}`);
+    }
     logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: wallet_id: ${userId}.`);
 
     if (userId) {
