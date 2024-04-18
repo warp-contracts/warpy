@@ -4,7 +4,7 @@ import { connectToServerContract, getStateFromDre } from '../utils';
 import { RolesToBeRewarded } from '../types/discord';
 
 const rolesToBeRewarded: RolesToBeRewarded[] = [
-  { role: 'Ore Digger', points: 1000 },
+  { role: 'kicia', points: 1000 },
   { role: 'Rock Breaker', points: 5000 },
   { role: 'Frens', points: 100000 },
 ];
@@ -13,19 +13,52 @@ export default {
   name: 'guildMemberUpdate',
   async execute(oldMember: GuildMember, newMember: GuildMember, warp: Warp, wallet: JWKInterface) {
     const contract = await connectToServerContract(warp, wallet, newMember.guild.id);
-    try {
-      const result = (await getStateFromDre(contract.txId(), 'users', newMember.id)).result;
-      if (!result) {
-        console.info(`User not registered in Warpy. User id: ${newMember.id}.`);
-        return;
+
+    let oldRoles: string[] = [];
+    let newRoles: string[] = [];
+    oldRoles = oldMember.roles.cache.map((r: any) => r.name);
+    await newMember.fetch(true).then((mem) => {
+      newRoles = mem.roles.cache.map((r: any) => r.name);
+    });
+
+    let shouldContinue = false;
+    for (const r of rolesToBeRewarded) {
+      if (!oldRoles.includes(r.role) && newRoles.includes(r.role)) {
+        shouldContinue = true;
+        break;
+      } else {
+        continue;
       }
-    } catch (e) {
-      console.error(`Could not load state from DRE in roleAdd event. User: ${newMember.id}. ${JSON.stringify(e)}`);
+    }
+
+    if (!shouldContinue) {
+      console.info(
+        `No roles to be rewarded. User id: ${newMember.id}. Old roles: ${JSON.stringify(
+          oldRoles
+        )}. New roles: ${JSON.stringify(newRoles)}`
+      );
       return;
     }
 
-    const oldRoles = oldMember.roles.cache.map((r: any) => r.name);
-    const newRoles = newMember.roles.cache.map((r: any) => r.name);
+    try {
+      const result = (await getStateFromDre(contract.txId(), 'users', newMember.id)).result;
+      if (!result) {
+        console.info(
+          `User not registered in Warpy. User id: ${newMember.id}. Old roles: ${JSON.stringify(
+            oldRoles
+          )}. New roles: ${JSON.stringify(newRoles)}`
+        );
+        return;
+      }
+    } catch (e) {
+      console.error(
+        `Could not load state from DRE in roleAdd event. User: ${newMember.id}. Old roles: ${JSON.stringify(
+          oldRoles
+        )}. New roles: ${JSON.stringify} ${JSON.stringify(e)}`
+      );
+      return;
+    }
+
     const memberId = newMember.id;
 
     for (const r of rolesToBeRewarded) {

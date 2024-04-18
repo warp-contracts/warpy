@@ -8,7 +8,7 @@ import {
   getSonarContractUrl,
   DRE_WARPY,
 } from '../utils';
-import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
+import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()

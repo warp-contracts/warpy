@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { RequestWithContext } from '../../types/express';
-import { GuildMember, Role } from 'discord.js';
+import { Role } from 'discord.js';
 
 export async function userRoles(req: RequestWithContext, res: Response) {
   const { id } = req.query;
