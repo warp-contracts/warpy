@@ -9,6 +9,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const port = process.env.PORT_LISTENER || 8081;
 
 async function main() {

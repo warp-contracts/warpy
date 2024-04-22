@@ -17,11 +17,11 @@ export async function usersRoles(req: RequestWithContext, res: Response) {
     } else {
       const guild = await req.ctx?.client.guilds.fetch(req.ctx?.serverId);
 
-      const idToRoles = new Map();
+      const idToRoles: { [key: string]: string[]; } = {};
       await guild.members.fetch({ user: ids })
           .then((members: Collection<Snowflake, GuildMember>) => {
             members.forEach((mem, id) => {
-              idToRoles.set(id, mem.roles.cache.map((r) => r.name))
+              idToRoles[id] = mem.roles.cache.map((r) => r.name)
             })
           });
       res.send({ id_to_roles: idToRoles });
