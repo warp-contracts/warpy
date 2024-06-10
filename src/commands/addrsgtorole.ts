@@ -58,10 +58,6 @@ export default {
           };
         })
     );
-    fs.writeFileSync(
-      __dirname + `${new Date().toLocaleDateString()}_${new Date().toLocaleTimeString()}_roles.json`,
-      JSON.stringify(members)
-    );
     const chunkSize = 150;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
