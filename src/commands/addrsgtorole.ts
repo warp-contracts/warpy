@@ -1,6 +1,7 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { GuildMember, SlashCommandBuilder } from 'discord.js';
 import { connectToServerContract, getSonarContractUrl, getStateFromDre, warpyIconUrl } from '../utils';
-import { Warp } from 'warp-contracts';
+import { Warp, WriteInteractionResponse } from 'warp-contracts';
+import fs from 'fs';
 
 export default {
   data: new SlashCommandBuilder()
@@ -44,14 +45,23 @@ export default {
     if (roleId == 'everyone') {
       members = interaction.guild.members.cache;
     } else {
-      members = interaction.guild.roles.cache.get(roleId).members;
+      members = await interaction.guild.roles.fetch(roleId).then((r: any) => r?.members);
     }
-    const membersInWarpy = members
-      // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
-      .map((member: any) => ({
-        id: member.user.id,
-        roles: member.roles.cache.map((r: any) => r.name),
-      }));
+    const membersInWarpy = await Promise.all(
+      members
+        // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
+        .map(async (member: any) => {
+          const roles = await member.fetch({ force: true }).then((m: GuildMember) => m.roles.cache.map((r) => r.name));
+          return {
+            id: member.user.id,
+            roles,
+          };
+        })
+    );
+    fs.writeFileSync(
+      `${new Date().toLocaleDateString()}_${new Date().toLocaleDateString()}_roles.json`,
+      JSON.stringify(members)
+    );
     const chunkSize = 150;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
@@ -63,7 +73,7 @@ export default {
         ...(noBoost && { noBoost }),
       };
       try {
-        await contract.writeInteraction(addPointsInput);
+        const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
       } catch (e) {
         console.error(
           `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
@@ -80,13 +90,6 @@ export default {
         {
           type: 1,
           components: [
-            // {
-            //   style: 5,
-            //   label: `Check out interaction`,
-            //   url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
-            //   disabled: false,
-            //   type: 2,
-            // },
             {
               style: 5,
               label: `Check out contract state`,
