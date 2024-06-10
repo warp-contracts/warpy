@@ -59,7 +59,7 @@ export default {
         })
     );
     fs.writeFileSync(
-      `${new Date().toLocaleDateString()}_${new Date().toLocaleDateString()}_roles.json`,
+      __dirname + `${new Date().toLocaleDateString()}_${new Date().toLocaleTimeString()}_roles.json`,
       JSON.stringify(members)
     );
     const chunkSize = 150;

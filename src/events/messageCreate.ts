@@ -75,6 +75,6 @@ export const limitTransactionsPerTimeLag = (
   } else {
     console.info(`Adding user to ${typeOfTransaction} transactionsPerTimeLag: ${userId}.`);
     transactions[userId] = [{ timestamp: transactionTimestamp, txId: transactionId }];
-    console.dir(transactions, { depth: null });
+    // console.dir(transactions, { depth: null });
   }
 };
