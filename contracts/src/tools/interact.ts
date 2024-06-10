@@ -6,12 +6,19 @@ import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 async function main() {
   const wallet = JSON.parse(fs.readFileSync(path.resolve('../.secrets', 'wallet.json'), 'utf-8'));
   const warp = WarpFactory.forMainnet().use(new VRFPlugin());
-  const contract = warp.contract('p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU').connect(wallet);
+  const contract = warp.contract('_mE1a7a96z0hsyQr7xgt8AcNsqUEG8KDz16MQJrnBb4').connect(wallet);
 
   // const { cachedValue } = await contract.readState();
   // console.log(cachedValue.state);
   await contract.writeInteraction({
-    // function: 'addPoints',
+    function: 'changeWallet',
+    id: '66586764980440269',
+    address: 'eloelo3',
+    // userId: '66586764980440269',
+    // roles: ['Twitter', 'Dev', 'Announcements', 'Miner', '@everyone'],
+    // messageId: '1220402252532023306',
+    // emojiId: 'Minecraft_redstone',
+    // function: 'addReaction',
     // roulettePicks: [
     //   { value: 1, weight: 404 },
     //   { value: 250, weight: 300 },
@@ -44,9 +51,9 @@ async function main() {
     //   timeLagInSeconds: 3600,
     // },
     // adminId: '769844280767807520',
-    function: 'changeWallet',
-    id: '769844280767807520',
-    address: '0x825999DB01C9D7b9A96411FfAd24a6Db6e11dC0c',
+    // function: 'changeWallet',
+    // id: '769844280767807520',
+    // address: '0x825999DB01C9D7b9A96411FfAd24a6Db6e11dC0c',
   });
   // const test = await contract.viewState({
   //   function: 'getRoulettePick',
