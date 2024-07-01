@@ -13,17 +13,18 @@ export default {
     const contract = await connectToServerContract(warp, warpWallet, interaction.guildId);
     const userId = interaction.user.id;
 
-    let joinSeason2Res: { id: string; joined: boolean; timestamp: string };
+    let joinSeason2Res: any;
     try {
       joinSeason2Res = await fetch(
         `https://gw.warp.cc/gateway/warpy/join-season-2?contractId=${REDSTONE_SERVER_CONTRACT_ID}&userId=${userId}`
       ).then((res) => res.json());
     } catch (e) {
+      console.log(e);
       await interaction.editReply({ content: `Could not load season 2 info.`, ephemeral: true });
       return;
     }
 
-    if (!joinSeason2Res) {
+    if (Object.keys(joinSeason2Res).length == 0) {
       await interaction.editReply({
         content: `To claim your gift you must first register using the command /linkwallet.`,
         ephemeral: true,
