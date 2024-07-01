@@ -7,7 +7,7 @@ import { Message } from 'discord.js';
 import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 
 const SERVERS_CONTRACT = 'ESC8nqUQB6yFPtZJ1homWzsA1CXzcWTkp3mvvwcNikU';
-const REDSTONE_SERVER_CONTRACT_ID = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
+export const REDSTONE_SERVER_CONTRACT_ID = 'p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU';
 export const DAILY_MESSAGES_LIMIT = 100;
 export const DAILY_REACTIONS_LIMIT = 100;
 export const DRE_WARPY = 'https://dre-warpy.warp.cc';
@@ -61,14 +61,12 @@ export async function getStateFromDre(contractId: string, propertyToGet?: string
 async function fetchDreWarpy(contractId: string, propertyToGet?: string, id?: string) {
   if (propertyToGet) {
     return await fetch(
-        `https://dre-warpy.warp.cc/pg/contract?id=${contractId}&query=$.${propertyToGet}${id ? `."${id}"` : ''}`
+      `https://dre-warpy.warp.cc/pg/contract?id=${contractId}&query=$.${propertyToGet}${id ? `."${id}"` : ''}`
     ).then((res) => {
       return res.json();
     });
   }
-  return await fetch(
-    `https://dre-warpy.warp.cc/contract?id=${contractId}`
-  ).then((res) => {
+  return await fetch(`https://dre-warpy.warp.cc/contract?id=${contractId}`).then((res) => {
     return res.json();
   });
 }
