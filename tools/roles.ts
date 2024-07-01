@@ -46,35 +46,6 @@ async function main() {
   }
 
   console.log(users);
-
-  //   fs.createReadStream(path.resolve('./roles.csv'), { encoding: 'utf-8' })
-  //     .pipe(csvParser())
-  //     .on('data', async (chunk) => {
-  //       idList.push(chunk.test.substring(0, chunk.test.indexOf('.')));
-  //     })
-  //     .on('error', (e) => {
-  //       throw new Error(`Error while reading CSV stream. ${e}`);
-  //     })
-  //     .on('end', async () => {
-  //       await Promise.all(
-  //         idList.map(async (id) => {
-  //           try {
-  //             console.log(id);
-  //             if (users[id]) {
-  //               await guild.members.fetch(id).then((mem) => {
-  //                 const roles = mem.roles.cache.map((r) => r.name);
-  //                 if (roles.includes('Ore Digger') || roles.includes('Rock Breaker')) {
-  //                   rolesList.push({ id, roles });
-  //                   console.log(rolesList.length);
-  //                 }
-  //               });
-  //             }
-  //           } catch (e) {}
-  //         })
-  //       );
-
-  //       console.log(rolesList.length);
-  //     });
 }
 
 main().catch((e) => console.error(e));

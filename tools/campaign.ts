@@ -14,13 +14,13 @@ async function main() {
     sequencerUrl: 'https://gw.warp.cc/',
   });
 
-  fs.createReadStream(path.resolve('./tools/integration-manta.csv'), { encoding: 'utf-8' })
+  fs.createReadStream(path.resolve('./tools/integration-mode.csv'), { encoding: 'utf-8' })
     .pipe(csvParser())
     .on('data', (chunk) => {
-      if (parseInt(chunk.sql_diff_2) == 0) {
+      if (parseInt(chunk.tochange) == 0) {
         return;
       }
-      addresses.push({ address: chunk.address, roles: chunk.sql_roles, points: parseInt(chunk.sql_diff_2) });
+      addresses.push({ address: chunk.address, roles: chunk.sql_roles, points: parseInt(chunk.tochange) });
     })
     .on('error', (e) => {
       throw new Error(`Error while reading CSV stream. ${e}`);
@@ -64,14 +64,14 @@ async function main() {
               noBoost: false,
               points: 0,
             };
-            // console.dir(addPointsInput, { depth: null });
-            try {
-              const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
-              console.log(`Interaction: ${originalTxId} succeeded.`);
-            } catch (e) {
-              console.error(`Error while executing interaction: ${JSON.stringify(addPointsInput)}`, e);
-              break;
-            }
+            console.dir(addPointsInput, { depth: null });
+            // try {
+            //   const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
+            //   console.log(`Interaction: ${originalTxId} succeeded.`);
+            // } catch (e) {
+            //   console.error(`Error while executing interaction: ${JSON.stringify(addPointsInput)}`, e);
+            //   break;
+            // }
           }
         });
     });
