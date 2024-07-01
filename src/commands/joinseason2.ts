@@ -3,7 +3,7 @@ import { connectToServerContract, warpyIconUrl, getSonarInteractionUrl, getSonar
 import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
 import { REDSTONE_SERVER_CONTRACT_ID } from '../utils';
 
-const SEASON_2_START_TIMESTAMP = 1719784799000;
+const SEASON_2_START_TIMESTAMP = 1719871200000;
 const SEASON_2_ROLE_ID = '1256189348022587453';
 
 export default {
