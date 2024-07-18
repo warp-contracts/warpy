@@ -39,13 +39,13 @@ export default {
       return;
     }
     const roleId = role.replace(/[<>@&]/g, '');
-    await interaction.guild.members.fetch();
+    await interaction.guild.members.fetch({ force: true });
 
     let members;
     if (roleId == 'everyone') {
       members = interaction.guild.members.cache;
     } else {
-      members = await interaction.guild.roles.fetch(roleId).then((r: any) => r?.members);
+      members = await interaction.guild.roles.fetch(roleId, { force: true }).then((r: any) => r?.members);
     }
     const membersInWarpy = await Promise.all(
       members
