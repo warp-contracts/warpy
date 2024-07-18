@@ -47,6 +47,9 @@ export default {
     } else {
       members = await interaction.guild.roles.fetch(roleId, { force: true }).then((r: any) => r?.members);
     }
+
+    console.log(`Found ${members.length} members having ${role} role.`);
+
     const membersInWarpy = await Promise.all(
       members
         // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
@@ -58,6 +61,9 @@ export default {
           };
         })
     );
+
+    console.log(`Mapped ${members.length} members having ${role} role.`);
+
     const chunkSize = 150;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
