@@ -64,7 +64,7 @@ export default {
 
     console.log(`Mapped ${members.size} members having ${role} role.`);
 
-    const chunkSize = 150;
+    const chunkSize = 100;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       const addPointsInput = {
@@ -77,38 +77,11 @@ export default {
       try {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
       } catch (e: any) {
-        if (JSON.stringify(e).includes('Nested bundle tags exceed limit')) {
-          console.log(`Tags exceeded limit, slicing the chunk further.`);
-          const chunks = [
-            membersInWarpy.slice(i, i + chunkSize / 3),
-            membersInWarpy.slice(i + chunkSize / 3, i + chunkSize * (2 / 3)),
-            membersInWarpy.slice(i + chunkSize * (2 / 3), i + chunkSize),
-          ];
-          for (let chunk of chunks) {
-            const addPointsInput = {
-              function: 'addPoints',
-              points: rsg,
-              adminId: interaction.user.id,
-              members: chunk,
-              ...(noBoost && { noBoost }),
-            };
-            try {
-              const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
-            } catch (e: any) {
-              console.error(
-                `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
-                e
-              );
-            }
-          }
-          continue;
-        } else {
-          console.error(
-            `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
-            e
-          );
-          continue;
-        }
+        console.error(
+          `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
+          e
+        );
+        continue;
       }
     }
 
