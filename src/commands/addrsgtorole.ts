@@ -80,8 +80,9 @@ export default {
         if (JSON.stringify(e).includes('Nested bundle tags exceed limit')) {
           console.log(`Tags exceeded limit, slicing the chunk further.`);
           const chunks = [
-            membersInWarpy.slice(i, i + chunkSize / 2),
-            membersInWarpy.slice(i + chunkSize / 2, i + chunkSize),
+            membersInWarpy.slice(i, i + chunkSize / 3),
+            membersInWarpy.slice(i + chunkSize / 3, i + chunkSize * (2 / 3)),
+            membersInWarpy.slice(i + chunkSize * (2 / 3), i + chunkSize),
           ];
           for (let chunk of chunks) {
             const addPointsInput = {
