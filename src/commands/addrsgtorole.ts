@@ -100,12 +100,14 @@ export default {
               );
             }
           }
+          continue;
+        } else {
+          console.error(
+            `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
+            e
+          );
+          continue;
         }
-        console.error(
-          `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
-          e
-        );
-        continue;
       }
     }
 
