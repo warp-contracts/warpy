@@ -64,7 +64,7 @@ export default {
 
     console.log(`Mapped ${members.size} members having ${role} role.`);
 
-    const chunkSize = 50;
+    const chunkSize = 100;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       const addPointsInput = {
@@ -87,6 +87,7 @@ export default {
                 ...addPointsInput,
                 members: slicedChunk,
               });
+              continue;
             } catch (e) {
               console.error(
                 `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
