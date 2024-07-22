@@ -54,7 +54,7 @@ export default {
       members
         // .filter((m: any) => Object.prototype.hasOwnProperty.call(response.users, m.id))
         .map(async (member: any) => {
-          const roles = await member.fetch({ force: true }).then((m: GuildMember) => m.roles.cache.map((r) => r.name));
+          const roles = await member.fetch().then((m: GuildMember) => m.roles.cache.map((r) => r.name));
           return {
             id: member.user.id,
             roles,
@@ -96,6 +96,7 @@ export default {
               continue;
             }
           }
+          continue;
         }
         console.error(
           `[${new Date().toLocaleString()}] Error while executing interaction: ${JSON.stringify(addPointsInput)}`,
