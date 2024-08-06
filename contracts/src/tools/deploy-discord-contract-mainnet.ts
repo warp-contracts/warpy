@@ -25,7 +25,7 @@ import { ArweaveSigner, DeployPlugin } from 'warp-contracts-plugin-deploy';
       owners: [
         '0xD284e567A89136406F45614F4D06cdddF4125fBa',
         '0x64937ab314bc1999396De341Aa66897C30008852',
-        'jnioZFibZSCcV8o-HkBXYPYEYNib4tqfexP0kCBXX_M',
+        'ESCLmn6txFGgK-XO2U6svB1543n2SoGTB29Aptnj9v0',
       ],
       serverName: 'TEST_SERVER',
       creationTimestamp: Date.now(),
