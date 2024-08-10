@@ -53,27 +53,6 @@ export default {
       await interaction.reply({
         content: `RSG have been subtracted from ${user} balance.`,
         tts: true,
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                style: 5,
-                label: `Check out interaction`,
-                url: getSonarInteractionUrl(originalTxId),
-                disabled: false,
-                type: 2,
-              },
-              {
-                style: 5,
-                label: `Check out contract state`,
-                url: getSonarContractUrl(contract.txId(), true),
-                disabled: false,
-                type: 2,
-              },
-            ],
-          },
-        ],
         embeds: [
           {
             type: 'rich',

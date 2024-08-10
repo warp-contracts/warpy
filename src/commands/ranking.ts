@@ -36,20 +36,6 @@ export default {
       await interaction.reply({
         content: `Warpy ranking.`,
         tts: true,
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                style: 5,
-                label: `Check out contract state`,
-                url: getSonarContractUrl(contract.txId(), true),
-                disabled: false,
-                type: 2,
-              },
-            ],
-          },
-        ],
         embeds: [
           {
             type: 'rich',

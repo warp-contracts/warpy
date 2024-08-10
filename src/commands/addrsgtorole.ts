@@ -109,20 +109,6 @@ export default {
     await interaction.editReply({
       content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
       tts: true,
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              style: 5,
-              label: `Check out contract state`,
-              url: getSonarContractUrl(contract.txId(), true),
-              disabled: false,
-              type: 2,
-            },
-          ],
-        },
-      ],
       embeds: [
         {
           type: 'rich',

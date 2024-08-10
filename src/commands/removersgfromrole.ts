@@ -76,27 +76,6 @@ export default {
     await interaction.editReply({
       content: `Role has got their RSG <:RSG:1131247707017715882> subtracted.`,
       tts: true,
-      components: [
-        {
-          type: 1,
-          components: [
-            // {
-            //   style: 5,
-            //   label: `Check out interaction`,
-            //   url: `https://sonar.warp.cc/#/app/interaction/${originalTxId}?network=mainnet`,
-            //   disabled: false,
-            //   type: 2,
-            // },
-            {
-              style: 5,
-              label: `Check out contract state`,
-              url: getSonarContractUrl(contract.txId(), true),
-              disabled: false,
-              type: 2,
-            },
-          ],
-        },
-      ],
       embeds: [
         {
           type: 'rich',

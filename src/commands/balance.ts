@@ -47,20 +47,6 @@ export default {
     await interaction.editReply({
       content: `User's tokens balance.`,
       tts: true,
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              style: 5,
-              label: `Check out contract state`,
-              url: getSonarContractUrl(contractId, true),
-              disabled: false,
-              type: 2,
-            },
-          ],
-        },
-      ],
       embeds: [
         {
           type: 'rich',

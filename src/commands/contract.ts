@@ -8,20 +8,6 @@ export default {
     await interaction.reply({
       content: `Warpy server's contract.`,
       tts: true,
-      components: [
-        {
-          type: 1,
-          components: [
-            {
-              style: 5,
-              label: `Check out contract`,
-              url: getSonarContractUrl(contractTxId),
-              disabled: false,
-              type: 2,
-            },
-          ],
-        },
-      ],
       embeds: [
         {
           type: 'rich',

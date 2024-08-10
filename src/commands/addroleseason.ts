@@ -80,13 +80,6 @@ export default {
               disabled: false,
               type: 2,
             },
-            {
-              style: 5,
-              label: `Check out contract state`,
-              url: getSonarContractUrl(contract.txId(), true),
-              disabled: false,
-              type: 2,
-            },
           ],
         },
       ],
