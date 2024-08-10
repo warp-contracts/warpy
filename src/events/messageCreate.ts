@@ -5,7 +5,6 @@ import { connectToServerContract, getStateFromDre } from '../utils';
 import { TransactionsPerTimeLag } from '../types/discord';
 
 const MESSAGES_LIMIT = 10;
-const MESSAGES_TIMESTAMP_LIMIT = 3600000;
 
 export default {
   name: 'messageCreate',
@@ -16,7 +15,6 @@ export default {
       return;
     } else {
       limitTransactionsPerTimeLag(
-        MESSAGES_TIMESTAMP_LIMIT,
         messagesPerTimeLag,
         message.author.id,
         message.createdTimestamp,
@@ -50,7 +48,6 @@ export default {
 };
 
 export const limitTransactionsPerTimeLag = (
-  timestampLimit: number,
   transactions: TransactionsPerTimeLag,
   userId: string,
   transactionTimestamp: number,
@@ -58,11 +55,14 @@ export const limitTransactionsPerTimeLag = (
   transactionsLimit: number,
   typeOfTransaction: 'message' | 'reaction'
 ) => {
-  const currentTimestamp = Date.now();
-  const limitedTimestamp = currentTimestamp - timestampLimit;
+  const now = Date.now();
+  const currentDate = new Date(now);
+  currentDate.setMinutes(0, 0, 0);
+  const lastFullHourTimestamp = currentDate.getTime();
+
   const userTransactions = transactions[userId];
   if (userTransactions) {
-    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= limitedTimestamp);
+    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= lastFullHourTimestamp);
     transactions[userId] = userTransactionsLimited;
     if (userTransactions.length < transactionsLimit) {
       transactions[userId].push({ timestamp: transactionTimestamp, txId: transactionId });

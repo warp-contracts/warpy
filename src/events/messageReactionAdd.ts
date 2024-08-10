@@ -4,7 +4,6 @@ import { connectToServerContract, getStateFromDre } from '../utils';
 import { limitTransactionsPerTimeLag } from './messageCreate';
 import { TransactionsPerTimeLag } from '../types/discord';
 
-const REACTIONS_TIMESTAMP_LIMIT = 3600000;
 const REACTIONS_LIMIT = 10;
 
 export default {
@@ -21,7 +20,6 @@ export default {
     const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
 
     limitTransactionsPerTimeLag(
-      REACTIONS_TIMESTAMP_LIMIT,
       reactionsPerTimeLag,
       user.id,
       Date.now(),
