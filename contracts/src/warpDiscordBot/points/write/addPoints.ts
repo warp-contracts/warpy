@@ -17,30 +17,15 @@ export const addPoints = async (state: ContractState, { input }: ContractAction)
   for (let i = 0; i < members.length; i++) {
     const id = members[i].id;
     const roles = members[i].roles;
-    const counter = state.counter[id];
     const points = members[i].points || input.points;
     if (!Number.isInteger(points)) {
       throw new ContractError(`Invalid points for member ${id}`);
     }
 
     let boostsPoints = points;
-    let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
-    if (counter) {
-      if (!noBoost) {
-        boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
-      }
-      counterObj = {
-        messages: counter.messages,
-        reactions: counter.reactions,
-        boosts: counter.boosts,
-        points: counter.points + boostsPoints,
-      };
-    } else {
-      counterObj = { messages: 0, reactions: 0, boosts: [], points: boostsPoints };
+    if (!noBoost) {
+      boostsPoints *= countBoostsPoints(state, [], roles);
     }
-
-    state.counter[id] = counterObj;
-
     addTokensBalance(state, id, boostsPoints);
     addPointsEvent.push({ userId: id, points: boostsPoints, roles });
   }

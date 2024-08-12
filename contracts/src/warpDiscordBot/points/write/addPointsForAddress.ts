@@ -40,24 +40,10 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
 
     if (userId) {
       const roles = members[i].roles;
-      const counter = state.counter[userId];
       let boostsPoints = points;
-      let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
-      if (counter) {
-        if (!noBoost) {
-          boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
-        }
-        counterObj = {
-          messages: counter.messages,
-          reactions: counter.reactions,
-          boosts: counter.boosts,
-          points: counter.points + boostsPoints,
-        };
-      } else {
-        counterObj = { messages: 0, reactions: 0, boosts: [], points: boostsPoints };
+      if (!noBoost) {
+        boostsPoints *= countBoostsPoints(state, [], roles);
       }
-
-      state.counter[userId] = counterObj;
 
       addTokensBalance(state, userId, boostsPoints);
       addPointsEvent.push({ userId, points: boostsPoints, roles });

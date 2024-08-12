@@ -35,23 +35,9 @@ export const addReaction = async (state: ContractState, { input }: ContractActio
     );
   }
 
-  const counter = state.counter[userId];
-
   let boostsPoints = state.reactionsTokenWeight;
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
-  if (counter) {
-    boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
-    counterObj = {
-      messages: counter.messages,
-      reactions: counter.reactions + 1,
-      boosts: counter.boosts,
-      points: counter.points + boostsPoints,
-    };
-  } else {
-    counterObj = { messages: 0, reactions: 1, boosts: [], points: state.reactionsTokenWeight };
-  }
 
-  state.counter[userId] = counterObj;
+  boostsPoints *= countBoostsPoints(state, [], roles);
 
   addTokensBalance(state, userId, boostsPoints);
 
@@ -76,9 +62,9 @@ export const exceedsMaxTxsInTimeLag = async (
   removedTxsPrefix: string
 ) => {
   const currentTimestamp = SmartWeave.block.timestamp;
-  const timeLagTimestamp = currentTimestamp - timeLagInSeconds;
+  const pastHourTimestamp = Math.round(currentTimestamp / timeLagInSeconds) * timeLagInSeconds;
   const timeLagTxs = await SmartWeave.kv.kvMap({
-    gte: `${prefix}${userId}_${timeLagTimestamp}`,
+    gte: `${prefix}${userId}_${pastHourTimestamp}`,
     lt: `${prefix}${userId}_${currentTimestamp}\xff`,
   });
   const timeLagValues = [...timeLagTxs.values()];

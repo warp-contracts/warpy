@@ -13,14 +13,6 @@ export interface ContractState {
   messages: {
     [id: string]: string;
   };
-  counter: {
-    [id: string]: {
-      messages: number;
-      reactions: number;
-      points: number;
-      boosts: string[];
-    };
-  };
   users: {
     [id: string]: string;
   };
@@ -65,15 +57,6 @@ export interface UserId {
   userId: string;
 }
 
-export interface MessagesContentResult {
-  counter?: {
-    messages: number;
-    reactions: number;
-    points: number;
-    boosts: string[];
-  };
-}
-
 export interface PstResult {
   target: string;
   ticker: string;
@@ -108,7 +91,6 @@ export interface RankingResult {
 export type ContractReadResult =
   | NameServiceResult
   | UserId
-  | MessagesContentResult
   | PstResult
   | BoostResult
   | RoulettePickResult
@@ -191,7 +173,6 @@ export type ContractFunction =
   | 'balance'
   | 'addMessage'
   | 'addReaction'
-  | 'getCounter'
   | 'removeMessage'
   | 'removeReaction'
   | 'addBoost'

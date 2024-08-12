@@ -21,6 +21,7 @@ export const registerUser = async (state: ContractState, { input }: ContractActi
   }
 
   state.users[id] = address;
+  state.balances[address] = state.balances[address] || 0;
 
   return { state };
 };

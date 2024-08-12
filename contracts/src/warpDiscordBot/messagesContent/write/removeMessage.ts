@@ -45,14 +45,6 @@ export const removeMessage = async (state: ContractState, { input }: ContractAct
   await SmartWeave.kv.del(rolesKey);
   await SmartWeave.kv.put(`${removedMessagesPrefix}${userId}_${messageId}`, 'removed');
 
-  const counter = state.counter[userId];
-  const counterObj = {
-    ...counter,
-    messages: counter.messages - 1,
-    points: counter.points - boostsPointsValue,
-  };
-  state.counter[userId] = counterObj;
-
   subtractTokensBalance(state, userId, boostsPointsValue);
 
   return { state, event: { userId, roles: rolesValue, points: -boostsPointsValue } };

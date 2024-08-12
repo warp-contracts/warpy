@@ -45,26 +45,10 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
 
   await SmartWeave.kv.put(`${messagesPrefix}${effectiveCaller}`, effectiveContent);
 
-  const counter = state.counter[userId];
-
   let boostsPoints = state.messagesTokenWeight;
-  let counterObj: { messages: number; reactions: number; boosts: string[]; points: number };
 
-  const boosts = counter ? counter.boosts : [];
+  const boosts = [];
   boostsPoints *= countBoostsPoints(state, boosts, roles);
-
-  if (counter) {
-    counterObj = {
-      messages: counter.messages + 1,
-      reactions: counter.reactions,
-      boosts: counter.boosts,
-      points: counter.points + boostsPoints,
-    };
-  } else {
-    counterObj = { messages: 1, reactions: 0, boosts: [], points: boostsPoints };
-  }
-
-  state.counter[userId] = counterObj;
 
   addTokensBalance(state, userId, boostsPoints);
 

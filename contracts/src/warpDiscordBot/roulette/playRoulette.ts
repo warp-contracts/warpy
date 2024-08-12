@@ -26,13 +26,12 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
     throw new ContractError(`User not found.`);
   }
 
-  const points = state.counter[userId]?.points;
+  const points = state.balances[user];
 
   if (!points || points < state.rouletteEntry) {
     throw new ContractError(`User does not have enough balance to enter the game. Balance: ${points || 0}.`);
   }
 
-  state.counter[userId].points -= state.rouletteEntry;
   subtractTokensBalance(state, userId, state.rouletteEntry);
 
   const weightedRandomPicker = new WeightedRandomPicker(state.roulettePicks);
@@ -42,7 +41,6 @@ export const playRoulette = async (state: ContractState, { input }: ContractActi
 
   await SmartWeave.kv.put(`${roulettePrefix}${effectiveCaller}`, winningOption);
 
-  state.counter[userId].points += winningOption;
   addTokensBalance(state, userId, winningOption);
 
   const rouletteBalance = winningOption - state.rouletteEntry;

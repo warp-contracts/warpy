@@ -20,18 +20,10 @@ export const removePoints = async (state: ContractState, { input }: ContractActi
   for (let i = 0; i < members.length; i++) {
     const id = members[i].id;
     const roles = members[i].roles;
-    const counter = state.counter[id];
     let boostsPoints = points;
     if (!noBoost) {
-      boostsPoints *= countBoostsPoints(state, counter.boosts, roles);
+      boostsPoints *= countBoostsPoints(state, [], roles);
     }
-
-    const pointsAfterSubtraction = counter.points - boostsPoints;
-    const counterObj = {
-      ...counter,
-      points: pointsAfterSubtraction >= 0 ? pointsAfterSubtraction : 0,
-    };
-    state.counter[id] = counterObj;
 
     subtractTokensBalance(state, id, boostsPoints);
     subtractPointsEvent.push({ userId: id, points: -boostsPoints, roles });

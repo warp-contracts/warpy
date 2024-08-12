@@ -32,12 +32,12 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
   let currentTimestamp: number;
 
   beforeAll(async () => {
-    arlocal = new ArLocal(1820, false);
+    arlocal = new ArLocal(1822, false);
     await arlocal.start();
 
     LoggerFactory.INST.logLevel('info');
 
-    warp = WarpFactory.forLocal(1820).use(new DeployPlugin()).use(new VRFPlugin());
+    warp = WarpFactory.forLocal(1822).use(new DeployPlugin()).use(new VRFPlugin());
 
     ({ jwk: ownerWallet, address: owner } = await warp.generateWallet());
     ({ jwk: ownerWallet2, address: owner2 } = await warp.generateWallet());
@@ -54,7 +54,6 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
       reactionsTokenWeight: 10,
       balances: {},
       users: {},
-      counter: {},
       messages: {},
       boosts: {},
       admins: ['asia'],
@@ -129,14 +128,13 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
     expect(address).toEqual(owner);
 
     const address2 = (
-        await contract.viewState<{ function: string; id: string }, { address: string }>({
-          function: 'getAddress',
-          id: 'asd',
-        })
+      await contract.viewState<{ function: string; id: string }, { address: string }>({
+        function: 'getAddress',
+        id: 'asd',
+      })
     ).result.address;
     expect(address2).toEqual(owner2);
   });
-
 
   it('should correctly add points csv', async () => {
     const chunkSize = 5;
@@ -144,7 +142,6 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
     const { cachedValue: cachedValue1 } = await contract.readState();
 
     console.log(cachedValue1.state.balances);
-    console.log(cachedValue1.state.counter);
     const addresses = [
       { 'token id': 19007569, address: owner },
       { 'token id': 19007569, address: owner2, points: 90 },
@@ -157,7 +154,7 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
         return {
           id: c.address,
           roles: [],
-          points: c.points
+          points: c.points,
         };
       });
 
@@ -181,19 +178,20 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
       function: 'addPointsForAddress',
       points: 20,
       adminId: 'asia',
-      members: [{ id: owner, txId: 'testTxId', roles: [] }, { id: owner2, txId: 'testTxId', roles: [], points: 11 }],
+      members: [
+        { id: owner, txId: 'testTxId', roles: [] },
+        { id: owner2, txId: 'testTxId', roles: [], points: 11 },
+      ],
     };
     await contract.writeInteraction(addPointsInput);
-    const counter = (
-        await contract.viewState<
-            { function: string; id: string },
-            { counter: { messages: number; reactions: number; points: number } }
-        >({
-          function: 'getCounter',
-          id: 'asia',
-        })
-    ).result?.counter;
-    expect(counter.points).toEqual(40);
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(40);
   });
 
   it('should not add additional points for already registered transaction', async () => {
@@ -201,29 +199,27 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
       function: 'addPointsForAddress',
       points: 20,
       adminId: 'asia',
-      members: [{ id: owner, points: 20, txId: 'testTxId', roles: [] }, { id: 'asd', points: 120, txId: 'testTxId', roles: [] }],
+      members: [
+        { id: owner, points: 20, txId: 'testTxId', roles: [] },
+        { id: 'asd', points: 120, txId: 'testTxId', roles: [] },
+      ],
     };
     await contract.writeInteraction(addPointsInput);
-    const counter = (
-        await contract.viewState<
-            { function: string; id: string },
-            { counter: { messages: number; reactions: number; points: number } }
-        >({
-          function: 'getCounter',
-          id: 'asia',
-        })
-    ).result?.counter;
-    expect(counter.points).toEqual(40);
-    const counterAsd = (
-        await contract.viewState<
-            { function: string; id: string },
-            { counter: { messages: number; reactions: number; points: number } }
-        >({
-          function: 'getCounter',
-          id: 'asd',
-        })
-    ).result?.counter;
-    expect(counterAsd.points).toEqual(101);
-  });
+    const balance = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
 
+    expect(balance).toEqual(40);
+    const balance2 = (
+      await contract.viewState<
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner2 })
+    ).result?.balance;
+
+    expect(balance2).toEqual(101);
+  });
 });

@@ -4,9 +4,7 @@ import { addMessage } from './messagesContent/write/addMessage';
 import { addReaction } from './messagesContent/write/addReaction';
 import { ContractResult, ContractAction, ContractState } from './types/types';
 import { getAddress } from './namesService/read/getAddress';
-import { getCounter } from './messagesContent/read/getCounter';
 import { balance } from './pst/read/balance';
-import { mint } from './pst/write/mint';
 import { transfer } from './pst/write/transfer';
 import { removeMessage } from './messagesContent/write/removeMessage';
 import { removeReaction } from './messagesContent/write/removeReaction';
@@ -14,8 +12,6 @@ import { addBoost } from './boost/write/addBoost';
 import { getBoost } from './boost/read/getBoost';
 import { removeBoost } from './boost/write/removeBoost';
 import { changeBoost } from './boost/write/changeBoost';
-import { addUserBoost } from './boost/write/addUserBoost';
-import { removeUserBoost } from './boost/write/removeUserBoost';
 import { addAdmin } from './admins/write/addAdmin';
 import { removeAdmin } from './admins/write/removeAdmin';
 import { removePoints } from './points/write/removePoints';
@@ -28,7 +24,6 @@ import { addRoulettePicks } from './roulette/addRoulettePicks';
 import { getRoulettePick } from './roulette/read/getRoulettePick';
 import { validateOwnerFunction } from '../utils';
 import { getRouletteSwitch } from './roulette/read/getRouletteSwitch';
-import { clearSeasonsAndBoosts } from './general/write/clearSeasonsAndBoosts';
 import { addRouletteEntry } from './roulette/addRouletteEntry';
 import { getRanking } from './points/read/getRanking';
 import { addPointsForAddress } from './points/write/addPointsForAddress';
@@ -54,14 +49,10 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await addMessage(state, action);
     case 'addReaction':
       return await addReaction(state, action);
-    case 'getCounter':
-      return await getCounter(state, action);
     case 'balance':
       return await balance(state, action);
     case 'transfer':
       return await transfer(state, action);
-    case 'mint':
-      return await mint(state, action);
     case 'removeMessage':
       return await removeMessage(state, action);
     case 'removeReaction':
@@ -74,10 +65,6 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await removeBoost(state, action);
     case 'changeBoost':
       return await changeBoost(state, action);
-    case 'addUserBoost':
-      return await addUserBoost(state, action);
-    case 'removeUserBoost':
-      return await removeUserBoost(state, action);
     case 'addPoints':
       return await addPoints(state, action);
     case 'removePoints':
@@ -100,8 +87,6 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await getRoulettePick(state, action);
     case 'getRouletteSwitch':
       return await getRouletteSwitch(state);
-    case 'clearSeasonsAndBoosts':
-      return await clearSeasonsAndBoosts(state, action);
     case 'addRouletteEntry':
       return await addRouletteEntry(state, action);
     case 'getRanking':

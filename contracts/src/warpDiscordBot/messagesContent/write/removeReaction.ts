@@ -19,7 +19,6 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
 
   const { userId, messageId, emojiId } = input;
 
-  const counter = state.counter[userId];
   const boostsPoints = await SmartWeave.kv.kvMap({
     gte: `${pointsPrefix}${userId}_${emojiId}_${messageId}`,
     lt: `${pointsPrefix}${userId}_${emojiId}_${messageId}\xff`,
@@ -42,13 +41,6 @@ export const removeReaction = async (state: ContractState, { input }: ContractAc
   await SmartWeave.kv.del(boostsPointsKey);
   await SmartWeave.kv.put(`${removedReactionsPrefix}${userId}_${emojiId}${messageId}`, 'removed');
   await SmartWeave.kv.del(rolesKey);
-
-  const counterObj = {
-    ...counter,
-    reactions: counter.reactions - 1,
-    points: counter.points - boostsPointsValue,
-  };
-  state.counter[userId] = counterObj;
 
   subtractTokensBalance(state, userId, boostsPointsValue);
 

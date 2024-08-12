@@ -54,13 +54,12 @@ describe('Testing warpDiscordBot contract', () => {
       reactionsTokenWeight: 10,
       balances: {},
       users: {},
-      counter: {},
       messages: {},
       boosts: {},
       admins: ['asia'],
       seasons: {},
       reactions: {
-        max: 5,
+        max: 3,
         timeLagInSeconds: 50,
       },
       rouletteEntry: 500,
@@ -263,17 +262,13 @@ describe('Testing warpDiscordBot contract', () => {
       messageId: '1',
       roles: ['admin'],
     });
-    const counter = (
+    const balance = (
       await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.messages).toEqual(1);
-    expect(counter.points).toEqual(100);
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result.balance;
+    expect(balance).toEqual(100);
   });
 
   it('should properly add second message', async () => {
@@ -284,38 +279,13 @@ describe('Testing warpDiscordBot contract', () => {
       content: 'randomContent',
       roles: ['admin'],
     });
-    const counter = (
+    const balance = (
       await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.messages).toEqual(2);
-    expect(counter.points).toEqual(200);
-  });
-
-  it('should properly add second user message', async () => {
-    await contract.writeInteraction({
-      function: 'addMessage',
-      userId: 'tomek',
-      content: 'randomContent',
-      messageId: '3',
-      roles: ['admin'],
-    });
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'tomek',
-      })
-    ).result?.counter;
-    expect(counter.messages).toEqual(1);
-    expect(counter.points).toEqual(100);
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result.balance;
+    expect(balance).toEqual(200);
   });
 
   it('should properly add reaction', async () => {
@@ -328,46 +298,13 @@ describe('Testing warpDiscordBot contract', () => {
       emojiId: updated,
       roles: ['admin'],
     });
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.reactions).toEqual(1);
-    expect(counter.messages).toEqual(2);
-    expect(counter.points).toEqual(210);
-  });
-
-  it('should correctly set tokens when adding a message and a reaction', async () => {
-    const result = await contract.viewState<
-      { function: string; target: string },
-      { target: string; ticker: string; balance: number }
-    >({ function: 'balance', target: owner });
-    expect(result.result.balance).toEqual(210);
-  });
-
-  it('should not allow to mint tokens if id is not registered in the name service', async () => {
-    await expect(contract.writeInteraction({ function: 'mint', id: 'randomName' }, { strict: true })).rejects.toThrow(
-      `User is not registered in the name service.`
-    );
-  });
-
-  it('should mint tokens', async () => {
-    await contract.writeInteraction({ function: 'registerUser', id: 'tomek', address: owner2 });
-    await contract.writeInteraction({ function: 'mint', id: 'tomek' });
-
     const balance = (
       await contract.viewState<
         { function: string; target: string },
         { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner2 })
-    ).result?.balance;
-
-    expect(balance).toEqual(100);
+      >({ function: 'balance', target: owner })
+    ).result.balance;
+    expect(balance).toEqual(210);
   });
 
   it('should correctly transfer tokens', async () => {
@@ -380,7 +317,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner2 })
     ).result?.balance;
 
-    expect(balance).toEqual(200);
+    expect(balance).toEqual(100);
   });
 
   it('should properly remove message', async () => {
@@ -394,18 +331,6 @@ describe('Testing warpDiscordBot contract', () => {
     ).result?.balance;
 
     expect(balance).toEqual(10);
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.messages).toEqual(1);
-    expect(counter.points).toEqual(110);
   });
 
   it('should properly remove reaction', async () => {
@@ -427,18 +352,6 @@ describe('Testing warpDiscordBot contract', () => {
     ).result?.balance;
 
     expect(balance).toEqual(0);
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.reactions).toEqual(0);
-    expect(counter.points).toEqual(100);
   });
 
   it('should throw when trying to delet non-existing message', async () => {
@@ -630,247 +543,7 @@ describe('Testing warpDiscordBot contract', () => {
     ).rejects.toThrow(`Boost with given name does not exist.`);
   });
 
-  it('should not allow to add user boost when name is not provided', async () => {
-    await expect(
-      contract.writeInteraction({ function: 'addUserBoost', userId: 'asia', adminId: 'asia' }, { strict: true })
-    ).rejects.toThrow(`name should be provided.`);
-  });
-
-  it('should not allow to add user boost when user id is not provided', async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'addUserBoost', name: 'testChangeBoost', adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`userId should be provided.`);
-  });
-
-  it(`should not allow to add user boost when name is not of type 'string'`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'addUserBoost', name: 5, userId: 'asia', adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`name should be of type 'string'.`);
-  });
-
-  it(`should not allow to add boost when user id is not of type 'string'`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'addUserBoost', name: 'testChangeBoost', userId: 5, adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`userId should be of type 'string'.`);
-  });
-
-  it('should not allow to add user boost if no adminId is given', async () => {
-    await expect(
-      contract.writeInteraction({ function: 'addUserBoost', name: 'testChangeBoost', userId: 'asia' }, { strict: true })
-    ).rejects.toThrow(`adminId should be provided.`);
-  });
-
-  it(`should not allow to add user boost when adminId is not on admins list`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'addUserBoost', name: 'testChangeBoost', userId: 'asia', adminId: 'tomek' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`Only admin can add user boost.`);
-  });
-
-  it('should correctly add user boost', async () => {
-    await contract.writeInteraction({
-      function: 'addUserBoost',
-      name: 'testChangeBoost',
-      userId: 'asia',
-      adminId: 'asia',
-    });
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number; boosts: string[] } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.boosts.length).toEqual(1);
-  });
-
-  it('should not allow to remove user boost when name is not provided', async () => {
-    await expect(
-      contract.writeInteraction({ function: 'removeUserBoost', userId: 'asia', adminId: 'asia' }, { strict: true })
-    ).rejects.toThrow(`name should be provided.`);
-  });
-
-  it('should not allow to remove user boost when user id is not provided', async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 'testChangeBoost', adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`userId should be provided.`);
-  });
-
-  it(`should not allow to remove user boost when name is not of type 'string'`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 5, userId: 'asia', adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`name should be of type 'string'.`);
-  });
-
-  it(`should not allow to remove boost when user id is not of type 'string'`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 'testChangeBoost', userId: 5, adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`userId should be of type 'string'.`);
-  });
-
-  it('should not allow to remove user boost if no adminId is given', async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 'testChangeBoost', userId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`adminId should be provided.`);
-  });
-
-  it(`should not allow to remove user boost when adminId is not on admins list`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 'testChangeBoost', userId: 'asia', adminId: 'tomek' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`Only admin can remove user boost.`);
-  });
-
-  it(`should not allow to remove boost when boost is not assigned to user`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'removeUserBoost', name: 'incorrectTestChangeBoost', userId: 'asia', adminId: 'asia' },
-        { strict: true }
-      )
-    ).rejects.toThrow(`Boost not found.`);
-  });
-
-  it('should correctly remove user boost', async () => {
-    await contract.writeInteraction({
-      function: 'removeUserBoost',
-      name: 'testChangeBoost',
-      userId: 'asia',
-      adminId: 'asia',
-    });
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; boosts: string[] } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-
-    expect(counter.boosts.length).toBe(0);
-    const { cachedValue } = await contract.readState();
-    console.log(cachedValue.state);
-  });
-
-  it('should correctly calculate points based on boost - message', async () => {
-    await contract.writeInteraction({
-      function: 'addUserBoost',
-      name: 'testChangeBoost',
-      userId: 'asia',
-      adminId: 'asia',
-    });
-    await contract.writeInteraction({
-      function: 'addMessage',
-      userId: 'asia',
-      content: 'randomContent',
-      messageId: '66',
-      roles: ['admin'],
-    });
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; boosts: string[]; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-
-    expect(counter.points).toEqual(700);
-
-    const result = await contract.viewState<
-      { function: string; target: string },
-      { target: string; ticker: string; balance: number }
-    >({ function: 'balance', target: owner });
-    expect(result.result.balance).toEqual(600);
-  });
-
-  it('should correctly calculate points based on boost - reaction', async () => {
-    const emoji = ':RSG';
-    const updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
-
-    await contract.writeInteraction({
-      function: 'addReaction',
-      userId: 'asia',
-      messageId: '1234',
-      emojiId: updated,
-      roles: ['admin'],
-    });
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; boosts: string[]; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-
-    expect(counter.points).toEqual(760);
-
-    const result = await contract.viewState<
-      { function: string; target: string },
-      { target: string; ticker: string; balance: number }
-    >({ function: 'balance', target: owner });
-    expect(result.result.balance).toEqual(660);
-  });
-
-  it('should properly remove message', async () => {
-    await contract.writeInteraction({ function: 'removeMessage', userId: 'asia', messageId: '66' });
-
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(60);
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.messages).toEqual(1);
-    expect(counter.points).toEqual(160);
-  });
-
-  it('should throw when removing non-existing', async () => {
+  it('should throw when removing non-existing reaction', async () => {
     await expect(
       contract.writeInteraction(
         {
@@ -882,82 +555,6 @@ describe('Testing warpDiscordBot contract', () => {
         { strict: true }
       )
     ).rejects.toThrow('Reaction not found.');
-  });
-
-  it('should properly remove reaction', async () => {
-    const emoji = ':RSG';
-    const updated = emoji.replace(/\p{Emoji}/gu, (m, idx) => m.codePointAt(0).toString(16));
-
-    await contract.writeInteraction({
-      function: 'removeReaction',
-      userId: 'asia',
-      messageId: '1234',
-      emojiId: updated,
-    });
-
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(0);
-
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.reactions).toEqual(0);
-    expect(counter.points).toEqual(100);
-  });
-  90;
-  it('should properly add second boost and calculate points and balance based on it', async () => {
-    await contract.writeInteraction({ function: 'addBoost', name: 'secondTestBoost', boostValue: 3, adminId: 'asia' });
-    await contract.writeInteraction({
-      function: 'addUserBoost',
-      name: 'secondTestBoost',
-      userId: 'asia',
-      adminId: 'asia',
-    });
-    await contract.writeInteraction({
-      function: 'addReaction',
-      userId: 'asia',
-      messageId: '12345',
-      emojiId: 'hearthpulse',
-      roles: ['admin'],
-    });
-    await contract.writeInteraction({
-      function: 'addMessage',
-      userId: 'asia',
-      content: 'randomContent',
-      messageId: '77',
-      roles: ['admin'],
-    });
-
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(9 * 10 + 9 * 100);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100);
   });
 
   it(`should not allow to add points when members are not provided`, async () => {
@@ -972,7 +569,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'addPoints', adminId: 'testAdmin', members: [{ id: 'asia', roles: 'user' }] },
         { strict: true }
       )
-    ).rejects.toThrow(`points should be provided.`);
+    ).rejects.toThrow(`Invalid points for member asia`);
   });
 
   it(`should not allow to add points when adminId is not provided`, async () => {
@@ -1009,18 +606,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    // boost - 18, points: 5
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 5 * 9);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 5 * 9);
+    expect(balance).toEqual(5);
   });
 
   it(`should not allow to remove points when members are not provided`, async () => {
@@ -1035,7 +621,7 @@ describe('Testing warpDiscordBot contract', () => {
         { function: 'removePoints', members: [{ id: 'asia', roles: ['user'] }], adminId: 'testAdmin' },
         { strict: true }
       )
-    ).rejects.toThrow(`points should be provided.`);
+    ).rejects.toThrow(`points should be provided`);
   });
 
   it(`should not allow to remove points when adminId is not provided`, async () => {
@@ -1076,17 +662,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100);
+    expect(balance).toEqual(0);
   });
 
   it(`should not allow to add season when name is not provided`, async () => {
@@ -1213,17 +789,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100);
+    expect(balance).toEqual(200);
   });
 
   it('should add reaction points according to season boost', async () => {
@@ -1242,17 +808,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10);
+    expect(balance).toEqual(200 + 20);
   });
 
   it(`should not allow to add season to role when name is not provided`, async () => {
@@ -1361,22 +917,6 @@ describe('Testing warpDiscordBot contract', () => {
 
   it('should add message points according to season to role boost', async () => {
     await contract.writeInteraction({
-      function: 'removeUserBoost',
-      userId: 'asia',
-      name: 'testChangeBoost',
-      adminId: 'asia',
-    });
-    await contract.writeInteraction({
-      function: 'removeUserBoost',
-      userId: 'asia',
-      name: 'secondTestBoost',
-      adminId: 'asia',
-    });
-
-    const { cachedValue } = await contract.readState();
-    console.log(cachedValue.state.counter['asia']);
-
-    await contract.writeInteraction({
       function: 'addSeasonToRole',
       name: 'seasonToRole2',
       from: Math.round((currentTimestamp - 9000) / 1000),
@@ -1401,17 +941,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100);
+    expect(balance).toEqual(200 + 20 + 700);
   });
 
   it('should add reaction points according to season to role boost', async () => {
@@ -1430,17 +960,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10);
+    expect(balance).toEqual(200 + 20 + 700 + 70);
   });
 
   it('should not boost points when noBoost flag is set to true', async () => {
@@ -1459,17 +979,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1);
+    expect(balance).toEqual(200 + 20 + 700 + 70 + 1);
   });
 
   it('should not boost removed points when noBoost flag is set to true', async () => {
@@ -1488,20 +998,11 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1);
+    expect(balance).toEqual(200 + 20 + 700 + 70);
   });
 
   it('should correctly award points to multiple members', async () => {
+    await contract.writeInteraction({ function: 'registerUser', id: 'tomek', address: owner2 });
     await contract.writeInteraction({
       function: 'addPoints',
       points: 1,
@@ -1520,17 +1021,7 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner })
     ).result?.balance;
 
-    expect(balance).toEqual(9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1);
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1);
+    expect(balance).toEqual(200 + 20 + 700 + 70 + 1);
 
     const balance2 = (
       await contract.viewState<
@@ -1539,31 +1030,10 @@ describe('Testing warpDiscordBot contract', () => {
       >({ function: 'balance', target: owner2 })
     ).result?.balance;
 
-    expect(balance2).toEqual(200 + 1);
-    const counter2 = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'tomek',
-      })
-    ).result?.counter;
-    expect(counter2.points).toEqual(100 + 1);
+    expect(balance2).toEqual(100 + 1);
   });
 
   it('should not allow to send more than maximum number of reactions in specific time lag', async () => {
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    const currentNumberOfReactions = counter.reactions;
-    expect(currentNumberOfReactions).toBe(3);
     await contract.writeInteraction({
       function: 'addReaction',
       userId: 'asia',
@@ -1572,16 +1042,14 @@ describe('Testing warpDiscordBot contract', () => {
       roles: ['admin'],
     });
 
-    const counter2 = (
+    const balance = (
       await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter2.points).toEqual(100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1 + 70);
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(200 + 20 + 700 + 70 + 1 + 70);
 
     await contract.writeInteraction({
       function: 'addReaction',
@@ -1602,20 +1070,16 @@ describe('Testing warpDiscordBot contract', () => {
         },
         { strict: true }
       )
-    ).rejects.toThrow('User cannot sent more than 5 reactions in 50 seconds.');
+    ).rejects.toThrow('User cannot sent more than 3 reactions in 50 seconds.');
 
-    const counter3 = (
+    const balance2 = (
       await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    expect(counter3.points).toEqual(
-      100 + 9 * 10 + 9 * 100 + 11 * 100 + 11 * 10 + 7 * 100 + 7 * 10 + 1 - 1 + 1 + 70 + 70
-    );
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance2).toEqual(200 + 20 + 700 + 70 + 1 + 70);
   });
 
   it('should allow user to send another reaction in specific time lag if last reaction in this time lag has been removed', async () => {
@@ -1636,17 +1100,14 @@ describe('Testing warpDiscordBot contract', () => {
       })
     ).resolves.toBeTruthy();
 
-    const counter = (
+    const balance = (
       await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'asia',
-      })
-    ).result?.counter;
-    const currentNumberOfReactions = counter.reactions;
-    expect(currentNumberOfReactions).toBe(5);
+        { function: string; target: string },
+        { target: string; ticker: string; balance: number }
+      >({ function: 'balance', target: owner })
+    ).result?.balance;
+
+    expect(balance).toEqual(200 + 20 + 700 + 70 + 1 + 70);
   });
 
   it('should correctly display ranking', async () => {
@@ -1860,17 +1321,6 @@ describe('Testing warpDiscordBot contract', () => {
       { function: 'playRoulette', userId: 'rouletteUser', interactionId: '7890', roles: ['rouletteUser'] },
       { vrf: true }
     );
-    const counter = (
-      await contract.viewState<
-        { function: string; id: string },
-        { counter: { messages: number; reactions: number; points: number } }
-      >({
-        function: 'getCounter',
-        id: 'rouletteUser',
-      })
-    ).result?.counter;
-
-    expect(counter.points).toBeGreaterThan(0);
     const result = (
       await contract.viewState<
         { function: string; target: string },
@@ -1929,6 +1379,6 @@ describe('Testing warpDiscordBot contract', () => {
       { target: string; ticker: string; balance: number }
     >({ function: 'balance', target: 'new address' });
 
-    expect(result.result.balance).toEqual(201);
+    expect(result.result.balance).toEqual(101);
   });
 });
