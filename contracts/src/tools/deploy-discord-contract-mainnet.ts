@@ -35,7 +35,6 @@ import { ArweaveSigner, DeployPlugin } from 'warp-contracts-plugin-deploy';
       reactionsTokenWeight: 10,
       balances: {},
       users: {},
-      counter: {},
       messages: {},
       boosts: {},
       seasons: {},

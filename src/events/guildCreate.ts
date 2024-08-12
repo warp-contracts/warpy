@@ -25,7 +25,6 @@ export default {
         reactionsTokenWeight: 1,
         balances: {},
         users: {},
-        counter: {},
         boosts: {},
         admins: ['304935610089734150', '769844280767807520'],
         seasons: {},

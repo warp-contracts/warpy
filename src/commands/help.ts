@@ -24,10 +24,6 @@ export default {
               value: `check your tokens balance`,
             },
             {
-              name: `📊 **/counter**`,
-              value: `check number of the messages and reactions you've sent so far`,
-            },
-            {
               name: `📃 **/contract**`,
               value: `get link to this server's  contract`,
             },

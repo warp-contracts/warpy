@@ -1,13 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
-import {
-  isEthWallet,
-  getStateFromDre,
-  connectToServerContract,
-  warpyIconUrl,
-  getSonarInteractionUrl,
-  getSonarContractUrl,
-} from '../utils';
-import { Tag, Warp, WriteInteractionResponse } from 'warp-contracts';
+import { isEthWallet, getStateFromDre, connectToServerContract, warpyIconUrl, getSonarInteractionUrl } from '../utils';
+import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
   data: new SlashCommandBuilder()
@@ -46,24 +39,6 @@ export default {
       id: userId,
       address: wallet,
     })) as WriteInteractionResponse;
-
-    let result: { interactions: number; reactions: number };
-
-    try {
-      result = (await getStateFromDre(contract.txId(), 'counter', userId)).result;
-    } catch (e) {
-      await interaction.editReply({ content: `Could not load state from D.R.E. nodes.`, ephemeral: true });
-      return;
-    }
-
-    if (result) {
-      await contract.writeInteraction(
-        { function: 'mint', id: userId },
-        {
-          tags: [new Tag('Indexed-By', `mint;${userId};${interaction.guildId};`)],
-        }
-      );
-    }
 
     await interaction.editReply({
       content: `User registered correctly.`,
