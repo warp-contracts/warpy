@@ -9,7 +9,7 @@ import { VRFPlugin } from 'warp-contracts-plugin-vrf';
 
 jest.setTimeout(30000);
 
-describe('Testing warpDiscordBot contract - add points for address', () => {
+describe('Testing warpDiscordBot contract - add points with cap', () => {
   let ownerWallet: JWKInterface;
   let owner: string;
 
@@ -32,12 +32,12 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
   let currentTimestamp: number;
 
   beforeAll(async () => {
-    arlocal = new ArLocal(1822, false);
+    arlocal = new ArLocal(1823, false);
     await arlocal.start();
 
     LoggerFactory.INST.logLevel('info');
 
-    warp = WarpFactory.forLocal(1822).use(new DeployPlugin()).use(new VRFPlugin());
+    warp = WarpFactory.forLocal(1823).use(new DeployPlugin()).use(new VRFPlugin());
 
     ({ jwk: ownerWallet, address: owner } = await warp.generateWallet());
     ({ jwk: ownerWallet2, address: owner2 } = await warp.generateWallet());
@@ -101,24 +101,10 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
     expect((await contract.readState()).cachedValue.state).toEqual(initialState);
   });
 
-  it('should correctly set messages limit', async () => {
-    await contract.writeInteraction({
-      function: 'setMessagesLimit',
-      messagesLimit: {
-        max: 10,
-        timeLagInSeconds: 50,
-      },
-      adminId: 'asia',
-    });
-
-    const { cachedValue } = await contract.readState();
-    expect(cachedValue.state.messagesLimit.max).toBe(10);
-    expect(cachedValue.state.messagesLimit.timeLagInSeconds).toBe(50);
-  });
-
   it('should correctly register user', async () => {
     await contract.writeInteraction({ function: 'registerUser', id: 'asia', address: owner });
     await contract.writeInteraction({ function: 'registerUser', id: 'asd', address: owner2 });
+    await contract.writeInteraction({ function: 'registerUser', id: 'tomek', address: owner3 });
 
     const address = (
       await contract.viewState<{ function: string; id: string }, { address: string }>({
@@ -135,92 +121,80 @@ describe('Testing warpDiscordBot contract - add points for address', () => {
       })
     ).result.address;
     expect(address2).toEqual(owner2);
+
+    const address3 = (
+      await contract.viewState<{ function: string; id: string }, { address: string }>({
+        function: 'getAddress',
+        id: 'tomek',
+      })
+    ).result.address;
+    expect(address3).toEqual(owner3);
   });
 
-  it('should correctly add points csv', async () => {
-    const chunkSize = 5;
+  // it('should correctly add temporary balances', async () => {
+  //   const addPointsInput = {
+  //     function: 'addPointsWithCap',
+  //     points: 20,
+  //     adminId: 'asia',
+  //     members: [
+  //       { id: owner, txId: 'testTxId', roles: [] },
+  //       { id: owner2, txId: 'testTxId', roles: [], points: 11 },
+  //       { id: owner3, txId: 'testTxId', roles: [], points: 5 },
+  //     ],
+  //   };
+  //   await contract.writeInteraction(addPointsInput);
+  //   const state = (await contract.readState()).cachedValue.state;
+  //   const temporaryBalances = state.temporaryBalances;
+  //   expect(temporaryBalances[owner].balance).toEqual(20);
+  //   expect(temporaryBalances[owner].userId).toEqual('asia');
+  //   expect(temporaryBalances[owner2].balance).toEqual(11);
+  //   expect(temporaryBalances[owner2].userId).toEqual('asd');
+  //   expect(temporaryBalances[owner3].balance).toEqual(5);
+  //   expect(temporaryBalances[owner3].userId).toEqual('tomek');
+  //   expect(state.temporaryTotalSum).toEqual(36);
+  // });
 
-    const { cachedValue: cachedValue1 } = await contract.readState();
-
-    console.log(cachedValue1.state.balances);
-    const addresses = [
-      { 'token id': 19007569, address: owner },
-      { 'token id': 19007569, address: owner2, points: 90 },
-    ];
-    for (let i = 0; i < addresses.length; i += chunkSize) {
-      const chunk = addresses.slice(i, i + chunkSize);
-
-      let members;
-      members = chunk.map((c) => {
-        return {
-          id: c.address,
-          roles: [],
-          points: c.points,
-        };
-      });
-
-      console.log(members);
-
-      const addPointsInput = {
-        function: 'addPointsForAddress',
-        points: 20,
-        adminId: 'asia',
-        members,
-      };
-      await contract.writeInteraction(addPointsInput);
-    }
-    const { cachedValue } = await contract.readState();
-
-    expect(cachedValue.state.balances).toBeTruthy();
-  });
-
-  it('should correctly add points for address with on-chain txId', async () => {
+  it('should correctly add balances', async () => {
     const addPointsInput = {
-      function: 'addPointsForAddress',
+      function: 'addPointsWithCap',
       points: 20,
       adminId: 'asia',
       members: [
         { id: owner, txId: 'testTxId', roles: [] },
         { id: owner2, txId: 'testTxId', roles: [], points: 11 },
+        { id: owner3, txId: 'testTxId', roles: [], points: 5 },
       ],
+      cap: 50000,
     };
     await contract.writeInteraction(addPointsInput);
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(40);
+    const state = (await contract.readState()).cachedValue.state;
+    const balances = state.balances;
+    expect(balances[owner]).toEqual(27778);
+    expect(balances[owner2]).toEqual(15278);
+    expect(balances[owner3]).toEqual(6944);
+    expect(state.temporaryTotalSum).toEqual(0);
+    expect(Object.keys(state.temporaryBalances).length).toEqual(0);
   });
 
-  it('should not add additional points for already registered transaction', async () => {
+  it('should correctly add balances', async () => {
     const addPointsInput = {
-      function: 'addPointsForAddress',
+      function: 'addPointsWithCap',
       points: 20,
       adminId: 'asia',
       members: [
-        { id: owner, points: 20, txId: 'testTxId', roles: [] },
-        { id: 'asd', points: 120, txId: 'testTxId', roles: [] },
+        { id: owner, txId: 'testTxId2', roles: [] },
+        { id: owner2, txId: 'testTxId2', roles: [], points: 11 },
+        { id: owner3, txId: 'testTxId2', roles: [], points: 5 },
       ],
+      cap: 50000,
     };
     await contract.writeInteraction(addPointsInput);
-    const balance = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner })
-    ).result?.balance;
-
-    expect(balance).toEqual(40);
-    const balance2 = (
-      await contract.viewState<
-        { function: string; target: string },
-        { target: string; ticker: string; balance: number }
-      >({ function: 'balance', target: owner2 })
-    ).result?.balance;
-
-    expect(balance2).toEqual(101);
+    const state = (await contract.readState()).cachedValue.state;
+    const balances = state.balances;
+    expect(balances[owner]).toEqual(27778);
+    expect(balances[owner2]).toEqual(15278);
+    expect(balances[owner3]).toEqual(6944);
+    expect(state.temporaryTotalSum).toEqual(0);
+    expect(Object.keys(state.temporaryBalances).length).toEqual(0);
   });
 });

@@ -65,6 +65,14 @@ describe('Testing warpDiscordBot contract', () => {
       rouletteEntry: 500,
       divisibility: 1000,
       rouletteOn: false,
+      counter: {
+        '123': {
+          messages: 5,
+          reactions: 6,
+          points: 5,
+          boosts: ['1'],
+        },
+      },
     };
 
     contractSrc = fs.readFileSync(path.join(__dirname, '../dist/warpDiscordBot/warpDiscordBotContract.js'), 'utf8');
@@ -1380,5 +1388,11 @@ describe('Testing warpDiscordBot contract', () => {
     >({ function: 'balance', target: 'new address' });
 
     expect(result.result.balance).toEqual(101);
+  });
+
+  it('should correctly remove the counter', async () => {
+    await contract.writeInteraction({ function: 'removeCounter' });
+
+    expect(Object.keys((await contract.readState()).cachedValue.state.counter).length).toEqual(0);
   });
 });

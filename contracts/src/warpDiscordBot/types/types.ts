@@ -10,6 +10,14 @@ export interface ContractState {
   balances: {
     [address: string]: number;
   };
+  temporaryBalances?: {
+    [address: string]: {
+      balance: number;
+      userId: string | null;
+      roles: string[];
+    };
+  };
+  temporaryTotalSum?: number;
   messages: {
     [id: string]: string;
   };
@@ -35,6 +43,14 @@ export interface ContractState {
   rouletteEntry: number;
   roulettePicks?: WeightedOption[];
   rouletteOn: boolean;
+  counter: {
+    [id: string]: {
+      messages: number;
+      reactions: number;
+      points: number;
+      boosts: string[];
+    };
+  };
 }
 
 export interface Season {
@@ -136,6 +152,7 @@ export interface ContractInput {
     max: number;
     timeLagInSeconds: number;
   };
+  cap: number;
 }
 
 export interface WeightedOption {
@@ -198,7 +215,9 @@ export type ContractFunction =
   | 'getRanking'
   | 'addPointsForAddress'
   | 'changeWallet'
-  | 'setMessagesLimit';
+  | 'setMessagesLimit'
+  | 'removeCounter'
+  | 'addPointsWithCap';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 
