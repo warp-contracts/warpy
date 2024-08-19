@@ -131,28 +131,32 @@ describe('Testing warpDiscordBot contract - add points with cap', () => {
     expect(address3).toEqual(owner3);
   });
 
-  // it('should correctly add temporary balances', async () => {
-  //   const addPointsInput = {
-  //     function: 'addPointsWithCap',
-  //     points: 20,
-  //     adminId: 'asia',
-  //     members: [
-  //       { id: owner, txId: 'testTxId', roles: [] },
-  //       { id: owner2, txId: 'testTxId', roles: [], points: 11 },
-  //       { id: owner3, txId: 'testTxId', roles: [], points: 5 },
-  //     ],
-  //   };
-  //   await contract.writeInteraction(addPointsInput);
-  //   const state = (await contract.readState()).cachedValue.state;
-  //   const temporaryBalances = state.temporaryBalances;
-  //   expect(temporaryBalances[owner].balance).toEqual(20);
-  //   expect(temporaryBalances[owner].userId).toEqual('asia');
-  //   expect(temporaryBalances[owner2].balance).toEqual(11);
-  //   expect(temporaryBalances[owner2].userId).toEqual('asd');
-  //   expect(temporaryBalances[owner3].balance).toEqual(5);
-  //   expect(temporaryBalances[owner3].userId).toEqual('tomek');
-  //   expect(state.temporaryTotalSum).toEqual(36);
-  // });
+  it('should correctly add temporary balances', async () => {
+    const addPointsInput = {
+      function: 'addPointsWithCap',
+      points: 20,
+      adminId: 'asia',
+      members: [
+        { id: owner, txId: 'testTxId', roles: [] },
+        { id: owner2, txId: 'testTxId', roles: [], points: 11 },
+        { id: owner3, txId: 'testTxId', roles: [], points: 5 },
+      ],
+    };
+    await contract.writeInteraction(addPointsInput);
+    const state = (await contract.readState()).cachedValue.state;
+    const temporaryBalances = state.temporaryBalances;
+    const balances = state.balances;
+    expect(temporaryBalances[owner].balance).toEqual(20);
+    expect(temporaryBalances[owner].userId).toEqual('asia');
+    expect(temporaryBalances[owner2].balance).toEqual(11);
+    expect(temporaryBalances[owner2].userId).toEqual('asd');
+    expect(temporaryBalances[owner3].balance).toEqual(5);
+    expect(temporaryBalances[owner3].userId).toEqual('tomek');
+    expect(balances[owner]).toEqual(0);
+    expect(balances[owner2]).toEqual(0);
+    expect(balances[owner3]).toEqual(0);
+    expect(state.temporaryTotalSum).toEqual(36);
+  });
 
   it('should correctly add balances', async () => {
     const addPointsInput = {
@@ -163,28 +167,6 @@ describe('Testing warpDiscordBot contract - add points with cap', () => {
         { id: owner, txId: 'testTxId', roles: [] },
         { id: owner2, txId: 'testTxId', roles: [], points: 11 },
         { id: owner3, txId: 'testTxId', roles: [], points: 5 },
-      ],
-      cap: 50000,
-    };
-    await contract.writeInteraction(addPointsInput);
-    const state = (await contract.readState()).cachedValue.state;
-    const balances = state.balances;
-    expect(balances[owner]).toEqual(27778);
-    expect(balances[owner2]).toEqual(15278);
-    expect(balances[owner3]).toEqual(6944);
-    expect(state.temporaryTotalSum).toEqual(0);
-    expect(Object.keys(state.temporaryBalances).length).toEqual(0);
-  });
-
-  it('should correctly add balances', async () => {
-    const addPointsInput = {
-      function: 'addPointsWithCap',
-      points: 20,
-      adminId: 'asia',
-      members: [
-        { id: owner, txId: 'testTxId2', roles: [] },
-        { id: owner2, txId: 'testTxId2', roles: [], points: 11 },
-        { id: owner3, txId: 'testTxId2', roles: [], points: 5 },
       ],
       cap: 50000,
     };
