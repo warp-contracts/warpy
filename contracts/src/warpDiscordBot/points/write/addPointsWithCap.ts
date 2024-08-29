@@ -18,8 +18,8 @@ export const addPointsWithCap = async (state: ContractState, { input }: Contract
     throw new ContractError(`Only admin can award points.`);
   }
 
-  if (!state.temporaryTotalSum) state.temporaryTotalSum = 0;
-  if (!state.temporaryBalances) state.temporaryBalances = {};
+  if (!state.temporaryTotalSum || input.initialCapInteraction) state.temporaryTotalSum = 0;
+  if (!state.temporaryBalances || input.initialCapInteraction) state.temporaryBalances = {};
 
   for (let i = 0; i < members.length; i++) {
     const txId = members[i].txId;

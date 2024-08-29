@@ -153,6 +153,7 @@ export interface ContractInput {
     timeLagInSeconds: number;
   };
   cap: number;
+  initialCapInteraction: boolean;
 }
 
 export interface WeightedOption {

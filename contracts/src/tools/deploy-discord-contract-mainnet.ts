@@ -20,7 +20,7 @@ import { ArweaveSigner, DeployPlugin } from 'warp-contracts-plugin-deploy';
 
   const { contractTxId } = await warp.deployFromSourceTx({
     wallet: new ArweaveSigner(wallet),
-    srcTxId: '5P_wgG2n_bCrzP_GsCliSn02avFMspageU9bTx-3nig',
+    srcTxId: 'Dt-nTQpNCZp65qRh6Dtrcgxhl9dDa7TTi57Otf3Zc5M',
     initState: JSON.stringify({
       owners: [
         '0xD284e567A89136406F45614F4D06cdddF4125fBa',
