@@ -47,13 +47,14 @@ export const addPointsWithCap = async (state: ContractState, { input }: Contract
     logger.info(`Transaction: ${txId} for wallet address: ${address}: user_id: ${userId}.`);
 
     if (userId) {
+      const address = state.users[userId];
       const roles = members[i].roles;
       let boostsPoints = points;
       if (!noBoost) {
         boostsPoints *= countBoostsPoints(state, [], roles);
       }
 
-      state.temporaryBalances[members[i].id] = { balance: boostsPoints, userId, roles };
+      state.temporaryBalances[address] = { balance: boostsPoints, userId, roles };
       state.temporaryTotalSum += boostsPoints;
       logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: points: ${boostsPoints}.`);
     } else {

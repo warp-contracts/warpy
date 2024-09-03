@@ -40,8 +40,6 @@ Warpy app breaks down into component interactions and events:
 ### Events
 
 - `guildCreate`: On Warpy joining a server, it deploys a new bot contract, ensuring each server operates on a unique contract.
-- `messageCreate`: User messages earn them 10 points.
-- `messageDelete`: Deleting a message reduces the user's points by 10.
 - `messageReactionAdd`: Reacting to a message gives 1 point.
 - `messageReactionRemove`: Removing a reaction deducts 1 point
 

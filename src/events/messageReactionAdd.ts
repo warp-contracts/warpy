@@ -1,7 +1,6 @@
 import { User } from 'discord.js';
 import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, getStateFromDre } from '../utils';
-import { limitTransactionsPerTimeLag } from './messageCreate';
 import { TransactionsPerTimeLag } from '../types/discord';
 
 const REACTIONS_LIMIT = 10;
@@ -59,4 +58,36 @@ export default {
       console.error(`Unable to write interaction.`);
     }
   },
+};
+
+export const limitTransactionsPerTimeLag = (
+  transactions: TransactionsPerTimeLag,
+  userId: string,
+  transactionTimestamp: number,
+  transactionId: string,
+  transactionsLimit: number,
+  typeOfTransaction: 'message' | 'reaction'
+) => {
+  const now = Date.now();
+  const currentDate = new Date(now);
+  currentDate.setMinutes(0, 0, 0);
+  const lastFullHourTimestamp = currentDate.getTime();
+
+  const userTransactions = transactions[userId];
+  if (userTransactions) {
+    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= lastFullHourTimestamp);
+    transactions[userId] = userTransactionsLimited;
+    if (userTransactions.length < transactionsLimit) {
+      transactions[userId].push({ timestamp: transactionTimestamp, txId: transactionId });
+    } else {
+      console.warn(
+        `Skipping ${typeOfTransaction} sending. Trasaction author: ${userId}, transaction id: ${transactionId}.`
+      );
+      return;
+    }
+  } else {
+    console.info(`Adding user to ${typeOfTransaction} transactionsPerTimeLag: ${userId}.`);
+    transactions[userId] = [{ timestamp: transactionTimestamp, txId: transactionId }];
+    // console.dir(transactions, { depth: null });
+  }
 };

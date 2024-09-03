@@ -78,11 +78,7 @@ async function main() {
     if (event.default.once) {
       client.once(event.default.name, (...args) => event.default.execute(...args));
     } else {
-      if (event.default.name == 'messageCreate') {
-        client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet, messages));
-      } else if (event.default.name == 'messageDelete') {
-        client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet, messages));
-      } else if (event.default.name == 'messageReactionAdd') {
+      if (event.default.name == 'messageReactionAdd') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet, reactions));
       } else if (event.default.name == 'messageReactionRemove') {
         client.on(event.default.name, async (...args) => await event.default.execute(...args, warp, wallet, reactions));
