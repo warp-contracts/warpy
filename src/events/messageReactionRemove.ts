@@ -2,7 +2,6 @@ import { User } from 'discord.js';
 import { JWKInterface, Tag, Warp } from 'warp-contracts';
 import { connectToServerContract, getStateFromDre } from '../utils';
 import { TransactionsPerTimeLag } from '../types/discord';
-import { deleteFromLimitedTransactionsIfExists } from './messageDelete';
 
 export default {
   name: 'messageReactionRemove',
@@ -50,4 +49,23 @@ export default {
       console.error(`Unable to write interaction.`);
     }
   },
+};
+
+export const deleteFromLimitedTransactionsIfExists = (
+  transactionsPerTimeLag: TransactionsPerTimeLag,
+  userId: string,
+  transactionId: string,
+  transactionType: 'message' | 'reaction'
+) => {
+  const userTransactions = transactionsPerTimeLag[userId];
+  if (userTransactions) {
+    const userTransaction = userTransactions.find((t) => t.txId == transactionId);
+    if (userTransaction) {
+      const userTransactionsSliced = userTransactions.slice(userTransactions.indexOf(userTransaction), 1);
+      transactionsPerTimeLag[userId] = userTransactionsSliced;
+      console.info(
+        `Transaction deleted from ${transactionType}. User id: ${transactionId}, transaction id: ${userId}.`
+      );
+    }
+  }
 };
