@@ -78,13 +78,10 @@ export default {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
         console.log(`Role: ${role} has been rewarded, interaction id: ${originalTxId}, chunk length: ${chunk.length}`);
       } catch (e: any) {
-        console.log(e?.message);
-        console.log(e);
-        console.log(e.includes);
-        console.error(`Error while rewarding role`, JSON.stringify(e));
+        console.log(typeof e?.message == 'string' && e?.message?.includes(`exceeds maximum interactions size limit`));
         if (
-          JSON.stringify(e).includes(`Nested bundle tags exceed limit`) ||
-          JSON.stringify(e).includes(`exceeds maximum interactions size limit`)
+          JSON.stringify(e).includes(`Nested bundle tags exceed limit`)
+          // (typeof e?.message == 'string' && e?.message?.includes(`exceeds maximum interactions size limit`))
         ) {
           const halfChunk = Math.ceil(chunk.length / 2);
           const slicedChunks = [chunk.slice(0, halfChunk), chunk.slice(halfChunk, chunk.length)];
