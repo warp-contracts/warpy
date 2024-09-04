@@ -64,7 +64,7 @@ export default {
 
     console.log(`Mapped ${members.size} members having ${role} role.`);
 
-    const chunkSize = 100;
+    const chunkSize = 80;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
       const addPointsInput = {
