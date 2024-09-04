@@ -82,7 +82,10 @@ export default {
         console.log(originalTxId);
       } catch (e: any) {
         console.log(JSON.stringify(e));
-        if (JSON.stringify(e).includes(`Nested bundle tags exceed limit`)) {
+        if (
+          JSON.stringify(e).includes(`Nested bundle tags exceed limit`) ||
+          JSON.stringify(e).includes(`exceeds maximum interactions size limit`)
+        ) {
           const halfChunk = Math.ceil(chunk.length / 2);
           const slicedChunks = [chunk.slice(0, halfChunk), chunk.slice(halfChunk, chunk.length)];
 
