@@ -78,10 +78,9 @@ export default {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
         console.log(`Role: ${role} has been rewarded, interaction id: ${originalTxId}, chunk length: ${chunk.length}`);
       } catch (e: any) {
-        console.log(typeof e?.message == 'string' && e?.message?.includes(`exceeds maximum interactions size limit`));
         if (
-          JSON.stringify(e).includes(`Nested bundle tags exceed limit`)
-          // (typeof e?.message == 'string' && e?.message?.includes(`exceeds maximum interactions size limit`))
+          JSON.stringify(e).includes(`Nested bundle tags exceed limit`) ||
+          (typeof e?.message == 'string' && e?.message?.includes(`exceeds maximum interactions size limit`))
         ) {
           const halfChunk = Math.ceil(chunk.length / 2);
           const slicedChunks = [chunk.slice(0, halfChunk), chunk.slice(halfChunk, chunk.length)];
@@ -111,32 +110,32 @@ export default {
       }
     }
 
-    // await interaction.editReply({
-    //   content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
-    //   tts: true,
-    //   embeds: [
-    //     {
-    //       type: 'rich',
-    //       description: `All users having below role have been rewarded with RSG <:RSG:1131247707017715882>.`,
-    //       color: 0x6c8cfd,
-    //       fields: [
-    //         {
-    //           name: `Role`,
-    //           value: role,
-    //         },
-    //         {
-    //           name: `RSG`,
-    //           value: `${rsg} <:RSG:1131247707017715882>`,
-    //         },
-    //       ],
-    //       thumbnail: {
-    //         url: warpyIconUrl,
-    //         height: 0,
-    //         width: 0,
-    //       },
-    //       timestamp: new Date().toISOString(),
-    //     },
-    //   ],
-    // });
+    await interaction.editReply({
+      content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
+      tts: true,
+      embeds: [
+        {
+          type: 'rich',
+          description: `All users having below role have been rewarded with RSG <:RSG:1131247707017715882>.`,
+          color: 0x6c8cfd,
+          fields: [
+            {
+              name: `Role`,
+              value: role,
+            },
+            {
+              name: `RSG`,
+              value: `${rsg} <:RSG:1131247707017715882>`,
+            },
+          ],
+          thumbnail: {
+            url: warpyIconUrl,
+            height: 0,
+            width: 0,
+          },
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    });
   },
 };
