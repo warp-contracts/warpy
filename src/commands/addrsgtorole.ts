@@ -67,6 +67,8 @@ export default {
     const chunkSize = 100;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
+      console.log(chunk.length);
+      console.log(JSON.stringify(chunk));
       const addPointsInput = {
         function: 'addPoints',
         points: rsg,
@@ -74,9 +76,12 @@ export default {
         members: chunk,
         ...(noBoost && { noBoost }),
       };
+      console.log(JSON.stringify(addPointsInput));
       try {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
+        console.log(originalTxId);
       } catch (e: any) {
+        console.log(JSON.stringify(e));
         if (JSON.stringify(e).includes(`Nested bundle tags exceed limit`)) {
           const halfChunk = Math.ceil(chunk.length / 2);
           const slicedChunks = [chunk.slice(0, halfChunk), chunk.slice(halfChunk, chunk.length)];
