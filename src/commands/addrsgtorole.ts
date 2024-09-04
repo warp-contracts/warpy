@@ -78,7 +78,10 @@ export default {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
         console.log(`Role: ${role} has been rewarded, interaction id: ${originalTxId}, chunk length: ${chunk.length}`);
       } catch (e: any) {
-        console.error(`Error while rewarding rolee`, JSON.stringify(e));
+        console.log(e?.message);
+        console.log(e);
+        console.log(e.includes);
+        console.error(`Error while rewarding role`, JSON.stringify(e));
         if (
           JSON.stringify(e).includes(`Nested bundle tags exceed limit`) ||
           JSON.stringify(e).includes(`exceeds maximum interactions size limit`)
@@ -111,32 +114,32 @@ export default {
       }
     }
 
-    await interaction.editReply({
-      content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
-      tts: true,
-      embeds: [
-        {
-          type: 'rich',
-          description: `All users having below role have been rewarded with RSG <:RSG:1131247707017715882>.`,
-          color: 0x6c8cfd,
-          fields: [
-            {
-              name: `Role`,
-              value: role,
-            },
-            {
-              name: `RSG`,
-              value: `${rsg} <:RSG:1131247707017715882>`,
-            },
-          ],
-          thumbnail: {
-            url: warpyIconUrl,
-            height: 0,
-            width: 0,
-          },
-          timestamp: new Date().toISOString(),
-        },
-      ],
-    });
+    // await interaction.editReply({
+    //   content: `Role has been awarded with RSG <:RSG:1131247707017715882>.`,
+    //   tts: true,
+    //   embeds: [
+    //     {
+    //       type: 'rich',
+    //       description: `All users having below role have been rewarded with RSG <:RSG:1131247707017715882>.`,
+    //       color: 0x6c8cfd,
+    //       fields: [
+    //         {
+    //           name: `Role`,
+    //           value: role,
+    //         },
+    //         {
+    //           name: `RSG`,
+    //           value: `${rsg} <:RSG:1131247707017715882>`,
+    //         },
+    //       ],
+    //       thumbnail: {
+    //         url: warpyIconUrl,
+    //         height: 0,
+    //         width: 0,
+    //       },
+    //       timestamp: new Date().toISOString(),
+    //     },
+    //   ],
+    // });
   },
 };
