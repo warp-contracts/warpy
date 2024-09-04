@@ -67,8 +67,6 @@ export default {
     const chunkSize = 100;
     for (let i = 0; i < membersInWarpy.length; i += chunkSize) {
       const chunk = membersInWarpy.slice(i, i + chunkSize);
-      console.log(chunk.length);
-      console.log(JSON.stringify(chunk));
       const addPointsInput = {
         function: 'addPoints',
         points: rsg,
@@ -76,12 +74,11 @@ export default {
         members: chunk,
         ...(noBoost && { noBoost }),
       };
-      console.log(JSON.stringify(addPointsInput));
       try {
         const { originalTxId } = (await contract.writeInteraction(addPointsInput)) as WriteInteractionResponse;
-        console.log(originalTxId);
+        console.log(`Role: ${role} has been rewarded, interaction id: ${originalTxId}, chunk length: ${chunk.length}`);
       } catch (e: any) {
-        console.log(JSON.stringify(e));
+        console.error(`Error while rewarding rolee`, JSON.stringify(e));
         if (
           JSON.stringify(e).includes(`Nested bundle tags exceed limit`) ||
           JSON.stringify(e).includes(`exceeds maximum interactions size limit`)
