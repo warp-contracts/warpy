@@ -10,9 +10,12 @@ export async function usernames(req: RequestWithContext, res: Response) {
     } else if (!req.ctx?.serverId) {
       res.status(422).send(`Server id is not set.`);
     } else {
-      const idsArray = (ids as string).split(',');
+      const idsArray = (ids as string).split(',').filter((id) => id !== null && id !== '');
+      console.log(`Fetch guild`);
       const guild = await req.ctx?.client.guilds.fetch(req.ctx?.serverId);
+      console.log(`Fetch members`, idsArray);
       const members = await guild?.members.fetch({ user: idsArray });
+      console.log(`Got it, so great! so success!`);
       const handlers = members?.map((m) => {
         return { id: m.id, handler: m.user.username };
       });
