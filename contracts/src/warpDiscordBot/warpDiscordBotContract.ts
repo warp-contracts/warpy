@@ -31,6 +31,7 @@ import { getUserId } from './namesService/read/getUserId';
 import { changeWallet } from './namesService/write/changeWallet';
 import { setMessagesLimit } from './general/write/setMessagesLimit';
 import { addPointsWithCap } from './points/write/addPointsWithCap';
+import { addOwner } from './general/write/addOwner';
 
 export async function handle(state: ContractState, action: ContractAction): Promise<ContractResult> {
   const input = action.input;
@@ -100,6 +101,8 @@ export async function handle(state: ContractState, action: ContractAction): Prom
       return await setMessagesLimit(state, action);
     case 'addPointsWithCap':
       return await addPointsWithCap(state, action);
+    case 'addOwner':
+      return await addOwner(state, action);
 
     default:
       throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);

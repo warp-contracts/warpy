@@ -218,7 +218,8 @@ export type ContractFunction =
   | 'changeWallet'
   | 'setMessagesLimit'
   | 'removeCounter'
-  | 'addPointsWithCap';
+  | 'addPointsWithCap'
+  | 'addOwner';
 
 export type ContractResult = { state: ContractState; event?: ContractEvent } | { result: ContractReadResult };
 

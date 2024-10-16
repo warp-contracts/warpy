@@ -10,7 +10,6 @@ export const addSeasonToRole = async (state: ContractState, { input }: ContractA
   validateInteger(input, 'to');
   checkArgumentSet(input, 'boost');
   validateString(input, 'boost');
-  checkArgumentSet(input, 'boostValue');
   validateInteger(input, 'boostValue');
   checkArgumentSet(input, 'adminId');
   validateString(input, 'adminId');
