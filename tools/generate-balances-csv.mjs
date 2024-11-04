@@ -87,7 +87,7 @@ function generateCsv(linkedMap, uniqueRoles, idToRoles) {
   for (const [wallet, { id, balance }] of Object.entries(linkedMap)) {
     let row = `${wallet},${id},${balance}`;
     uniqueRoles.forEach((role) => {
-      row += ',' + (idToRoles[id]?.includes(role) ? 'Yes' : '-');
+      row += ',' + (idToRoles[id]?.includes(role) ? 'Yes' : 'No');
     });
     csvContent += row + '\n';
   }
