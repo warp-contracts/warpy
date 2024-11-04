@@ -78,7 +78,7 @@ export const addPointsWithCap = async (state: ContractState, { input }: Contract
 
   if (cap) {
     const addPointsEvent = addFinalPoints(state, input);
-    return { state, event: { users: addPointsEvent } };
+    return { state, event: { name: 'upsertBalance', users: addPointsEvent } };
   } else {
     return { state };
   }
@@ -90,7 +90,7 @@ function addFinalPoints(state: ContractState, input: ContractInput) {
   if (!totalSum) {
     throw new ContractError(`No total sum.`);
   }
-  const addPointsEvent: { userId: string; points: number; roles: string[] }[] = [];
+  const addPointsEvent: { userId: string; address: string; points: number; roles: string[]; balance: number }[] = [];
 
   for (const user in state.temporaryBalances) {
     const record = state.temporaryBalances[user];
@@ -99,7 +99,13 @@ function addFinalPoints(state: ContractState, input: ContractInput) {
     const newTokensAmount = tokens ? tokens + sumCalculated : sumCalculated;
     state.balances[user] = newTokensAmount;
     if (record.userId) {
-      addPointsEvent.push({ userId: record.userId, points: sumCalculated, roles: record.roles });
+      addPointsEvent.push({
+        userId: record.userId,
+        address: state.users[record.userId],
+        points: sumCalculated,
+        roles: record.roles,
+        balance: state.balances[state.users[record.userId]],
+      });
     }
   }
 

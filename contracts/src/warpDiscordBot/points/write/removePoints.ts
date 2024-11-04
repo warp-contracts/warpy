@@ -15,7 +15,7 @@ export const removePoints = async (state: ContractState, { input }: ContractActi
     throw new ContractError(`Only admin can remove points.`);
   }
 
-  const subtractPointsEvent: { userId: string; points: number; roles: string[] }[] = [];
+  const subtractPointsEvent: { userId: string; points: number; roles: string[]; balance: number }[] = [];
 
   for (let i = 0; i < members.length; i++) {
     const id = members[i].id;
@@ -26,7 +26,7 @@ export const removePoints = async (state: ContractState, { input }: ContractActi
     }
 
     subtractTokensBalance(state, id, boostsPoints);
-    subtractPointsEvent.push({ userId: id, points: -boostsPoints, roles });
+    subtractPointsEvent.push({ userId: id, points: -boostsPoints, roles, balance: state.balances[state.users[id]] });
   }
-  return { state, event: { users: subtractPointsEvent } };
+  return { state, event: { name: 'upsertBalance', users: subtractPointsEvent } };
 };

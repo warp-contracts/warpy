@@ -51,7 +51,21 @@ export const addReaction = async (state: ContractState, { input }: ContractActio
   );
   await SmartWeave.kv.put(`${rolesPrefix}${userId}_${emojiId}_${messageId}_${SmartWeave.block.timestamp}`, roles);
 
-  return { state, event: { userId, roles, points: boostsPoints } };
+  return {
+    state,
+    event: {
+      name: 'upsertBalance',
+      users: [
+        {
+          userId,
+          address: state.users[userId],
+          points: boostsPoints,
+          balance: state.balances[state.users[userId]],
+          roles,
+        },
+      ],
+    },
+  };
 };
 
 export const exceedsMaxTxsInTimeLag = async (

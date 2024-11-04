@@ -26,5 +26,5 @@ export const changeWallet = async (state: ContractState, { input }: ContractActi
   Object.defineProperty(state.balances, address, Object.getOwnPropertyDescriptor(state.balances, oldAddress)!!);
   delete state.balances[oldAddress];
 
-  return { state };
+  return { state, event: { name: 'changeWallet', oldAddress, address } };
 };

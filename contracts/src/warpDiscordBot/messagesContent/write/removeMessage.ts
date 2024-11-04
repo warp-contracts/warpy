@@ -47,7 +47,21 @@ export const removeMessage = async (state: ContractState, { input }: ContractAct
 
   subtractTokensBalance(state, userId, boostsPointsValue);
 
-  return { state, event: { userId, roles: rolesValue, points: -boostsPointsValue } };
+  return {
+    state,
+    event: {
+      name: 'upsertBalance',
+      users: [
+        {
+          userId,
+          address: state.users[userId],
+          points: -boostsPointsValue,
+          balance: state.balances[state.users[userId]],
+          roles: rolesValue,
+        },
+      ],
+    },
+  };
 };
 
 export const subtractTokensBalance = (state: ContractState, id: string, boostsPoints: number) => {

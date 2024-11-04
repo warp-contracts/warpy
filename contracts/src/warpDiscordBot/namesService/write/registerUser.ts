@@ -23,5 +23,11 @@ export const registerUser = async (state: ContractState, { input }: ContractActi
   state.users[id] = address;
   state.balances[address] = state.balances[address] || 0;
 
-  return { state };
+  return {
+    state,
+    event: {
+      name: 'upsertBalance',
+      users: [{ userId: id, address, points: state.balances[address], balance: state.balances[address], roles: [] }],
+    },
+  };
 };

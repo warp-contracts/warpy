@@ -56,7 +56,21 @@ export const addMessage = async (state: ContractState, { input }: ContractAction
   await SmartWeave.kv.put(`${rolesPrefix}${effectiveCaller}`, roles);
   await SmartWeave.kv.put(`${timePrefixMessages}${userId}_${SmartWeave.block.timestamp}_${messageId}`, `${messageId}`);
 
-  return { state, event: { userId, points: boostsPoints, roles } };
+  return {
+    state,
+    event: {
+      name: 'upsertBalance',
+      users: [
+        {
+          userId,
+          address: state.users[userId],
+          points: boostsPoints,
+          roles,
+          balance: state.balances[state.users[userId]],
+        },
+      ],
+    },
+  };
 };
 
 export const addTokensBalance = (state: ContractState, id: string, boostsPoints: number) => {

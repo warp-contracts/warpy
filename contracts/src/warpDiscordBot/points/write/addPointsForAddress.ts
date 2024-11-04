@@ -12,7 +12,7 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
     throw new ContractError(`Only admin can award points.`);
   }
 
-  const addPointsEvent: { userId: string; points: number; roles: string[] }[] = [];
+  const addPointsEvent: { userId: string; address: string; points: number; roles: string[]; balance: number }[] = [];
 
   for (let i = 0; i < members.length; i++) {
     const txId = members[i].txId;
@@ -46,7 +46,13 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
       }
 
       addTokensBalance(state, userId, boostsPoints);
-      addPointsEvent.push({ userId, points: boostsPoints, roles });
+      addPointsEvent.push({
+        userId,
+        address: state.users[userId],
+        points: boostsPoints,
+        roles,
+        balance: state.balances[state.users[userId]],
+      });
       logger.info(`Transaction: ${txId} for wallet address: ${members[i].id}: event: ${addPointsEvent}.`);
     } else {
       logger.warn(`Transaction: ${txId} for wallet address: ${members[i].id}: user not registered in Warpy.`);
@@ -68,7 +74,7 @@ export const addPointsForAddress = async (state: ContractState, { input }: Contr
     }
   }
 
-  return { state, event: { users: addPointsEvent } };
+  return { state, event: { name: 'upsertBalance', users: addPointsEvent } };
 };
 
 function getUser(address: string, state: ContractState) {

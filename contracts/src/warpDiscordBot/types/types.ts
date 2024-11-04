@@ -161,10 +161,17 @@ export interface WeightedOption {
   weight: number;
 }
 
+export interface ChangeWalletEvent {
+  address: string;
+  oldAddress: string;
+}
+
 export interface PointsEvent {
   userId: string;
+  address?: string;
   roles: string[];
   points: number;
+  balance?: number;
 }
 
 export interface BatchPointsEvent {
@@ -178,7 +185,7 @@ export interface SeasonEvent {
   role?: string;
 }
 
-export type ContractEvent = PointsEvent | BatchPointsEvent | SeasonEvent;
+export type ContractEvent = PointsEvent | BatchPointsEvent | SeasonEvent | ChangeWalletEvent;
 
 export type ContractFunction =
   | 'addActivity'
