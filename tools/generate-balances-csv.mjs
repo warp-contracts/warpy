@@ -49,7 +49,7 @@ function getBalancesMap(users, balances) {
   const invertedUsers = invertUsersMap(users);
 
   for (const [wallet, balance] of Object.entries(balances)) {
-    const userId = invertedUsers[wallet];
+    const userId = invertedUsers[wallet] || invertedUsers[wallet.toLowerCase()];
     if (userId) {
       linkedMap[wallet] = {
         id: userId,
@@ -121,7 +121,7 @@ async function fetchRolesForIds(guild, ids) {
 function invertUsersMap(users) {
   const inverted = {};
   for (const key in users) {
-    inverted[users[key]] = key;
+    inverted[users[key].toLowerCase()] = key;
   }
   return inverted;
 }
