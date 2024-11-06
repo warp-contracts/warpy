@@ -47,6 +47,7 @@ async function getState() {
 function getBalancesMap(users, balances) {
   const linkedMap = {};
   const invertedUsers = invertUsersMap(users);
+  const zombieWallets = {};
 
   for (const [wallet, balance] of Object.entries(balances)) {
     const userId = invertedUsers[wallet] || invertedUsers[wallet.toLowerCase()];
@@ -55,9 +56,13 @@ function getBalancesMap(users, balances) {
         id: userId,
         balance: balance,
       };
+    } else {
+      zombieWallets[wallet] = balance;
     }
   }
 
+  console.log(`Found: ${Object.keys(zombieWallets).length} zombie wallets.`);
+  fs.writeFileSync('zombie_wallets.json', JSON.stringify(zombieWallets));
   return linkedMap;
 }
 
