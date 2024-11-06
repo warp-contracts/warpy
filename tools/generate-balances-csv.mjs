@@ -25,11 +25,6 @@ async function getGuildInfo() {
 async function getState() {
   console.log(`Starting fetching state.`);
   try {
-    if (fs.existsSync('state.json')) {
-      console.log(`State file exists, reading state from file.`);
-      const state = fs.readFileSync('state.json', 'utf-8');
-      return JSON.parse(state);
-    }
     const state = (
       await fetch(`https://dre-warpy.warp.cc/contract?id=p5OI99-BaY4QbZts266T7EDwofZqs-wVuYJmMCS0SUU`).then((res) => {
         return res.json();
@@ -48,9 +43,8 @@ function getBalancesMap(users, balances) {
   const linkedMap = {};
   const invertedUsers = invertUsersMap(users);
   const zombieWallets = {};
-
   for (const [wallet, balance] of Object.entries(balances)) {
-    const userId = invertedUsers[wallet] || invertedUsers[wallet.toLowerCase()];
+    const userId = invertedUsers[wallet.toLowerCase()];
     if (userId) {
       linkedMap[wallet] = {
         id: userId,
