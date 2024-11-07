@@ -4,7 +4,7 @@ import { Client, IntentsBitField, Partials } from 'discord.js';
 
 dotenv.config();
 
-const chunkSize = 1000;
+const chunkSize = 10000;
 const guildId = '786251205008949258';
 
 async function getGuildInfo() {
@@ -44,7 +44,7 @@ function getBalancesMap(users, balances) {
   const invertedUsers = invertUsersMap(users);
   const zombieWallets = {};
   for (const [wallet, balance] of Object.entries(balances)) {
-    const userId = invertedUsers[wallet.toLowerCase()];
+    const userId = invertedUsers[wallet] || invertedUsers[wallet.toLowerCase()];
     if (userId) {
       linkedMap[wallet] = {
         id: userId,
@@ -67,7 +67,7 @@ async function processBalances(balances, guild) {
   let idToRoles = {};
   console.log(`Ids to be fetched from Discord: ${ids.length}.`);
   for (const chunk of chunks) {
-    const rolesForChunk = await fetchRolesForIds(guild, chunk);
+    const rolesForChunk = await fetchMembersInChunks(guild, chunk);
     idToRoles = { ...idToRoles, ...rolesForChunk };
     count += chunk.length;
     console.log(`Fetched roles for ids: ${count}.`);
@@ -102,20 +102,43 @@ function generateCsv(linkedMap, uniqueRoles, idToRoles) {
   });
 }
 
-async function fetchRolesForIds(guild, ids) {
-  try {
-    const idToRoles = {};
-    await guild.members.fetch({ user: ids }).then((members) => {
+const fetchMembersInChunks = async (guild, ids) => {
+  const chunkSize = 100;
+  const maxRetries = 10;
+  const chunkedIds = [];
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    chunkedIds.push(ids.slice(i, i + chunkSize));
+  }
+
+  const fetchChunk = async (chunk, retries = 0) => {
+    try {
+      const members = await guild.members.fetch({ user: chunk });
+      const idToRoles = {};
       members.forEach((member) => {
         idToRoles[member.id] = member.roles.cache.map((r) => r.name);
       });
-    });
-    return idToRoles;
-  } catch (error) {
-    console.error(`Failed to fetch roles: ${error}`);
-    return {};
-  }
-}
+      return idToRoles;
+    } catch (error) {
+      if (retries < maxRetries) {
+        console.log(`Retrying fetch for chunk. Attempt ${retries + 1}`);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return fetchChunk(chunk, retries + 1);
+      }
+      console.error(`Failed to fetch members after ${maxRetries} attempts: ${error}`);
+      throw new Error(`Failed to fetch members after ${maxRetries} attempts`);
+    }
+  };
+
+  const promises = chunkedIds.map((chunk) => fetchChunk(chunk));
+
+  const results = await Promise.all(promises);
+
+  const combinedResults = results.reduce((acc, result) => {
+    return { ...acc, ...result };
+  }, {});
+
+  return combinedResults;
+};
 
 function invertUsersMap(users) {
   const inverted = {};
