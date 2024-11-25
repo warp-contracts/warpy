@@ -62,7 +62,7 @@ export default {
     }
 
     interaction.guild.members.fetch(userId, { force: true }).then(async (member: GuildMember) => {
-      const isVeteran = parseInt(joinSeason3Res.timestamp) < SEASON_3_START_TIMESTAMP;
+      const isVeteran = joinSeason3Res.timestamp;
       const roles = await member.fetch(true).then((m: GuildMember) => m.roles.cache.map((r) => r.name));
 
       if (isVeteran) {
