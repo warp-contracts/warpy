@@ -12,14 +12,6 @@ export default {
     const contract = await connectToServerContract(warp, warpWallet, interaction.guildId);
     const userId = interaction.user.id;
 
-    if (
-      interaction.user.id != '769844280767807520' &&
-      interaction.user.id != '304935610089734150' &&
-      interaction.user.id != '1168815344736010240'
-    ) {
-      await interaction.editReply({ content: `Not available.`, ephemeral: true });
-      return;
-    }
     let walletAddress: string;
     try {
       walletAddress = (
