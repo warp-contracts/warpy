@@ -172,6 +172,8 @@ export interface PointsEvent {
   roles: string[];
   points: number;
   balance?: number;
+  roulette?: boolean;
+  interactionId?: string;
 }
 
 export interface BatchPointsEvent {

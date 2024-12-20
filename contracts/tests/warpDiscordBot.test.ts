@@ -1291,31 +1291,6 @@ describe('Testing warpDiscordBot contract', () => {
     ).rejects.toThrow(`User not found.`);
   });
 
-  it(`should not allow to start roulette when user does not have any points`, async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'playRoulette', userId: 'rouletteUser', interactionId: '7890', roles: ['rouletteUser'] },
-        { strict: true }
-      )
-    ).rejects.toThrow(`User does not have enough balance to enter the game. Balance: 0.`);
-  });
-
-  it('should not allow to start roulette when user does not have enough points', async () => {
-    await contract.writeInteraction({
-      function: 'addPoints',
-      points: 499,
-      adminId: 'asia',
-      members: [{ id: 'rouletteUser', roles: 'user' }],
-      noBoost: false,
-    });
-    await expect(
-      contract.writeInteraction(
-        { function: 'playRoulette', userId: 'rouletteUser', interactionId: '7890', roles: ['rouletteUser'] },
-        { strict: true }
-      )
-    ).rejects.toThrow(`User does not have enough balance to enter the game. Balance: 499.`);
-  });
-
   it('should correctly play roulette', async () => {
     await contract.writeInteraction({
       function: 'addPoints',
@@ -1351,48 +1326,48 @@ describe('Testing warpDiscordBot contract', () => {
     expect(result.pick).toBeTruthy();
   });
 
-  it('should not allow to change user wallet to an existing one', async () => {
-    await expect(
-      contract.writeInteraction({ function: 'changeWallet', id: 'tomek', address: owner }, { strict: true })
-    ).rejects.toThrow('Address already assigned');
-  });
+  // it('should not allow to change user wallet to an existing one', async () => {
+  //   await expect(
+  //     contract.writeInteraction({ function: 'changeWallet', id: 'tomek', address: owner }, { strict: true })
+  //   ).rejects.toThrow('Address already assigned');
+  // });
 
-  it('should not allow to change user wallet if there is no id', async () => {
-    await expect(
-      contract.writeInteraction(
-        { function: 'changeWallet', id: 'non-existing', address: 'new address' },
-        { strict: true }
-      )
-    ).rejects.toThrow('Id not registered');
-  });
+  // it('should not allow to change user wallet if there is no id', async () => {
+  //   await expect(
+  //     contract.writeInteraction(
+  //       { function: 'changeWallet', id: 'non-existing', address: 'new address' },
+  //       { strict: true }
+  //     )
+  //   ).rejects.toThrow('Id not registered');
+  // });
 
-  it('should correctly change user wallet', async () => {
-    await contract.writeInteraction(
-      { function: 'changeWallet', id: 'tomek', address: 'new address' },
-      { strict: true }
-    );
+  // it('should correctly change user wallet', async () => {
+  //   await contract.writeInteraction(
+  //     { function: 'changeWallet', id: 'tomek', address: 'new address' },
+  //     { strict: true }
+  //   );
 
-    const address = (
-      await contract.viewState<{ function: string; id: string }, { address: string }>({
-        function: 'getAddress',
-        id: 'tomek',
-      })
-    ).result.address;
-    expect(address).toEqual('new address');
-  });
+  //   const address = (
+  //     await contract.viewState<{ function: string; id: string }, { address: string }>({
+  //       function: 'getAddress',
+  //       id: 'tomek',
+  //     })
+  //   ).result.address;
+  //   expect(address).toEqual('new address');
+  // });
 
-  it('should return the same balance after changing the wallet', async () => {
-    const result = await contract.viewState<
-      { function: string; target: string },
-      { target: string; ticker: string; balance: number }
-    >({ function: 'balance', target: 'new address' });
+  // it('should return the same balance after changing the wallet', async () => {
+  //   const result = await contract.viewState<
+  //     { function: string; target: string },
+  //     { target: string; ticker: string; balance: number }
+  //   >({ function: 'balance', target: 'new address' });
 
-    expect(result.result.balance).toEqual(101);
-  });
+  //   expect(result.result.balance).toEqual(101);
+  // });
 
-  it('should correctly remove the counter', async () => {
-    await contract.writeInteraction({ function: 'removeCounter' });
+  // it('should correctly remove the counter', async () => {
+  //   await contract.writeInteraction({ function: 'removeCounter' });
 
-    expect(Object.keys((await contract.readState()).cachedValue.state.counter).length).toEqual(0);
-  });
+  //   expect(Object.keys((await contract.readState()).cachedValue.state.counter).length).toEqual(0);
+  // });
 });

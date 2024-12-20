@@ -1,11 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import {
-  connectToServerContract,
-  getSonarContractUrl,
-  getSonarInteractionUrl,
-  getStateFromDre,
-  warpyIconUrl,
-} from '../utils';
+import { connectToServerContract, getSonarInteractionUrl, getStateFromDre, sleep, warpyIconUrl } from '../utils';
 import { Warp, WriteInteractionResponse } from 'warp-contracts';
 
 export default {
@@ -34,18 +28,20 @@ export default {
       adminId: interaction.user.id,
     })) as WriteInteractionResponse;
 
+    await sleep(5000);
     let rouletteOn;
     try {
       rouletteOn = (
-        await fetch(
-          `https://dre-warpy.warp.cc/contract/view-state?id=${contractId}&input={"function":"getRouletteSwitch"}`
-        ).then((res) => res.json())
-      ).result.rouletteSwitch;
+        await fetch(`https://dre-warpy.warp.cc/contract?id=${contractId}&query=$.rouletteOn`).then((res) => {
+          return res.json();
+        })
+      ).result[0];
     } catch (e) {
-      console.log(e);
+      await interaction.editReply(`Could not load state from D.R.E. nodes.`);
+      return;
     }
     await interaction.editReply({
-      content: `**Warpy Roulette** :ferris_wheel: is now ${rouletteOn ? '**ON**' : '**OFF**'}!`,
+      content: `**Warpy Christmas Roulette** :ferris_wheel: is now ${rouletteOn ? '**ON**' : '**OFF**'}!`,
       tts: true,
       components: [
         {
@@ -66,16 +62,10 @@ export default {
           type: 'rich',
           description: `${
             rouletteOn
-              ? `Admins just started Warpy Roulette. In order to join the game, we will charge you 500 RSG :RSG: so be sure to check it upfront. Use **/roulette** method to play.`
-              : `Admins just switched off Warpy Roulette. Please wait for the next openning.`
+              ? `Admins just started Warpy Christmas  Roulette. Use **/roulette** method to play.`
+              : `Admins just switched off Warpy Christmas Roulette. Please wait for the next openning.`
           }`,
           color: 0x6c8cfd,
-          // fields: [
-          //   {
-          //     name: `:ferris-wheel:`,
-          //     value: ``,
-          //   },
-          // ],
           thumbnail: {
             url: warpyIconUrl,
             height: 0,

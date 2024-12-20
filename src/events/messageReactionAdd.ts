@@ -10,6 +10,7 @@ export default {
   async execute(
     reactionOrigin: any,
     user: User,
+    burst: number,
     warp: Warp,
     wallet: JWKInterface,
     reactionsPerTimeLag: TransactionsPerTimeLag
@@ -18,14 +19,19 @@ export default {
 
     const emojiId = reactionOrigin.emoji.name.replace(/\p{Emoji}/gu, (m: any) => m.codePointAt(0).toString(16));
 
-    limitTransactionsPerTimeLag(
-      reactionsPerTimeLag,
-      user.id,
-      Date.now(),
-      `${reactionOrigin.message.id}_${emojiId}`,
-      REACTIONS_LIMIT,
-      'reaction'
-    );
+    if (
+      !limitTransactionsPerTimeLag(
+        reactionsPerTimeLag,
+        user.id,
+        Date.now(),
+        `${reactionOrigin.message.id}_${emojiId}`,
+        REACTIONS_LIMIT,
+        'reaction',
+        3600
+      )
+    ) {
+      return;
+    }
 
     try {
       const contract = await connectToServerContract(warp, wallet, reactionOrigin.message.guildId);
@@ -55,6 +61,7 @@ export default {
       );
       // return { ...userToReactions, [id]: (userToReactions[id] || 0) + 1 };
     } catch (e: any) {
+      console.log(e);
       console.error(`Unable to write interaction.`);
     }
   },
@@ -66,28 +73,27 @@ export const limitTransactionsPerTimeLag = (
   transactionTimestamp: number,
   transactionId: string,
   transactionsLimit: number,
-  typeOfTransaction: 'message' | 'reaction'
+  typeOfTransaction: 'message' | 'reaction' | 'roulette',
+  timeLag: number
 ) => {
   const now = Date.now();
-  const currentDate = new Date(now);
-  currentDate.setMinutes(0, 0, 0);
-  const lastFullHourTimestamp = currentDate.getTime();
-
+  const lastFullTimestamp = now - (now % (timeLag * 1000));
   const userTransactions = transactions[userId];
   if (userTransactions) {
-    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= lastFullHourTimestamp);
-    transactions[userId] = userTransactionsLimited;
-    if (userTransactions.length < transactionsLimit) {
+    const userTransactionsLimited = userTransactions.filter((m) => m.timestamp >= lastFullTimestamp);
+    transactions[userId] = [...userTransactionsLimited];
+    if (userTransactionsLimited.length < transactionsLimit) {
       transactions[userId].push({ timestamp: transactionTimestamp, txId: transactionId });
+      return true;
     } else {
       console.warn(
         `Skipping ${typeOfTransaction} sending. Trasaction author: ${userId}, transaction id: ${transactionId}.`
       );
-      return;
+      return false;
     }
   } else {
     console.info(`Adding user to ${typeOfTransaction} transactionsPerTimeLag: ${userId}.`);
     transactions[userId] = [{ timestamp: transactionTimestamp, txId: transactionId }];
-    // console.dir(transactions, { depth: null });
+    return true;
   }
 };

@@ -8,7 +8,6 @@ export const getRoulettePick = async (state: ContractState, { input }: ContractA
   validateString(input, 'interactionId');
 
   const { userId, interactionId } = input;
-
   const pick = await SmartWeave.kv.get(`${roulettePrefix}${userId}_${interactionId}`);
 
   return { result: { pick } };

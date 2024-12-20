@@ -76,9 +76,9 @@ export const exceedsMaxTxsInTimeLag = async (
   removedTxsPrefix: string
 ) => {
   const currentTimestamp = SmartWeave.block.timestamp;
-  const pastHourTimestamp = Math.round(currentTimestamp / timeLagInSeconds) * timeLagInSeconds;
+  const pastTimestamp = currentTimestamp - (currentTimestamp % timeLagInSeconds);
   const timeLagTxs = await SmartWeave.kv.kvMap({
-    gte: `${prefix}${userId}_${pastHourTimestamp}`,
+    gte: `${prefix}${userId}_${pastTimestamp}`,
     lt: `${prefix}${userId}_${currentTimestamp}\xff`,
   });
   const timeLagValues = [...timeLagTxs.values()];
