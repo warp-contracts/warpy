@@ -11,14 +11,21 @@ async function main() {
   // const { cachedValue } = await contract.readState();
   // console.log(cachedValue.state);
 
+  /*
+  1000 punktów: 50%
+5000 punktów: 40%
+10000 punktów:  9%
+100000 punktów: 0.9%
+500000 punktów: 0.1%
+*/
   await contract.writeInteraction({
     function: 'addRoulettePicks',
     roulettePicks: [
-      { value: 1000, weight: 400 },
-      { value: 5000, weight: 300 },
-      { value: 10000, weight: 200 },
-      { value: 100000, weight: 70 },
-      { value: 500000, weight: 30 },
+      { value: 1000, weight: 500 },
+      { value: 5000, weight: 400 },
+      { value: 10000, weight: 90 },
+      { value: 100000, weight: 9 },
+      { value: 500000, weight: 1 },
     ],
     adminId: '769844280767807520',
   });

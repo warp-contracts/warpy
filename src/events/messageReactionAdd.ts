@@ -10,7 +10,6 @@ export default {
   async execute(
     reactionOrigin: any,
     user: User,
-    burst: number,
     warp: Warp,
     wallet: JWKInterface,
     reactionsPerTimeLag: TransactionsPerTimeLag
